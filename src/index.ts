@@ -1,26 +1,15 @@
-import { Octokit } from '@octokit/rest'
+import { GithubClient } from './client/github_client'
 
 const main = async () => {
-  const GITHUB_TOKEN = process.env['GITHUB_TOKEN']
-  const octokit = new Octokit({
-    auth: GITHUB_TOKEN
-  })
+  const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
+  const OWNER = 'Kesin11'
+  const REPO = 'Firestore-simple'
+  const githubClient = new GithubClient(GITHUB_TOKEN)
 
-  const runs = await octokit.actions.listRepoWorkflowRuns({
-    owner: 'Kesin11',
-    repo: 'Firestore-simple',
-    // per_page: 100, // default
-    // page: 1, // order desc
-  })
-  console.log(runs.data.workflow_runs[0])
+  const runs = await githubClient.fetchWorkflows(OWNER, REPO)
+  console.dir(runs)
 
-  const runId = runs.data.workflow_runs[0].id
-
-  const jobs = await octokit.actions.listJobsForWorkflowRun({
-    owner: 'Kesin11',
-    repo: 'Firestore-simple',
-    run_id: runId
-  })
-  console.dir(jobs.data.jobs[0])
+  const jobs = await githubClient.fetchJobs(OWNER, REPO, runs[0].id)
+  console.dir(jobs)
 }
 main()
