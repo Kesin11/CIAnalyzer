@@ -27,6 +27,7 @@
   "homepage": "https://github.com/Kesin11/CIAnalyzer#readme",
   "devDependencies": {
     "@types/jest": "25.2.1",
+    "@types/lodash": "4.14.150",
     "@types/node": "13.13.4",
     "jest": "25.5.0",
     "rimraf": "3.0.2",
@@ -34,6 +35,7 @@
     "typescript": "3.8.3"
   },
   "dependencies": {
-    "@octokit/rest": "17.6.0"
+    "@octokit/rest": "17.6.0",
+    "lodash": "4.17.15"
   }
 }

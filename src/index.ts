@@ -8,13 +8,11 @@ const main = async () => {
   const githubClient = new GithubClient(GITHUB_TOKEN)
 
   const runs = await githubClient.fetchWorkflowRuns(OWNER, REPO)
-  console.dir(runs)
-
   const jobs = await githubClient.fetchJobs(OWNER, REPO, runs[0].run.id)
-  console.dir(jobs)
-
 
   const githubAnalyzer = new GithubAnalyzer()
-  githubAnalyzer.createWorkflowReport(runs[0].name, runs[0].run, jobs)
+  const report = githubAnalyzer.createWorkflowReport(runs[0].name, runs[0].run, jobs)
+
+  console.dir(report)
 }
 main()
