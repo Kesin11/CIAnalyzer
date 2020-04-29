@@ -1,0 +1,11 @@
+name: "CI"
+on: push
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    container:
+      image: "docker"
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker build -t ci_analyzer .
