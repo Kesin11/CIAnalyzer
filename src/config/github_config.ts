@@ -10,7 +10,7 @@ type GithubConfig = {
   }[]
 }
 
-const defaultPath = path.join(__dirname, '../../config.yaml')
+const defaultPath = path.join(__dirname, '../../ci_analyzer.yaml')
 
 export const loadConfig = (configPath?: string): GithubConfig | undefined => {
   configPath = configPath || defaultPath

@@ -16,6 +16,7 @@ const main = async () => {
       const report = githubAnalyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs)
 
       console.dir(report)
+      // console.dir(JSON.stringify(report, null, 2))
     }
   }
 }

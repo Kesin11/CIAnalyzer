@@ -1,8 +1,7 @@
 github:
   # baseUrl: https://api.github.com # default
   repos:
-    - Kesin11/Firestore-simple
-    - Kesin11/github_actions_matrix_js_sandbox
+    - Kesin11/CIAnalyzer
   # exporter:
   #   - local
   #   - bigquery:
