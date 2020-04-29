@@ -1,0 +1,43 @@
+version: 2.1
+
+jobs:
+  lint:
+    docker:
+      - image: circleci/node:lts
+    steps:
+      - checkout
+      - run: npm ci
+      - run:
+          name: Lint
+          command: npm run lint
+  build_and_test:
+    docker:
+      - image: circleci/node:lts
+    steps:
+      - checkout
+      - run: npm ci
+      - run:
+          name: Build
+          command: npm run build
+      - run:
+          name: Test
+          command: npm run test:ci
+  docker_build:
+    docker:
+      - image: circleci/node:lts
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker build -t ci_analyzer .
+
+workflows:
+  version: 2
+  ci:
+    jobs:
+      - lint
+      - build_and_test:
+          requires:
+            - lint
+  docker:
+    jobs:
+      - docker_build
