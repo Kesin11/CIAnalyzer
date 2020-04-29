@@ -1,18 +1,22 @@
 import { GithubClient } from './client/github_client'
 import { GithubAnalyzer } from './analyzer/github_analyzer'
+import { loadConfig } from './config/github_config'
 
 const main = async () => {
   const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
-  const OWNER = 'Kesin11'
-  const REPO = 'Firestore-simple'
   const githubClient = new GithubClient(GITHUB_TOKEN)
-
-  const runs = await githubClient.fetchWorkflowRuns(OWNER, REPO)
-  const jobs = await githubClient.fetchJobs(OWNER, REPO, runs[0].run.id)
-
   const githubAnalyzer = new GithubAnalyzer()
-  const report = githubAnalyzer.createWorkflowReport(runs[0].name, runs[0].run, jobs)
+  const githubConfig = loadConfig()
+  if (!githubConfig) return
 
-  console.dir(report)
+  for (const repo of githubConfig.repos) {
+    const workflowRuns = await githubClient.fetchWorkflowRuns(repo.owner, repo.repo)
+    for (const workflowRun of workflowRuns) {
+      const jobs = await githubClient.fetchJobs(repo.owner, repo.repo, workflowRun.run.id)
+      const report = githubAnalyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs)
+
+      console.dir(report)
+    }
+  }
 }
 main()
