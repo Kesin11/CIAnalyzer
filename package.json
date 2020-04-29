@@ -1,0 +1,29 @@
+{
+  "name": "ci_analyzer",
+  "version": "0.1.0",
+  "description": "Analyze each CI service build metrics.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kesin11/CIAnalyzer.git"
+  },
+  "keywords": [
+    "CI"
+  ],
+  "author": "kesin1202000@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Kesin11/CIAnalyzer/issues"
+  },
+  "homepage": "https://github.com/Kesin11/CIAnalyzer#readme",
+  "devDependencies": {
+    "@types/jest": "25.2.1",
+    "@types/node": "13.13.4",
+    "jest": "25.5.0",
+    "ts-jest": "25.4.0",
+    "typescript": "3.8.3"
+  }
+}
