@@ -6,8 +6,11 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "tsc -b",
-    "build:watch": "tsc -b --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:watch": "tsc -b -w",
+    "lint": "echo \"We have not lint yet\"",
+    "test": "jest",
+    "test:ci": "jest",
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
