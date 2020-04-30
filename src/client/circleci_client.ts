@@ -1,27 +1,19 @@
 import axios, { AxiosInstance } from 'axios'
 import { groupBy } from 'lodash'
 
+const DEBUG_PER_PAGE = 5
+
 export type CircleciStatus = 'retried' | 'canceled' | 'infrastructure_fail' | 'timedout' | 'not_run' | 'running' | 'failed' | 'queued' | 'scheduled' | 'not_running' | 'no_tests' | 'fixed' | 'success'
 type RecentBuildResponse = {
-  // compare: null,
-  // previous_successful_build: null,
-  // build_parameters: { CIRCLE_JOB: 'build_and_test' },
-  // oss: true,
-  // all_commit_details_truncated: false,
-  // committer_date: null,
-  // body: null,
+  // committer_date: 2020-04-30T08:31:56.000Z,
+  // body: '',
   // usage_queued_at: '2020-04-29T13:20:15.497Z',
-  // context_ids: [],
-  // fail_reason: null,
-  // retry_of: null,
   reponame: string,
-  // ssh_users: [],
   build_url: string,
   // parallel: 1,
-  failed: boolean,
   branch: string,
   username: string,
-  // author_date: null,
+  // author_date: 2020-04-30T08:31:56.000Z,
   why: string,
   // user: {
   //   is_user: true,
@@ -43,38 +35,22 @@ type RecentBuildResponse = {
   },
   vcs_tag: string | null,
   build_num: number,
-  // infrastructure_fail: false,
-  // committer_email: null,
-  // has_artifacts: true,
-  // previous: { build_num: 2, status: 'success', build_time_millis: 62381 },
+  // committer_email: kesin1202000@gmail.com,
   status: CircleciStatus
-  // committer_name: null,
-  // retries: null,
-  // subject: null,
-  vcs_type: string,
-  // timedout: boolean,
+  // committer_name: 'Kenta Kase',
+  // subject: 'refactor: Improve import',
   // dont_build: null,
   lifecycle: 'queued' | 'scheduled' | 'not_run' | 'not_running' | 'running' | 'finished'
-  // no_dependency_cache: false,
+  // fleet: 'picard',
   stop_time: string,
-  // ssh_disabled: false,
   build_time_millis: number,
-  // picard: null,
-  // circle_yml: null,
-  // messages: [],
-  // is_first_green_build: false,
-  // job_name: null,
   start_time: string,
-  // canceler: null,
-  // all_commit_details: [],
-  // platform: '1.0',
+  // platform: '2.0',
   // outcome: 'success',
   // vcs_url: 'https://github.com/Kesin11/CIAnalyzer',
-  // author_name: null,
-  // node: null,
+  // author_name: Kenta Kase,
   queued_at: string,
-  canceled: boolean,
-  // author_email: null
+  // author_email: kesin1202000@gmail.com
 }
 
 type Steps = {
@@ -128,10 +104,13 @@ export class CircleciClient {
     // https://circleci.com/api/v1.1/project/:vcs-type/:username/:project?circle-token=:token&limit=20&offset=5&filter=completed
     const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}`, {
       params: {
-        limit: 20,
+        // API default is 30 and max is 100
+        // ref: https://circleci.com/docs/api/#recent-builds-for-a-single-project
+        limit: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : 30,
         // limit: 3,
         // offset: 5,
         // filter: "completed"
+        shallow: true,
       }
     })
     let recentBuilds = res.data as RecentBuildResponse[]
@@ -145,7 +124,7 @@ export class CircleciClient {
         workflow_id: build.workflows.workflow_id,
         reponame: build.reponame,
         username: build.username,
-        vcs_type: build.vcs_type,
+        vcs_type: vcsType,
         build_num: build.build_num,
         lifecycle: build.lifecycle,
       }
@@ -166,9 +145,6 @@ export class CircleciClient {
     })
 
     return workflowRuns
-  }
-
-  async fetchWorkflows(owner: string, repo: string) {
   }
 
   async fetchJobs(owner: string, repo: string, vcsType: string, runId: number) {
