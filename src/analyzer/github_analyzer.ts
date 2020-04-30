@@ -5,7 +5,7 @@ export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRu
 
 export type Status = 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
 
-export type WorkflowReport = {
+type WorkflowReport = {
   // workflow
   service: 'github',
   workflowId: string, // = id = job.run_id
@@ -24,7 +24,7 @@ export type WorkflowReport = {
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
 }
 
-export type JobReport = {
+type JobReport = {
   workflowId: string, // = run_id
   buildNumber?: number, // undefined. Github Action does not provide job build number
   jobId: string, // = id
@@ -37,7 +37,7 @@ export type JobReport = {
   steps: StepReport[],
 }
 
-export type StepReport = {
+type StepReport = {
   name: string,
   status: Status,
   number: number,
@@ -46,7 +46,7 @@ export type StepReport = {
   stepDurationSec: number // completedAt - startedAt
 }
 
-const diffSec = (start: string | Date, end: string | Date): number => {
+export const diffSec = (start: string | Date, end: string | Date): number => {
   const startDate = new Date(start)
   const endDate = new Date(end)
 

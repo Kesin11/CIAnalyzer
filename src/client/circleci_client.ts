@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import { groupBy } from 'lodash'
 
-type Status = 'retried' | 'canceled' | 'infrastructure_fail' | 'timedout' | 'not_run' | 'running' | 'failed' | 'queued' | 'scheduled' | 'not_running' | 'no_tests' | 'fixed' | 'success'
+export type CircleciStatus = 'retried' | 'canceled' | 'infrastructure_fail' | 'timedout' | 'not_run' | 'running' | 'failed' | 'queued' | 'scheduled' | 'not_running' | 'no_tests' | 'fixed' | 'success'
 type RecentBuildResponse = {
   // compare: null,
   // previous_successful_build: null,
@@ -47,7 +47,7 @@ type RecentBuildResponse = {
   // committer_email: null,
   // has_artifacts: true,
   // previous: { build_num: 2, status: 'success', build_time_millis: 62381 },
-  status: Status
+  status: CircleciStatus
   // committer_name: null,
   // retries: null,
   // subject: null,
@@ -81,7 +81,7 @@ type Steps = {
   name: string
   actions: {
     name: string
-    status: Status
+    status: CircleciStatus
     end_time: string,
     start_time: string,
     step: number,
@@ -89,8 +89,8 @@ type Steps = {
   }[]
 }
 
-type SingleBuildResponse = RecentBuildResponse & {
-  steps: Steps
+export type SingleBuildResponse = RecentBuildResponse & {
+  steps: Steps[]
 }
 
 export type WorkflowRun = {
@@ -128,7 +128,7 @@ export class CircleciClient {
     // https://circleci.com/api/v1.1/project/:vcs-type/:username/:project?circle-token=:token&limit=20&offset=5&filter=completed
     const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}`, {
       params: {
-        // limit: 20,
+        limit: 20,
         // limit: 3,
         // offset: 5,
         // filter: "completed"

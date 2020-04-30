@@ -1,5 +1,6 @@
 import { loadConfig } from './config/circleci_config'
 import { CircleciClient } from './client/circleci_client'
+import { CircleciAnalyzer } from './analyzer/circleci_analyzer'
 
 const main = async () => {
   const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
@@ -20,6 +21,8 @@ const main = async () => {
           )
       }))
       const report = circleciAnalyzer.createWorkflowReport(workflowRun, jobs)
+      // console.dir(report)
+      console.log(JSON.stringify(report, null, 2))
     }
   }
 }
