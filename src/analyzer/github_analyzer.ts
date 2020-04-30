@@ -1,5 +1,5 @@
 import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods'
-import _ from 'lodash'
+import { sumBy, min, max } from 'lodash'
 export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listRepoWorkflowRuns']['response']['data']['workflow_runs'][0]
 export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']['jobs']
 
@@ -86,13 +86,13 @@ export class GithubAnalyzer {
         startedAt,
         completedAt,
         jobDurationSec: diffSec(startedAt, completedAt),
-        sumStepsDurationSec: _.sumBy(stepReports, 'stepDurationSec'),
+        sumStepsDurationSec: sumBy(stepReports, 'stepDurationSec'),
         steps: stepReports,
       }
     })
 
-    const startedAt = _.min(jobReports.map((job) => job.startedAt )) || new Date(workflow.created_at)
-    const completedAt = _.max(jobReports.map((job) => job.completedAt )) || new Date(workflow.created_at)
+    const startedAt = min(jobReports.map((job) => job.startedAt )) || new Date(workflow.created_at)
+    const completedAt = max(jobReports.map((job) => job.completedAt )) || new Date(workflow.created_at)
     // workflow
     return {
       service: 'github',
@@ -109,7 +109,7 @@ export class GithubAnalyzer {
       startedAt,
       completedAt,
       workflowDurationSec: diffSec(startedAt, completedAt),
-      sumJobsDurationSec: _.sumBy(jobReports, 'sumStepsDurationSec')
+      sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec')
     }
   }
 
