@@ -3,6 +3,7 @@ import { GithubAnalyzer } from './analyzer/github_analyzer'
 import { loadConfig } from './config/github_config'
 import { WorkflowReport } from './analyzer/analyzer'
 import { LocalExporter } from './exporter/local_exporter'
+import { CompositExporter } from './exporter/exporter'
 
 const main = async () => {
   const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
@@ -22,7 +23,7 @@ const main = async () => {
     }
   }
 
-  const exporter = new LocalExporter('github')
+  const exporter = new CompositExporter('github', githubConfig.exporter)
   exporter.exportReports(reports)
 }
 main()

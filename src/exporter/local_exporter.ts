@@ -2,11 +2,12 @@ import path from "path"
 import fs from "fs"
 import dayjs from 'dayjs'
 import { WorkflowReport } from "../analyzer/analyzer"
+import { Exporter } from "./exporter"
 
 type Format = 'json' | 'row_based_json'
 const defaultOutDir = path.join(__dirname, '../../output')
 
-export class LocalExporter {
+export class LocalExporter implements Exporter {
   service: string
   outDir: string
   formatter: (report: WorkflowReport[]) => string
@@ -17,7 +18,7 @@ export class LocalExporter {
     this.formatter = (format === 'json') ? this.formatJson : this.formatRowBasedJson
   }
 
-  exportReports (reports: WorkflowReport[]) {
+  async exportReports (reports: WorkflowReport[]) {
     fs.mkdirSync(this.outDir, { recursive: true })
 
     const now = dayjs()

@@ -3,13 +3,13 @@ github:
   repos:
     - Kesin11/CIAnalyzer
   exporter:
-    - local:
-        outDir: ./output
-        format: json
+    local:
+      outDir: ./output
+      format: json
 
-  #   - bigquery:
-  #     dataset: pipeline
-  #     table: job
+    # bigquery:
+    #   dataset: pipeline
+    #   table: job
 circleci:
   # baseUrl: https://circleci.com/api/v1.1 # default
   repos:
