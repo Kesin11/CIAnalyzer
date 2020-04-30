@@ -1,5 +1,7 @@
 import { Octokit } from "@octokit/rest";
 
+const DEBUG_PER_PAGE = 5
+
 export class GithubClient {
   private octokit: Octokit
   constructor(token: string, baseUrl?: string) {
@@ -15,7 +17,7 @@ export class GithubClient {
       owner,
       repo,
       status: "completed",
-      // per_page: 100, // default
+      per_page: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : 100, // API default is 100
       // page: 1, // order desc
     })
 
