@@ -1,7 +1,8 @@
 import axios, { AxiosInstance } from 'axios'
 import { groupBy } from 'lodash'
 
-type RecentBuildsResponse = {
+type Status = 'retried' | 'canceled' | 'infrastructure_fail' | 'timedout' | 'not_run' | 'running' | 'failed' | 'queued' | 'scheduled' | 'not_running' | 'no_tests' | 'fixed' | 'success'
+type RecentBuildResponse = {
   // compare: null,
   // previous_successful_build: null,
   // build_parameters: { CIRCLE_JOB: 'build_and_test' },
@@ -46,7 +47,7 @@ type RecentBuildsResponse = {
   // committer_email: null,
   // has_artifacts: true,
   // previous: { build_num: 2, status: 'success', build_time_millis: 62381 },
-  status: 'retried' | 'canceled' | 'infrastructure_fail' | 'timedout' | 'not_run' | 'running' | 'failed' | 'queued' | 'scheduled' | 'not_running' | 'no_tests' | 'fixed' | 'success'
+  status: Status
   // committer_name: null,
   // retries: null,
   // subject: null,
@@ -76,13 +77,30 @@ type RecentBuildsResponse = {
   // author_email: null
 }
 
+type Steps = {
+  name: string
+  actions: {
+    name: string
+    status: Status
+    end_time: string,
+    start_time: string,
+    step: number,
+    run_time_millis: number,
+  }[]
+}
+
+type SingleBuildResponse = RecentBuildResponse & {
+  steps: Steps
+}
+
 export type WorkflowRun = {
   workflow_name: string
   workflow_id: string
   reponame: string
   username: string
+  vcs_type: string,
   build_nums: number[]
-  lifecycles: RecentBuildsResponse['lifecycle'][]
+  lifecycles: RecentBuildResponse['lifecycle'][]
 }
 
 export class CircleciClient {
@@ -106,9 +124,9 @@ export class CircleciClient {
     }
   }
 
-  async fetchWorkflowRuns(owner: string, repo: string, vscType: string, fromRunId?: number) {
+  async fetchWorkflowRuns(owner: string, repo: string, vcsType: string, fromRunId?: number) {
     // https://circleci.com/api/v1.1/project/:vcs-type/:username/:project?circle-token=:token&limit=20&offset=5&filter=completed
-    const res = await this.axios.get( `project/${vscType}/${owner}/${repo}`, {
+    const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}`, {
       params: {
         // limit: 20,
         // limit: 3,
@@ -116,7 +134,7 @@ export class CircleciClient {
         // filter: "completed"
       }
     })
-    let recentBuilds = res.data as RecentBuildsResponse[]
+    let recentBuilds = res.data as RecentBuildResponse[]
     if (fromRunId) {
       recentBuilds.filter((build) => build.build_num > fromRunId)
     }
@@ -127,6 +145,7 @@ export class CircleciClient {
         workflow_id: build.workflows.workflow_id,
         reponame: build.reponame,
         username: build.username,
+        vcs_type: build.vcs_type,
         build_num: build.build_num,
         lifecycle: build.lifecycle,
       }
@@ -138,6 +157,7 @@ export class CircleciClient {
         workflow_name: build.workflow_name,
         reponame: build.reponame,
         username: build.username,
+        vcs_type: build.vcs_type,
         build_nums: builds.map((build) => build.build_num),
         lifecycles: builds.map((build) => build.lifecycle)
       }
@@ -151,6 +171,8 @@ export class CircleciClient {
   async fetchWorkflows(owner: string, repo: string) {
   }
 
-  async fetchJobs(owner: string, repo: string, runId: number) {
+  async fetchJobs(owner: string, repo: string, vcsType: string, runId: number) {
+    const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}/${runId}`, {})
+    return res.data as SingleBuildResponse
   }
 }
