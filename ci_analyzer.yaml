@@ -2,8 +2,11 @@ github:
   # baseUrl: https://api.github.com # default
   repos:
     - Kesin11/CIAnalyzer
-  # exporter:
-  #   - local
+  exporter:
+    - local:
+        outDir: ./output
+        format: json
+
   #   - bigquery:
   #     dataset: pipeline
   #     table: job
