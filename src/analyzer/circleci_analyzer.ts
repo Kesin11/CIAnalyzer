@@ -1,6 +1,6 @@
-import { Status, diffSec } from "./github_analyzer"
 import { WorkflowRun, SingleBuildResponse, CircleciStatus } from "../client/circleci_client"
 import { sumBy, min, max, sortBy, first, last } from "lodash"
+import { Status, diffSec, Analyzer } from "./analyzer"
 
 type WorkflowReport = {
   // workflow
@@ -43,7 +43,7 @@ type StepReport = {
   stepDurationSec: number // run_time_millis
 }
 
-export class CircleciAnalyzer {
+export class CircleciAnalyzer implements Analyzer {
   constructor() { }
 
   createWorkflowReport( workflowRun: WorkflowRun, jobs: SingleBuildResponse[]): WorkflowReport {

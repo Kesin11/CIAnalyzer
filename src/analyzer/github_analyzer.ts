@@ -1,9 +1,8 @@
 import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods'
 import { sumBy, min, max } from 'lodash'
+import { Analyzer, diffSec, Status } from './analyzer'
 export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listRepoWorkflowRuns']['response']['data']['workflow_runs'][0]
 export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']['jobs']
-
-export type Status = 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
 
 type WorkflowReport = {
   // workflow
@@ -46,14 +45,7 @@ type StepReport = {
   stepDurationSec: number // completedAt - startedAt
 }
 
-export const diffSec = (start: string | Date, end: string | Date): number => {
-  const startDate = new Date(start)
-  const endDate = new Date(end)
-
-  return (endDate.getTime() - startDate.getTime()) / 1000
-}
-
-export class GithubAnalyzer {
+export class GithubAnalyzer implements Analyzer {
   constructor() { }
 
   createWorkflowReport(workflowName: string, workflow: WorkflowRunsItem, jobs: JobsItem): WorkflowReport {
