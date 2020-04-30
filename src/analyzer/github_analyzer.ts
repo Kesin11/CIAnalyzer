@@ -7,6 +7,7 @@ export type Status = 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
 
 export type WorkflowReport = {
   // workflow
+  service: 'github',
   workflowId: string, // = id = job.run_id
   buildNumber?: number, // = run_number
   workflowName: string,
@@ -94,6 +95,7 @@ export class GithubAnalyzer {
     const completedAt = _.max(jobReports.map((job) => job.completedAt )) || new Date(workflow.created_at)
     // workflow
     return {
+      service: 'github',
       workflowId: String(workflow.id),
       buildNumber: workflow.run_number,
       workflowName: workflowName,
