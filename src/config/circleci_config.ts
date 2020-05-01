@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
+import { ExporterConfig } from './config'
 
 type RepoYaml = string | {
   name: string
@@ -10,6 +11,7 @@ type RepoYaml = string | {
 type CircleciYaml = {
   baseUrl?: string
   repos: RepoYaml[]
+  exporter: ExporterConfig
 }
 type CircleciConfig = {
   baseUrl?: string
@@ -18,6 +20,7 @@ type CircleciConfig = {
     owner: string
     repo: string
   }[]
+  exporter: ExporterConfig
 }
 
 const defaultPath = path.join(__dirname, '../../ci_analyzer.yaml')
@@ -32,7 +35,7 @@ export const loadConfig = (configPath?: string): CircleciConfig | undefined => {
   const repos = parseRepos(circleciYaml.repos)
 
   return {
-    baseUrl: circleciYaml.baseUrl,
+    ...circleciYaml,
     repos
   }
 }

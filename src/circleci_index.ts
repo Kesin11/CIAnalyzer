@@ -1,6 +1,8 @@
 import { loadConfig } from './config/circleci_config'
 import { CircleciClient } from './client/circleci_client'
 import { CircleciAnalyzer } from './analyzer/circleci_analyzer'
+import { CompositExporter } from './exporter/exporter'
+import { WorkflowReport } from './analyzer/analyzer'
 
 const main = async () => {
   const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
@@ -9,6 +11,7 @@ const main = async () => {
 
   const client = new CircleciClient(CIRCLECI_TOKEN, config.baseUrl)
   const circleciAnalyzer = new CircleciAnalyzer()
+  const reports: WorkflowReport[] = []
   for (const repo of config.repos) {
     const workflowRuns = await client.fetchWorkflowRuns(repo.owner, repo.repo, repo.vscType)
     for (const workflowRun of workflowRuns) {
@@ -21,9 +24,11 @@ const main = async () => {
           )
       }))
       const report = circleciAnalyzer.createWorkflowReport(workflowRun, jobs)
-      // console.dir(report)
-      console.log(JSON.stringify(report, null, 2))
+      reports.push(report)
     }
   }
+
+  const exporter = new CompositExporter('circleci', config.exporter)
+  await exporter.exportReports(reports)
 }
 main()

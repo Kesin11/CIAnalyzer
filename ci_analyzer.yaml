@@ -16,3 +16,7 @@ circleci:
     - Kesin11/CIAnalyzer
     # - name: Kesin11/CIAnalyzer
     #   vsc_type: github # github or bitbucket. default: github
+  exporter:
+    local:
+      outDir: ./output
+      format: json
