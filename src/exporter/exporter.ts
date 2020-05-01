@@ -1,6 +1,6 @@
 import { LocalExporter } from "./local_exporter";
 import { WorkflowReport } from "../analyzer/analyzer";
-import { ExporterConfig } from "../config/github_config";
+import { ExporterConfig } from "../config/config";
 
 export interface Exporter {
   exportReports(reports: WorkflowReport[]): Promise<void>

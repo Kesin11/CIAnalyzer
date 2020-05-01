@@ -1,12 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
-
-export type ExporterConfig = {
-  [exporterName: string]: {
-    [options: string]: any
-  }
-}
+import { ExporterConfig } from './config'
 
 type GithubConfig = {
   baseUrl?: string

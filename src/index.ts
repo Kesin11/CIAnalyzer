@@ -2,7 +2,6 @@ import { GithubClient } from './client/github_client'
 import { GithubAnalyzer } from './analyzer/github_analyzer'
 import { loadConfig } from './config/github_config'
 import { WorkflowReport } from './analyzer/analyzer'
-import { LocalExporter } from './exporter/local_exporter'
 import { CompositExporter } from './exporter/exporter'
 
 const main = async () => {
@@ -24,6 +23,6 @@ const main = async () => {
   }
 
   const exporter = new CompositExporter('github', githubConfig.exporter)
-  exporter.exportReports(reports)
+  await exporter.exportReports(reports)
 }
 main()
