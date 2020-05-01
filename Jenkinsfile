@@ -23,7 +23,7 @@ pipeline {
       agent any
       steps {
         checkout scm
-        docker build -t ci_analyzer .
+        sh "docker build -t ci_analyzer ."
       }
     }
   }
