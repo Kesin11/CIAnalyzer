@@ -3,7 +3,10 @@ pipeline {
   stages {
     stage('lint') {
       agent {
-        docker { image 'node:lts' }
+        docker {
+          image 'node:lts'
+          args '-u root:sudo'
+        }
       }
       steps {
         checkout scm
@@ -13,7 +16,10 @@ pipeline {
     }
     stage('build and test') {
       agent {
-        docker { image 'node:lts' }
+        docker {
+          image 'node:lts'
+          args '-u root:sudo'
+        }
       }
       steps {
         checkout scm
