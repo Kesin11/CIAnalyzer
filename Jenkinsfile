@@ -2,8 +2,9 @@ pipeline {
   agent any
   stages {
     stage('lint') {
-      agent any
-      docker { image 'node:lts' }
+      agent {
+        docker { image 'node:lts' }
+      }
       steps {
         checkout scm
         sh "npm ci"
@@ -11,7 +12,9 @@ pipeline {
       }
     }
     stage('build and test') {
-      docker { image 'node:lts' }
+      agent {
+        docker { image 'node:lts' }
+      }
       steps {
         checkout scm
         sh "npm ci"
