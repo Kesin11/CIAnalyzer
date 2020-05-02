@@ -23,8 +23,8 @@ const main = async () => {
       const build = await client.fetchBuild(job, Number(run.id))
       const report = analyzer.createWorkflowReport(job.name, run, build)
 
-      console.dir(report)
-      // console.log(JSON.stringify(report, null, 2))
+      // console.dir(report)
+      console.log(JSON.stringify(report, null, 2))
     }
   }
 

@@ -1,5 +1,5 @@
 import { Status, Analyzer } from "./analyzer"
-import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData } from "../client/jenkins_client"
+import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction } from "../client/jenkins_client"
 import { sumBy, first } from "lodash"
 
 type WorkflowReport = {
@@ -19,6 +19,7 @@ type WorkflowReport = {
   completedAt: Date // = Date(endTimeMillis)
   workflowDurationSec: number // = durationMillis / 1000
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
+  parameters: {[key: string]: string}
 }
 
 type JobReport = {
@@ -92,7 +93,8 @@ export class JenkinsAnalyzer implements Analyzer {
       startedAt: new Date(run.startTimeMillis),
       completedAt: new Date(run.startTimeMillis + run.durationMillis),
       workflowDurationSec: run.durationMillis / 1000,
-      sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec')
+      sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec'),
+      parameters: this.detectParameters(build),
     }
   }
 
@@ -169,5 +171,16 @@ export class JenkinsAnalyzer implements Analyzer {
         const repoParam = action.parameters.find((param) => param.name === "GIT_BRANCH")
         return repoParam?.value ?? ''
     }
+  }
+
+  detectParameters(build: BuildResponse): {[key: string]: string} {
+    const action = build.actions.find((action) => {
+      return action._class === "hudson.model.ParametersAction"
+    }) as ParametersAction | undefined
+    if (!action) return {}
+
+    return Object.fromEntries(
+      action.parameters.map((obj) => [obj.name, obj.value])
+    )
   }
 }

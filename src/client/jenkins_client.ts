@@ -73,13 +73,17 @@ type StageFlowNode = {
 }
 
 export type BuildResponse = {
-  actions: (CauseAction | BuildData | GhprbParametersAction)[]
+  actions: (CauseAction | BuildData | GhprbParametersAction | ParametersAction)[]
 }
 
 export type CauseAction = {
   _class: "hudson.model.CauseAction"
   causes: {
-    "_class": "hudson.model.Cause$UserIdCause" | "hudson.triggers.SCMTrigger$SCMTriggerCause" | "org.jenkinsci.plugins.ghprb.GhprbCause"
+    "_class":
+      "hudson.model.Cause$UserIdCause" |
+      "hudson.triggers.SCMTrigger$SCMTriggerCause" |
+      "org.jenkinsci.plugins.ghprb.GhprbCause" |
+      "hudson.triggers.TimerTrigger$TimerTriggerCause"
   }[]
 }
 
@@ -119,6 +123,16 @@ export type GhprbParametersAction = {
       value: string // "Kesin11/CIAnalyzer"
     }
   )[]
+}
+
+export type ParametersAction = {
+  _class: "hudson.model.ParametersAction"
+  parameters:
+    {
+      _class: "hudson.model.StringParameterValue"
+      name: string // "TIMEOUT",
+      value: string // "10"
+    }[]
 }
 
 export class JenkinsClient {

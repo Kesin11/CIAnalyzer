@@ -16,6 +16,7 @@ export type WorkflowReport = {
   workflowDurationSec: number
   sumJobsDurationSec: number
   jobs: JobReport[]
+  parameters: {[key: string]: string}
 }
 
 export type JobReport = {

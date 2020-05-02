@@ -21,6 +21,7 @@ type WorkflowReport = {
   completedAt: Date // = max(jobs completedAt)
   workflowDurationSec: number // = completedAt - startedAt
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
+  parameters: {[key: string]: string} // {} TODO: Currently not supported yet
 }
 
 type JobReport = {
@@ -101,7 +102,8 @@ export class GithubAnalyzer implements Analyzer {
       startedAt,
       completedAt,
       workflowDurationSec: diffSec(startedAt, completedAt),
-      sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec')
+      sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec'),
+      parameters: {}
     }
   }
 

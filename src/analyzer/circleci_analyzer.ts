@@ -19,6 +19,7 @@ type WorkflowReport = {
   completedAt: Date // = max(jobs stop_time)
   workflowDurationSec: number // = sum(job jobDurationSec)
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
+  parameters: {} // {} CircleCI API v1.1 does not support manual trigger workflow with parameter
 }
 
 type JobReport = {
@@ -102,7 +103,8 @@ export class CircleciAnalyzer implements Analyzer {
       startedAt,
       completedAt,
       workflowDurationSec: sumBy(jobReports, 'jobDurationSec'),
-      sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec')
+      sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec'),
+      parameters: {}
     }
   }
 
