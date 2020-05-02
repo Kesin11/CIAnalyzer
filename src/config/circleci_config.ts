@@ -10,7 +10,8 @@ type CircleciYaml = {
   repos: RepoYaml[]
   exporter: ExporterConfig
 }
-type CircleciConfig = {
+
+export type CircleciConfig = {
   baseUrl?: string
   repos: {
     vscType: string

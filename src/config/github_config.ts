@@ -1,6 +1,6 @@
 import { ExporterConfig, YamlConfig } from './config'
 
-type GithubConfig = {
+export type GithubConfig = {
   baseUrl?: string
   repos: {
     owner: string
