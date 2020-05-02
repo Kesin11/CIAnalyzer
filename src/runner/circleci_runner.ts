@@ -1,8 +1,8 @@
 import { Runner } from "./runner"
 import { YamlConfig } from "../config/config"
-import { CircleciClient } from "../client/Circleci_client"
-import { CircleciAnalyzer } from "../analyzer/Circleci_analyzer"
-import { CircleciConfig, parseConfig } from "../config/Circleci_config"
+import { CircleciClient } from "../client/circleci_client"
+import { CircleciAnalyzer } from "../analyzer/circleci_analyzer"
+import { CircleciConfig, parseConfig } from "../config/circleci_config"
 import { WorkflowReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 

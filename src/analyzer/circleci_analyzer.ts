@@ -1,6 +1,6 @@
 import { sumBy, min, max, sortBy, first, last } from "lodash"
 import { Status, diffSec, Analyzer } from "./analyzer"
-import { WorkflowRun, SingleBuildResponse, CircleciStatus } from "../client/Circleci_client"
+import { WorkflowRun, SingleBuildResponse, CircleciStatus } from "../client/circleci_client"
 
 type WorkflowReport = {
   // workflow
