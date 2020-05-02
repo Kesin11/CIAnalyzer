@@ -97,7 +97,7 @@ export class JenkinsClient {
     }
   }
 
-  async fetchWorkflowRuns() {
+  async fetchJobs() {
     const res = await this.axios.get("api/json")
 
     const jobs = res.data.jobs as JobResponse[]
@@ -106,7 +106,7 @@ export class JenkinsClient {
     })
   }
 
-  async fetchWorkflows(job: JobResponse) {
+  async fetchJobRuns(job: JobResponse) {
     const res = await this.axios.get(`job/${job.name}/wfapi/runs`, {
       params: {
         fullStages: "true"
@@ -116,7 +116,7 @@ export class JenkinsClient {
     return res.data as WfapiRunResponse[]
   }
 
-  async fetchJobs(job: JobResponse, runId: number) {
+  async fetchJobRun(job: JobResponse, runId: number) {
     const res = await this.axios.get(`job/${job.name}/${runId}/wfapi/describe`)
 
     return res.data as WfapiRunResponse

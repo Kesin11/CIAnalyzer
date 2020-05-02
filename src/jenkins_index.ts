@@ -14,11 +14,11 @@ const main = async () => {
   const client = new JenkinsClient(config.baseUrl, JENKINS_USER, JENKINS_TOKEN)
   const analyzer = new JenkinsAnalyzer()
 
-  const allJobs = await client.fetchWorkflowRuns()
+  const allJobs = await client.fetchJobs()
   const jobs = allJobs.filter((job) => config.jobs.includes(job.name))
 
   for (const job of jobs) {
-    const builds = await client.fetchWorkflows(job)
+    const builds = await client.fetchJobRuns(job)
     for (const build of builds) {
       const report = analyzer.createWorkflowReport(job.name, build)
       // console.dir(report)
