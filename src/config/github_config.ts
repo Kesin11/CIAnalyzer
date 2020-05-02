@@ -1,7 +1,4 @@
-import fs from 'fs'
-import path from 'path'
-import yaml from 'js-yaml'
-import { ExporterConfig } from './config'
+import { ExporterConfig, YamlConfig } from './config'
 
 type GithubConfig = {
   baseUrl?: string
@@ -12,12 +9,7 @@ type GithubConfig = {
   exporter: ExporterConfig
 }
 
-const defaultPath = path.join(__dirname, '../../ci_analyzer.yaml')
-
-export const loadConfig = (configPath?: string): GithubConfig | undefined => {
-  configPath = configPath || defaultPath
-
-  const config = yaml.safeLoad(fs.readFileSync(configPath, 'utf8'))
+export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
   if (!config.github) return
 
   const githubConfig = config.github

@@ -1,7 +1,4 @@
-import fs from 'fs'
-import path from 'path'
-import yaml from 'js-yaml'
-import { ExporterConfig } from './config'
+import { ExporterConfig, YamlConfig } from './config'
 
 type RepoYaml = string | {
   name: string
@@ -23,12 +20,7 @@ type CircleciConfig = {
   exporter: ExporterConfig
 }
 
-const defaultPath = path.join(__dirname, '../../ci_analyzer.yaml')
-
-export const loadConfig = (configPath?: string): CircleciConfig | undefined => {
-  configPath = configPath || defaultPath
-
-  const config = yaml.safeLoad(fs.readFileSync(configPath, 'utf8'))
+export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
   if (!config.circleci) return
 
   const circleciYaml = config.circleci as CircleciYaml
