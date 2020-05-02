@@ -18,11 +18,13 @@ const main = async () => {
   const jobs = allJobs.filter((job) => config.jobs.includes(job.name))
 
   for (const job of jobs) {
-    const builds = await client.fetchJobRuns(job)
-    for (const build of builds) {
-      const report = analyzer.createWorkflowReport(job.name, build)
-      // console.dir(report)
-      console.log(JSON.stringify(report, null, 2))
+    const runs = await client.fetchJobRuns(job)
+    for (const run of runs) {
+      const build = await client.fetchBuild(job, Number(run.id))
+      const report = analyzer.createWorkflowReport(job.name, run, build)
+
+      console.dir(report)
+      // console.log(JSON.stringify(report, null, 2))
     }
   }
 

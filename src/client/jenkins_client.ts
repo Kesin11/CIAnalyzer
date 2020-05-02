@@ -1,7 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
 
-const DEBUG_PER_PAGE = 5
-
 // ref: https://github.com/jenkinsci/pipeline-stage-view-plugin/blob/master/rest-api/src/main/java/com/cloudbees/workflow/rest/external/StatusExt.java
 export type JenkinsStatus = 'SUCCESS' | 'FAILED' | 'ABORTED' | 'NOT_EXECUTED' | 'IN_PROGRESS' | 'PAUSED_PENDING_INPUT' | 'UNSTABLE'
 
@@ -74,6 +72,55 @@ type StageFlowNode = {
   parentNodes: string[] // [ "6" ]
 }
 
+export type BuildResponse = {
+  actions: (CauseAction | BuildData | GhprbParametersAction)[]
+}
+
+export type CauseAction = {
+  _class: "hudson.model.CauseAction"
+  causes: {
+    "_class": "hudson.model.Cause$UserIdCause" | "hudson.triggers.SCMTrigger$SCMTriggerCause" | "org.jenkinsci.plugins.ghprb.GhprbCause"
+  }[]
+}
+
+export type BuildData = {
+  _class: "hudson.plugins.git.util.BuildData"
+  lastBuiltRevision: {
+    SHA1: string // "9db2c418143a661d07b7458debe0b7bced0cdb47"
+    branch: {
+      SHA1: string // "9db2c418143a661d07b7458debe0b7bced0cdb47"
+      name: string // "refs/remotes/origin/feature/jenkinsfile"
+    }[]
+  }
+  remoteUrls: string[] // "https://github.com/Kesin11/CIAnalyzer.git"
+}
+
+export type GhprbParametersAction = {
+  _class: "org.jenkinsci.plugins.ghprb.GhprbParametersAction"
+  parameters: (
+    {
+      _class: "hudson.model.StringParameterValue"
+      name: "ghprbActualCommit"
+      value: string // "ee0f40fec52d69d2961a726c1284002675b3d68a"
+    } |
+    {
+      _class: "hudson.model.StringParameterValue"
+      name: "ghprbAuthorRepoGitUrl"
+      value: string // "https://github.com/Kesin11/CIAnalyzer.git"
+    } |
+    {
+      _class: "hudson.model.StringParameterValue"
+      name: "GIT_BRANCH"
+      value: string // "feature/jenkinsfile"
+    } |
+    {
+      _class: "hudson.model.StringParameterValue"
+      name: "ghprbGhRepository"
+      value: string // "Kesin11/CIAnalyzer"
+    }
+  )[]
+}
+
 export class JenkinsClient {
   private axios: AxiosInstance
   constructor(baseUrl: string, user?: string, token?: string) {
@@ -120,5 +167,11 @@ export class JenkinsClient {
     const res = await this.axios.get(`job/${job.name}/${runId}/wfapi/describe`)
 
     return res.data as WfapiRunResponse
+  }
+
+  async fetchBuild(job: JobResponse, runId: number) {
+    const res = await this.axios.get(`job/${job.name}/${runId}/api/json`)
+
+    return res.data as BuildResponse
   }
 }

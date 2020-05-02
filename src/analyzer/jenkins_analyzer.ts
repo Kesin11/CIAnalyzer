@@ -1,6 +1,6 @@
 import { Status, Analyzer } from "./analyzer"
-import { WfapiRunResponse, JenkinsStatus } from "../client/jenkins_client"
-import { sumBy } from "lodash"
+import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData } from "../client/jenkins_client"
+import { sumBy, first } from "lodash"
 
 type WorkflowReport = {
   // workflow
@@ -46,9 +46,9 @@ type StepReport = {
 export class JenkinsAnalyzer implements Analyzer {
   constructor() { }
 
-  createWorkflowReport(jobName: string, job: WfapiRunResponse): WorkflowReport {
-    const workflowId = `jenkins-${jobName}-${job.id}`
-    const jobReports: JobReport[] = job.stages.map((stage) => {
+  createWorkflowReport(jobName: string, run: WfapiRunResponse, build: BuildResponse): WorkflowReport {
+    const workflowId = `jenkins-${jobName}-${run.id}`
+    const jobReports: JobReport[] = run.stages.map((stage) => {
       const stepReports: StepReport[] = stage.stageFlowNodes.map((node) => {
         // step
         return {
@@ -80,18 +80,18 @@ export class JenkinsAnalyzer implements Analyzer {
     return {
       service: 'jenkins',
       workflowId: workflowId,
-      buildNumber: Number(job.id),
+      buildNumber: Number(run.id),
       workflowName: jobName,
-      createdAt: new Date(job.startTimeMillis),
-      trigger: '', // TODO
-      status: this.normalizeStatus(job.status),
-      repository: '', // TODO
-      headSha: '', // TODO
-      branch: '', // TODO
+      createdAt: new Date(run.startTimeMillis),
+      trigger: this.detectTrigger(build),
+      status: this.normalizeStatus(run.status),
+      repository: this.detectRepository(build),
+      headSha: this.detectHeadSha(build),
+      branch: this.detectBranch(build),
       jobs: jobReports,
-      startedAt: new Date(job.startTimeMillis),
-      completedAt: new Date(job.startTimeMillis + job.durationMillis),
-      workflowDurationSec: job.durationMillis / 1000,
+      startedAt: new Date(run.startTimeMillis),
+      completedAt: new Date(run.startTimeMillis + run.durationMillis),
+      workflowDurationSec: run.durationMillis / 1000,
       sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec')
     }
   }
@@ -108,6 +108,66 @@ export class JenkinsAnalyzer implements Analyzer {
         return 'ABORTED'
       default:
         return 'OTHER';
+    }
+  }
+
+  detectTrigger(build: BuildResponse): string {
+    const causeAction = build.actions.find((action) => {
+      return action._class === "hudson.model.CauseAction"
+    }) as CauseAction | undefined
+    if (!causeAction) return ''
+
+    return first(causeAction.causes)?._class ?? ''
+  }
+
+  detectRepository(build: BuildResponse): string {
+    const action = build.actions.find((action) => {
+      return action._class === "hudson.plugins.git.util.BuildData" ||
+        action._class === "org.jenkinsci.plugins.ghprb.GhprbParametersAction"
+    }) as BuildData | GhprbParametersAction | undefined
+    if (!action) return ''
+
+    switch (action._class) {
+      case "hudson.plugins.git.util.BuildData":
+        return first(action.remoteUrls) ?? ''
+      case "org.jenkinsci.plugins.ghprb.GhprbParametersAction":
+        const repoParam = action.parameters.find((param) => param.name === "ghprbAuthorRepoGitUrl")
+        return repoParam?.value ?? ''
+    }
+  }
+
+  detectHeadSha(build: BuildResponse): string {
+    const action = build.actions.find((action) => {
+      return action._class === "hudson.plugins.git.util.BuildData" ||
+        action._class === "org.jenkinsci.plugins.ghprb.GhprbParametersAction"
+    }) as BuildData | GhprbParametersAction | undefined
+    if (!action) return ''
+
+    switch (action._class) {
+      case "hudson.plugins.git.util.BuildData":
+        return action.lastBuiltRevision.SHA1
+      case "org.jenkinsci.plugins.ghprb.GhprbParametersAction":
+        const repoParam = action.parameters.find((param) => param.name === "ghprbActualCommit")
+        return repoParam?.value ?? ''
+    }
+  }
+
+  detectBranch(build: BuildResponse): string {
+    const action = build.actions.find((action) => {
+      return action._class === "hudson.plugins.git.util.BuildData" ||
+        action._class === "org.jenkinsci.plugins.ghprb.GhprbParametersAction"
+    }) as BuildData | GhprbParametersAction | undefined
+    if (!action) return ''
+
+    switch (action._class) {
+      case "hudson.plugins.git.util.BuildData":
+        const branch = first(action.lastBuiltRevision.branch)?.name
+        // Remove 'refs/remotes/origin' prefix.
+        const matched = branch?.match(/(refs\/remotes\/origin\/)?(.+)/)
+        return (matched && matched[2]) ? matched[2] : ''
+      case "org.jenkinsci.plugins.ghprb.GhprbParametersAction":
+        const repoParam = action.parameters.find((param) => param.name === "GIT_BRANCH")
+        return repoParam?.value ?? ''
     }
   }
 }
