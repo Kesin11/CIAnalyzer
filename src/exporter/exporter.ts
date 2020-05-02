@@ -6,7 +6,7 @@ export interface Exporter {
   exportReports(reports: WorkflowReport[]): Promise<void>
 }
 
-export class CompositExporter {
+export class CompositExporter implements Exporter {
   exporters: (Exporter | undefined)[]
   constructor(service: string, config: ExporterConfig) {
     this.exporters = Object.entries(config).map(([exporter, options]) => {
@@ -20,10 +20,8 @@ export class CompositExporter {
   }
 
   async exportReports(reports: WorkflowReport[]) {
-    for (const exporter of this.exporters) {
-      if (!exporter) continue
-
-      await exporter.exportReports(reports)
-    }
+    await Promise.all(
+      this.exporters.map((exporter) => exporter?.exportReports(reports))
+    )
   }
 }
