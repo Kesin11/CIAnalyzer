@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from 'axios'
 const DEBUG_PER_PAGE = 5
 
 // ref: https://github.com/jenkinsci/pipeline-stage-view-plugin/blob/master/rest-api/src/main/java/com/cloudbees/workflow/rest/external/StatusExt.java
-type Status = 'SUCCESS' | 'FAILED' | 'ABORTED' | 'NOT_EXECUTED' | 'IN_PROGRESS' | 'PAUSED_PENDING_INPUT' | 'UNSTABLE'
+export type JenkinsStatus = 'SUCCESS' | 'FAILED' | 'ABORTED' | 'NOT_EXECUTED' | 'IN_PROGRESS' | 'PAUSED_PENDING_INPUT' | 'UNSTABLE'
 
 type JobResponse = {
   _class : string
@@ -12,13 +12,13 @@ type JobResponse = {
   color: string
 }
 
-type WfapiRunResponse = {
+export type WfapiRunResponse = {
   self: {
     href: string // "/job/ci_analyzer/7/wfapi/describe"
   }
   id: string // '16',
   name: string // '#16',
-  status: Status // 'SUCCESS',
+  status: JenkinsStatus // 'SUCCESS',
   startTimeMillis: number // 1588392912311,
   endTimeMillis: number // 1588393121925,
   durationMillis: number // 209614,
@@ -36,7 +36,7 @@ type Stage = {
   id: string // "6",
   name: string // "Declarative: Checkout SCM",
   execNode: string // "",
-  status: Status // "SUCCESS",
+  status: JenkinsStatus // "SUCCESS",
   error?: {
     message: string // "script returned exit code 243",
     type: string // "hudson.AbortException"
@@ -62,7 +62,7 @@ type StageFlowNode = {
   id: string // "7",
   name: string // "Check out from version control",
   execNode: string // "",
-  status: Status // "SUCCESS",
+  status: JenkinsStatus // "SUCCESS",
   error?: {
     message: string // "script returned exit code 1",
     type: string // "hudson.AbortException"
@@ -106,7 +106,7 @@ export class JenkinsClient {
     })
   }
 
-  async fetchWorkflows(job: string) {
+  async fetchWorkflows(job: JobResponse) {
     const res = await this.axios.get(`job/${job}/wfapi/runs`, {
       params: {
         fullStages: "true"
@@ -116,7 +116,7 @@ export class JenkinsClient {
     return res.data as WfapiRunResponse[]
   }
 
-  async fetchJobs(job: string, runId: number) {
+  async fetchJobs(job: JobResponse, runId: number) {
     const res = await this.axios.get(`job/${job}/${runId}/wfapi/describe`)
 
     return res.data as WfapiRunResponse
