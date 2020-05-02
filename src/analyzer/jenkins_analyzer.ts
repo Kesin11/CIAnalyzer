@@ -43,10 +43,11 @@ type StepReport = {
   stepDurationSec: number // durationMillis / 1000
 }
 
-export class CircleciAnalyzer implements Analyzer {
+export class JenkinsAnalyzer implements Analyzer {
   constructor() { }
 
   createWorkflowReport(jobName: string, job: WfapiRunResponse): WorkflowReport {
+    const workflowId = `jenkins-${jobName}-${job.id}`
     const jobReports: JobReport[] = job.stages.map((stage) => {
       const stepReports: StepReport[] = stage.stageFlowNodes.map((node) => {
         // step
@@ -56,20 +57,20 @@ export class CircleciAnalyzer implements Analyzer {
           number: Number(node.id),
           startedAt: new Date(node.startTimeMillis),
           completedAt: new Date(node.startTimeMillis + node.durationMillis),
-          stepDurationSec: node.durationMillis,
+          stepDurationSec: node.durationMillis / 1000,
         }
       })
 
       // job
       return {
-        workflowId: stage.name,
+        workflowId: workflowId,
         buildNumber: undefined,
         jobId: stage.id,
         jobName: stage.name,
         status: this.normalizeStatus(stage.status),
         startedAt: new Date(stage.startTimeMillis),
         completedAt: new Date(stage.startTimeMillis + stage.durationMillis),
-        jobDurationSec: stage.durationMillis,
+        jobDurationSec: stage.durationMillis / 1000,
         sumStepsDurationSec: sumBy(stepReports, 'stepDurationSec'),
         steps: stepReports,
       }
@@ -78,7 +79,7 @@ export class CircleciAnalyzer implements Analyzer {
     // workflow
     return {
       service: 'jenkins',
-      workflowId: `jenkins-${job.name}-${job.id}`,
+      workflowId: workflowId,
       buildNumber: Number(job.id),
       workflowName: jobName,
       createdAt: new Date(job.startTimeMillis),
@@ -90,7 +91,7 @@ export class CircleciAnalyzer implements Analyzer {
       jobs: jobReports,
       startedAt: new Date(job.startTimeMillis),
       completedAt: new Date(job.startTimeMillis + job.durationMillis),
-      workflowDurationSec: job.durationMillis,
+      workflowDurationSec: job.durationMillis / 1000,
       sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec')
     }
   }

@@ -20,7 +20,9 @@ const main = async () => {
   for (const job of jobs) {
     const builds = await client.fetchWorkflows(job)
     for (const build of builds) {
-      analyzer.createWorkflowReport(job.name, build)
+      const report = analyzer.createWorkflowReport(job.name, build)
+      // console.dir(report)
+      console.log(JSON.stringify(report, null, 2))
     }
   }
 
