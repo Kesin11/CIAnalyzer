@@ -20,3 +20,13 @@ circleci:
     local:
       outDir: ./output
       format: json
+jenkins:
+  baseUrl: http://localhost:8080 # Your jenkins url
+  jobs:
+    - ci_analyzer
+    - build-pipeline
+    - build-pipeline-nested
+  exporter:
+    local:
+      outDir: ./output
+      format: json
