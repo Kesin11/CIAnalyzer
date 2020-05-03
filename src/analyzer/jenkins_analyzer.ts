@@ -1,4 +1,4 @@
-import { Status, Analyzer } from "./analyzer"
+import { Status, Analyzer, secRound } from "./analyzer"
 import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction } from "../client/jenkins_client"
 import { sumBy, first } from "lodash"
 
@@ -72,7 +72,7 @@ export class JenkinsAnalyzer implements Analyzer {
         startedAt: new Date(stage.startTimeMillis),
         completedAt: new Date(stage.startTimeMillis + stage.durationMillis),
         jobDurationSec: stage.durationMillis / 1000,
-        sumStepsDurationSec: sumBy(stepReports, 'stepDurationSec'),
+        sumStepsDurationSec: secRound(sumBy(stepReports, 'stepDurationSec')),
         steps: stepReports,
       }
     })
@@ -93,7 +93,7 @@ export class JenkinsAnalyzer implements Analyzer {
       startedAt: new Date(run.startTimeMillis),
       completedAt: new Date(run.startTimeMillis + run.durationMillis),
       workflowDurationSec: run.durationMillis / 1000,
-      sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec'),
+      sumJobsDurationSec: secRound(sumBy(jobReports, 'sumStepsDurationSec')),
       parameters: this.detectParameters(build),
     }
   }

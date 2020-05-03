@@ -1,3 +1,5 @@
+import { round } from "lodash"
+
 export type Status = 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
 
 export type WorkflowReport = {
@@ -50,4 +52,9 @@ export const diffSec = (start: string | Date, end: string | Date): number => {
   const endDate = new Date(end)
 
   return (endDate.getTime() - startDate.getTime()) / 1000
+}
+
+export const secRound = (sec: number) => {
+  const PRECISION = 3
+  return round(sec, PRECISION)
 }

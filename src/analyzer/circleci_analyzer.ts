@@ -1,5 +1,5 @@
 import { sumBy, min, max, sortBy, first, last } from "lodash"
-import { Status, diffSec, Analyzer } from "./analyzer"
+import { Status, diffSec, Analyzer, secRound } from "./analyzer"
 import { WorkflowRun, SingleBuildResponse, CircleciStatus } from "../client/circleci_client"
 
 type WorkflowReport = {
@@ -80,7 +80,7 @@ export class CircleciAnalyzer implements Analyzer {
         startedAt,
         completedAt,
         jobDurationSec: diffSec(startedAt, completedAt),
-        sumStepsDurationSec: sumBy(stepReports, 'stepDurationSec'),
+        sumStepsDurationSec: secRound(sumBy(stepReports, 'stepDurationSec')),
         steps: stepReports,
       }
     })
@@ -102,8 +102,8 @@ export class CircleciAnalyzer implements Analyzer {
       jobs: jobReports,
       startedAt,
       completedAt,
-      workflowDurationSec: sumBy(jobReports, 'jobDurationSec'),
-      sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec'),
+      workflowDurationSec: secRound(sumBy(jobReports, 'jobDurationSec')),
+      sumJobsDurationSec: secRound(sumBy(jobReports, 'sumStepsDurationSec')),
       parameters: {}
     }
   }
