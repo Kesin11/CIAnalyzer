@@ -19,7 +19,7 @@ type WorkflowReport = {
   completedAt: Date // = Date(endTimeMillis)
   workflowDurationSec: number // = durationMillis / 1000
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
-  parameters: {[key: string]: string}
+  parameters?: {[key: string]: string}
 }
 
 type JobReport = {
