@@ -7,8 +7,9 @@ export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRu
 type WorkflowReport = {
   // workflow
   service: 'github',
-  workflowId: string, // = id = job.run_id
-  buildNumber?: number, // = run_number
+  workflowId: string, // = ${repositroy}-${workflowName}
+  workflowRunId: string // = ${repository}-${workflowName}-${buildNumber}
+  buildNumber: number, // = run_number
   workflowName: string,
   createdAt: Date,
   trigger: string // = event
@@ -24,7 +25,7 @@ type WorkflowReport = {
 }
 
 type JobReport = {
-  workflowId: string, // = run_id
+  workflowRunId: string, // = workflowRunId
   buildNumber?: number, // undefined. Github Action does not provide job build number
   jobId: string, // = id
   jobName: string,
@@ -50,6 +51,9 @@ export class GithubAnalyzer implements Analyzer {
 
   createWorkflowReport(workflowName: string, workflow: WorkflowRunsItem, jobs: JobsItem): WorkflowReport {
     const buildNumber = workflow.run_number
+    const repository = workflow.repository.full_name
+    const workflowId = `${repository}-${workflowName}`
+    const workflowRunId = `${repository}-${workflowName}-${buildNumber}`
 
     const jobReports: JobReport[] = jobs.map((job) => {
       const stepReports: StepReport[] = job.steps.map((step) => {
@@ -70,7 +74,7 @@ export class GithubAnalyzer implements Analyzer {
       const completedAt = new Date(job.completed_at)
       // job
       return {
-        workflowId: String(job.run_id),
+        workflowRunId: workflowRunId,
         buildNumber: buildNumber, // Github Actions job does not have buildNumber
         jobId: String(job.id),
         jobName: job.name,
@@ -88,9 +92,10 @@ export class GithubAnalyzer implements Analyzer {
     // workflow
     return {
       service: 'github',
-      workflowId: String(workflow.id),
-      buildNumber: workflow.run_number,
-      workflowName: workflowName,
+      workflowId,
+      buildNumber,
+      workflowRunId,
+      workflowName,
       createdAt: new Date(workflow.created_at),
       trigger: workflow.event,
       status: this.normalizeStatus(workflow.conclusion as unknown as string),

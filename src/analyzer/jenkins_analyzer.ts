@@ -5,8 +5,9 @@ import { sumBy, first } from "lodash"
 type WorkflowReport = {
   // workflow
   service: 'jenkins',
-  workflowId: string, // = jenkins-$jobName-$buildNumber: Jenkins env 'buildTag' compatible
-  buildNumber?: number, // number(id)
+  workflowId: string, // = jenkins-$jobName
+  workflowRunId: string, // = jenkins-$jobName-$buildNumber: It compatible Jenkins env 'BUILD_TAG'
+  buildNumber: number, // number(id)
   workflowName: string, // jobName
   createdAt: Date, // = Date(startTimeMillis)
   trigger: string // build api: causes[0]._class or ghprb
@@ -23,8 +24,8 @@ type WorkflowReport = {
 }
 
 type JobReport = {
-  workflowId: string, // = workflow name
-  buildNumber?: number, // = workflow buildNumber
+  workflowRunId: string, // = workflowRunId
+  buildNumber: number, // = workflow buildNumber
   jobId: string, // = stage.id
   jobName: string, // stage.name
   status: Status,
@@ -48,7 +49,9 @@ export class JenkinsAnalyzer implements Analyzer {
   constructor() { }
 
   createWorkflowReport(jobName: string, run: WfapiRunResponse, build: BuildResponse): WorkflowReport {
-    const workflowId = `jenkins-${jobName}-${run.id}`
+    const buildNumber = Number(run.id)
+    const workflowRunId = `jenkins-${jobName}-${run.id}`
+
     const jobReports: JobReport[] = run.stages.map((stage) => {
       const stepReports: StepReport[] = stage.stageFlowNodes.map((node) => {
         // step
@@ -64,8 +67,8 @@ export class JenkinsAnalyzer implements Analyzer {
 
       // job
       return {
-        workflowId: workflowId,
-        buildNumber: undefined,
+        workflowRunId,
+        buildNumber,
         jobId: stage.id,
         jobName: stage.name,
         status: this.normalizeStatus(stage.status),
@@ -80,8 +83,9 @@ export class JenkinsAnalyzer implements Analyzer {
     // workflow
     return {
       service: 'jenkins',
-      workflowId: workflowId,
-      buildNumber: Number(run.id),
+      workflowId: `jenkins-${jobName}`,
+      workflowRunId,
+      buildNumber,
       workflowName: jobName,
       createdAt: new Date(run.startTimeMillis),
       trigger: this.detectTrigger(build),

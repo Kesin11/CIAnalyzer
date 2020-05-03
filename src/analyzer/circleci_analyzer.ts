@@ -5,8 +5,9 @@ import { WorkflowRun, SingleBuildResponse, CircleciStatus } from "../client/circ
 type WorkflowReport = {
   // workflow
   service: 'circleci',
-  workflowId: string, // = workflow_id
-  buildNumber?: number, // undefined. CircleCI dows not provide workflow number
+  workflowId: string, // = ${repository}-${workflowName}
+  workflowRunId: string, // = ${repository}-${workflowName}-${buildNumber}
+  buildNumber: number, // first(jobs.buildNumber): CircleCI does not provide workflow number
   workflowName: string,
   createdAt: Date, // = min(jobs queued_at)
   trigger: string // = why
@@ -22,8 +23,8 @@ type WorkflowReport = {
 }
 
 type JobReport = {
-  workflowId: string, // = workflow_id
-  buildNumber?: number, // = build_number
+  workflowRunId: string, // = workflowRunId
+  buildNumber: number, // = build_number
   jobId: string, // = workflows.job_id
   jobName: string, // workflows.job_name
   status: Status,
@@ -50,6 +51,10 @@ export class CircleciAnalyzer implements Analyzer {
     const sortedJobs = sortBy(jobs, 'build_num')
     const firstJob = first(sortedJobs)!
     const lastJob = last(sortedJobs)!
+    const repository = `${firstJob.username}/${firstJob.reponame}`
+    const workflowName = workflowRun.workflow_name
+    const workflowBuildNumber = firstJob.build_num
+    const workflowRunId = `${repository}-${workflowName}-${workflowBuildNumber}`
 
     const jobReports: JobReport[] = sortedJobs.map((job) => {
       const stepReports: StepReport[] = job.steps.map((step) => {
@@ -71,7 +76,7 @@ export class CircleciAnalyzer implements Analyzer {
       const completedAt = new Date(job.stop_time)
       // job
       return {
-        workflowId: job.workflows.workflow_id,
+        workflowRunId,
         buildNumber: job.build_num,
         jobId: job.workflows.job_id,
         jobName: job.workflows.job_name,
@@ -89,13 +94,14 @@ export class CircleciAnalyzer implements Analyzer {
     // workflow
     return {
       service: 'circleci',
-      workflowId: workflowRun.workflow_id,
-      buildNumber: undefined,
-      workflowName: workflowRun.workflow_name,
+      workflowId: `${repository}-${workflowName}` ,
+      buildNumber: workflowBuildNumber,
+      workflowRunId,
+      workflowName,
       createdAt: min(jobs.map((job) => new Date(job.queued_at)))!,
       trigger: firstJob.why,
       status: this.normalizeStatus(lastJob.status),
-      repository: firstJob.reponame,
+      repository,
       headSha: firstJob.vcs_revision,
       branch: firstJob.branch,
       jobs: jobReports,

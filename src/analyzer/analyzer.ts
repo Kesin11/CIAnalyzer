@@ -5,7 +5,8 @@ export type Status = 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
 export type WorkflowReport = {
   service: string
   workflowId: string
-  buildNumber?: number
+  workflowRunId: string
+  buildNumber: number
   workflowName: string
   createdAt: Date
   trigger: string
@@ -22,7 +23,7 @@ export type WorkflowReport = {
 }
 
 export type JobReport = {
-  workflowId: string
+  workflowRunId: string
   buildNumber?: number
   jobId: string
   jobName: string
