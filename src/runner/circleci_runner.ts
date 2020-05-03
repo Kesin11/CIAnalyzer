@@ -13,7 +13,7 @@ export class CircleciRunner implements Runner {
   constructor(public yamlConfig: YamlConfig) {
     const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
-    this.client = new CircleciClient(CIRCLECI_TOKEN)
+    this.client = new CircleciClient(CIRCLECI_TOKEN, this.config?.baseUrl)
     this.analyzer = new CircleciAnalyzer()
   }
 

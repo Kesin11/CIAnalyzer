@@ -1,6 +1,7 @@
 import { YamlConfig } from "../config/config";
 import { GithubRunner } from "./github_runner";
 import { CircleciRunner } from "./circleci_runner";
+import { JenkinsRunner } from "./jenkins_runner";
 
 export interface Runner {
   run (): Promise<void>
@@ -15,6 +16,8 @@ export class CompositRunner implements Runner {
           return new GithubRunner(config)
         case 'circleci':
           return new CircleciRunner(config)
+        case 'jenkins':
+          return new JenkinsRunner(config)
         default:
           return undefined
       }

@@ -24,6 +24,7 @@ jenkins:
   baseUrl: http://localhost:8080 # Your jenkins url
   jobs:
     - ci_analyzer
+    - ci_analyzer_push
     - build-pipeline
     - build-pipeline-nested
   exporter:
