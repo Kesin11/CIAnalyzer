@@ -32,20 +32,13 @@
   }, 
   {
     "mode": "NULLABLE", 
-    "name": "status", 
+    "name": "workflowRunId", 
     "type": "STRING"
   }, 
   {
-    "fields": [
-      {
-        "mode": "NULLABLE", 
-        "name": "TIMEOUT", 
-        "type": "INTEGER"
-      }
-    ], 
     "mode": "NULLABLE", 
-    "name": "parameters", 
-    "type": "RECORD"
+    "name": "status", 
+    "type": "STRING"
   }, 
   {
     "description": "bq-datetime", 
@@ -169,7 +162,7 @@
       }, 
       {
         "mode": "NULLABLE", 
-        "name": "workflowId", 
+        "name": "workflowRunId", 
         "type": "STRING"
       }
     ], 

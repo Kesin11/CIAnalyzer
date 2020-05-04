@@ -20,7 +20,6 @@ type WorkflowReport = {
   completedAt: Date // = Date(endTimeMillis)
   workflowDurationSec: number // = durationMillis / 1000
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
-  parameters?: {[key: string]: string}
 }
 
 type JobReport = {
@@ -98,7 +97,6 @@ export class JenkinsAnalyzer implements Analyzer {
       completedAt: new Date(run.startTimeMillis + run.durationMillis),
       workflowDurationSec: run.durationMillis / 1000,
       sumJobsDurationSec: secRound(sumBy(jobReports, 'sumStepsDurationSec')),
-      parameters: this.detectParameters(build),
     }
   }
 
