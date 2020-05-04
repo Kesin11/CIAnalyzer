@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import { groupBy } from 'lodash'
 
-const DEBUG_PER_PAGE = 5
+const DEBUG_PER_PAGE = 10
 
 export type CircleciStatus = 'retried' | 'canceled' | 'infrastructure_fail' | 'timedout' | 'not_run' | 'running' | 'failed' | 'queued' | 'scheduled' | 'not_running' | 'no_tests' | 'fixed' | 'success'
 type RecentBuildResponse = {
@@ -108,7 +108,7 @@ export class CircleciClient {
       params: {
         // API default is 30 and max is 100
         // ref: https://circleci.com/docs/api/#recent-builds-for-a-single-project
-        limit: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : 30,
+        limit: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : 100,
         // limit: 3,
         // offset: 5,
         // filter: "completed"
@@ -119,6 +119,8 @@ export class CircleciClient {
     if (fromRunId) {
       recentBuilds.filter((build) => build.build_num > fromRunId)
     }
+
+    console.log(`${owner}/${repo}:`, recentBuilds.length)
 
     // Add dummy workflow data if job is not belong to workflow
     for (const build of recentBuilds) {

@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/rest";
 
-const DEBUG_PER_PAGE = 5
+const DEBUG_PER_PAGE = 10
 
 export class GithubClient {
   private octokit: Octokit
@@ -11,8 +11,13 @@ export class GithubClient {
     })
   }
 
+  // see: https://developer.github.com/v3/actions/workflow-runs/#list-repository-workflow-runs
   async fetchWorkflowRuns(owner: string, repo: string, fromRunId?: number) {
-    // TODO: loop and increment page while found fromRunId
+    const workflows = await this.fetchWorkflows(owner, repo)
+    const workflowIdMap = new Map((
+      workflows.map((workflow) => [String(workflow.id), workflow.name])
+    ))
+
     const runs = await this.octokit.actions.listRepoWorkflowRuns({
       owner,
       repo,
@@ -20,11 +25,6 @@ export class GithubClient {
       per_page: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : 100, // API default is 100
       // page: 1, // order desc
     })
-
-    const workflows = await this.fetchWorkflows(owner, repo)
-    const workflowIdMap = new Map((
-      workflows.map((workflow) => [String(workflow.id), workflow.name])
-    ))
 
     // Attach workflow name
     const workflowRuns = runs.data.workflow_runs.map((run) => {
@@ -40,6 +40,7 @@ export class GithubClient {
       : workflowRuns
   }
 
+  // see: https://developer.github.com/v3/actions/workflows/#list-repository-workflows
   async fetchWorkflows(owner: string, repo: string) {
     const workflows = await this.octokit.actions.listRepoWorkflows({
       owner,
@@ -50,6 +51,7 @@ export class GithubClient {
   }
 
 
+  // see: https://developer.github.com/v3/actions/workflow-jobs/#list-jobs-for-a-workflow-run
   async fetchJobs(owner: string, repo: string, runId: number) {
     const jobs = await this.octokit.actions.listJobsForWorkflowRun({
       owner,
