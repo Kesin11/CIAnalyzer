@@ -24,15 +24,7 @@ type RecentBuildResponse = {
   //   id: 1324862
   // },
   vcs_revision: string,
-  workflows: {
-    job_name: string,
-    job_id: string,
-    workflow_id: string,
-    // workspace_id: 'f4e658f6-2eb2-4b34-8da9-e932fc25303f',
-    // upstream_job_ids: [Array],
-    // upstream_concurrency_map: {},
-    workflow_name: string
-  },
+  workflows: Workflow,
   vcs_tag: string | null,
   build_num: number,
   // committer_email: kesin1202000@gmail.com,
@@ -51,6 +43,16 @@ type RecentBuildResponse = {
   // author_name: Kenta Kase,
   queued_at: string,
   // author_email: kesin1202000@gmail.com
+}
+
+type Workflow = {
+  job_name: string
+  job_id: string
+  workflow_id: string
+  // workspace_id: 'f4e658f6-2eb2-4b34-8da9-e932fc25303f',
+  // upstream_job_ids: [Array],
+  // upstream_concurrency_map: {},
+  workflow_name: string
 }
 
 type Steps = {
@@ -118,6 +120,13 @@ export class CircleciClient {
       recentBuilds.filter((build) => build.build_num > fromRunId)
     }
 
+    // Add dummy workflow data if job is not belong to workflow
+    for (const build of recentBuilds) {
+      if (!build.workflows) {
+        build.workflows = this.createDefaultWorkflow(build)
+      }
+    }
+
     const groupedBuilds = groupBy(recentBuilds.map((build) => {
       return {
         workflow_name: build.workflows.workflow_name,
@@ -149,6 +158,23 @@ export class CircleciClient {
 
   async fetchJobs(owner: string, repo: string, vcsType: string, runId: number) {
     const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}/${runId}`, {})
-    return res.data as SingleBuildResponse
+    const build = res.data
+    // Add dummy workflow data if job is not belong to workflow
+    if (!build.workflows) {
+      build.workflows = this.createDefaultWorkflow(build)
+    }
+    return build as SingleBuildResponse
+  }
+
+  // Create default params for old type job that is not using workflow
+  createDefaultWorkflow (data: RecentBuildResponse): Workflow {
+    const startTime = new Date(data.start_time)
+    const repo = `${data.username}/${data.reponame}`
+    return {
+      job_name: 'build',
+      job_id: `${repo}-build-${startTime.getTime()}`,
+      workflow_id: `${repo}-workflow-${startTime.getTime()}`,
+      workflow_name: 'workflow'
+    }
   }
 }
