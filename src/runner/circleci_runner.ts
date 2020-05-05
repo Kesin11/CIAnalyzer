@@ -52,7 +52,7 @@ export class CircleciRunner implements Runner {
       }
 
       this.setRepoLastRun(repo.fullname, repoReports)
-      reports = reports.concat(reports, repoReports)
+      reports = reports.concat(repoReports)
     }
 
     const exporter = new CompositExporter('circleci', this.config.exporter)

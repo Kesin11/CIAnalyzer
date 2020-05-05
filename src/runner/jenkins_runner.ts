@@ -41,7 +41,7 @@ export class JenkinsRunner implements Runner {
 
     let reports: WorkflowReport[] = []
     for (const job of jobs) {
-      const repoReports: WorkflowReport[] = []
+      const jobReports: WorkflowReport[] = []
       const fromRunId = this.store.getLastRun(job.name)
       const runs = await this.client.fetchJobRuns(job, fromRunId)
 
@@ -49,11 +49,11 @@ export class JenkinsRunner implements Runner {
         const build = await this.client.fetchBuild(job, Number(run.id))
         const report = this.analyzer.createWorkflowReport(job.name, run, build)
 
-        repoReports.push(report)
+        jobReports.push(report)
       }
 
-      this.setRepoLastRun(job.name, repoReports)
-      reports = reports.concat(reports, repoReports)
+      this.setRepoLastRun(job.name, jobReports)
+      reports = reports.concat(jobReports)
     }
 
     const exporter = new CompositExporter('jenkins', this.config.exporter)
