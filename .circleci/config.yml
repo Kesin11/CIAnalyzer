@@ -15,6 +15,9 @@ jobs:
       - image: circleci/node:lts
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - npm-cache-{{ checksum "package-lock.json" }}
       - run: npm ci
       - run:
           name: Build
@@ -22,6 +25,11 @@ jobs:
       - run:
           name: Test
           command: npm run test:ci
+      - save_cache:
+          key: npm-cache-{{ checksum "package-lock.json" }}
+          name: Save npm cache
+          paths:
+          - ~/.npm
   docker_build:
     docker:
       - image: circleci/node:lts

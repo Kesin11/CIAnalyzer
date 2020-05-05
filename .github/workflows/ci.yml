@@ -8,6 +8,13 @@ jobs:
       image: "node:lts"
     steps:
       - uses: actions/checkout@v2
+      - name: Cache Node.js modules
+      - uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - run: npm ci
       - name: Lint
         run: npm run lint
@@ -19,6 +26,12 @@ jobs:
       image: "node:lts"
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - run: npm ci
       - name: Build
         run: npm run build
