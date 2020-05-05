@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { WorkflowReport } from "../analyzer/analyzer"
 import { Exporter } from "./exporter"
 
-type Format = 'json' | 'row_based_json'
+type Format = 'json' | 'json_lines'
 const defaultOutDir = path.join(__dirname, '../../output')
 
 export class LocalExporter implements Exporter {
@@ -15,7 +15,7 @@ export class LocalExporter implements Exporter {
     this.service = service
     this.outDir = outDir ?? defaultOutDir
     format = format ?? 'json'
-    this.formatter = (format === 'json') ? this.formatJson : this.formatRowBasedJson
+    this.formatter = (format === 'json') ? this.formatJson : this.formatJsonLines
   }
 
   async exportReports (reports: WorkflowReport[]) {
@@ -32,7 +32,7 @@ export class LocalExporter implements Exporter {
     return JSON.stringify(reports, null, 2)
   }
 
-  formatRowBasedJson (reports: WorkflowReport[]): string {
+  formatJsonLines (reports: WorkflowReport[]): string {
     return reports.map((report) => JSON.stringify(report)).join("\n")
   }
 }

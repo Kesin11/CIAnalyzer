@@ -6,7 +6,7 @@ github:
     local:
       outDir: ./output
       # format: json
-      format: row_based_json
+      format: json_lines
 
     # bigquery:
     #   dataset: pipeline
@@ -21,7 +21,7 @@ circleci:
     local:
       outDir: ./output
       # format: json
-      format: row_based_json
+      format: json_lines
 jenkins:
   baseUrl: http://localhost:8080 # Your jenkins url
   jobs:
@@ -33,4 +33,4 @@ jenkins:
     local:
       outDir: ./output
       # format: json
-      format: row_based_json
+      format: json_lines
