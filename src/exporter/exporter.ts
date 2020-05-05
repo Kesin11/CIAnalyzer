@@ -1,6 +1,7 @@
 import { LocalExporter } from "./local_exporter";
 import { WorkflowReport } from "../analyzer/analyzer";
 import { ExporterConfig } from "../config/config";
+import { BigqueryExporter } from "./bigquery_exporter";
 
 export interface Exporter {
   exportReports(reports: WorkflowReport[]): Promise<void>
@@ -18,6 +19,8 @@ export class CompositExporter implements Exporter {
       switch (exporter) {
         case 'local':
           return new LocalExporter(service, options.outDir, options.format)
+        case 'bigquery':
+          return new BigqueryExporter(options.project, options.dataset, options.table, options.maxBadRecords)
         default:
           return undefined
       }
