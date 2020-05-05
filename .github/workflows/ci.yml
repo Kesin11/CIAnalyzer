@@ -8,7 +8,6 @@ jobs:
       image: "node:lts"
     steps:
       - uses: actions/checkout@v2
-      - name: Cache Node.js modules
       - uses: actions/cache@v1
         with:
           path: ~/.npm
