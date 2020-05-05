@@ -36,7 +36,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: DOCKER_BUILDKIT=1 docker build -t ci_analyzer .
+      - run: docker build -t ci_analyzer .
 
 workflows:
   version: 2
