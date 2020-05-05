@@ -2,16 +2,21 @@ import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 
-export type ExporterConfig = {
-  [exporterName: string]: {
-    [options: string]: any
-  }
-}
-
 export type YamlConfig = {
   'github'?: { [key: string]: any }
   'circleci'?: { [key: string]: any }
   'jenkins'?: { [key: string]: any }
+}
+
+export type CommonConfig = {
+  exporter?: ExporterConfig
+  lastRunStore?: string
+}
+
+export type ExporterConfig = {
+  [exporterName: string]: {
+    [options: string]: any
+  }
 }
 
 const defaultPath = path.join(__dirname, '../../ci_analyzer.yaml')

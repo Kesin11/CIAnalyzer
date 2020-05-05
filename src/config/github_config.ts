@@ -1,12 +1,11 @@
-import { ExporterConfig, YamlConfig } from './config'
+import { YamlConfig, CommonConfig } from './config'
 
-export type GithubConfig = {
+export type GithubConfig = CommonConfig & {
   baseUrl?: string
   repos: {
     owner: string
     repo: string
   }[]
-  exporter: ExporterConfig
 }
 
 export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {

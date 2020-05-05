@@ -7,6 +7,7 @@ github:
       outDir: ./output
       # format: json
       format: json_lines
+  lastRunStore: ./.ci_analyzer/last_run/github.json # default: ./.ci_analyzer/last_run/${service}.json
 
     # bigquery:
     #   dataset: pipeline
@@ -22,6 +23,7 @@ circleci:
       outDir: ./output
       # format: json
       format: json_lines
+
 jenkins:
   baseUrl: http://localhost:8080 # Your jenkins url
   jobs:
@@ -34,3 +36,4 @@ jenkins:
       outDir: ./output
       # format: json
       format: json_lines
+  lastRunStore: ./.ci_analyzer/last_run/jenkins/localhost.json

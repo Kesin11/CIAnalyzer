@@ -1,24 +1,22 @@
-import { ExporterConfig, YamlConfig } from './config'
+import { ExporterConfig, YamlConfig, CommonConfig } from './config'
 
 type RepoYaml = string | {
   name: string
   vsc_type: string
 }
 
-type CircleciYaml = {
+type CircleciYaml = CommonConfig & {
   baseUrl?: string
   repos: RepoYaml[]
-  exporter: ExporterConfig
 }
 
-export type CircleciConfig = {
+export type CircleciConfig = CommonConfig & {
   baseUrl?: string
   repos: {
     vscType: string
     owner: string
     repo: string
   }[]
-  exporter: ExporterConfig
 }
 
 export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
