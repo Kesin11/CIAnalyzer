@@ -9,3 +9,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: docker build -t ci_analyzer .
+        env:
+          DOCKER_BUILDKIT: 1
