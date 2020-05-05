@@ -2,16 +2,19 @@ github:
   # baseUrl: https://api.github.com # default
   repos:
     - Kesin11/CIAnalyzer
+    - Kesin11/Firestore-simple
   exporter:
     local:
-      outDir: ./output
-      # format: json
+      outDir: ./output # default: output
+      # format: json # default: json
       format: json_lines
+    bigquery:
+      project: common-dev-242504
+      dataset: ci_analyzer
+      table: bigquery_exporter
+      maxBadRecords: 0 # default: 0. If set > 0, skip bad record. This option should only be used for workaround.
   lastRunStore: ./.ci_analyzer/last_run/github.json # default: ./.ci_analyzer/last_run/${service}.json
 
-    # bigquery:
-    #   dataset: pipeline
-    #   table: job
 circleci:
   # baseUrl: https://circleci.com/api/v1.1 # default
   repos:
@@ -21,8 +24,11 @@ circleci:
   exporter:
     local:
       outDir: ./output
-      # format: json
       format: json_lines
+    bigquery:
+      project: common-dev-242504
+      dataset: ci_analyzer
+      table: bigquery_exporter
 
 jenkins:
   baseUrl: http://localhost:8080 # Your jenkins url
@@ -34,6 +40,9 @@ jenkins:
   exporter:
     local:
       outDir: ./output
-      # format: json
       format: json_lines
+    bigquery:
+      project: common-dev-242504
+      dataset: ci_analyzer
+      table: bigquery_exporter
   lastRunStore: ./.ci_analyzer/last_run/jenkins/localhost.json
