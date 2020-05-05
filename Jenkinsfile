@@ -30,6 +30,9 @@ pipeline {
     }
     stage('docker build') {
       agent any
+      environment {
+        DOCKER_BUILDKIT = '1'
+      }
       steps {
         checkout scm
         sh "docker build -t ci_analyzer ."
