@@ -1,9 +1,8 @@
-import { ExporterConfig, YamlConfig } from './config'
+import { YamlConfig, CommonConfig } from './config'
 
-export type JenkinsConfig = {
+export type JenkinsConfig = CommonConfig & {
   baseUrl: string
   jobs: string[]
-  exporter: ExporterConfig
 }
 
 export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {

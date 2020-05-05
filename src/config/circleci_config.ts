@@ -1,24 +1,23 @@
-import { ExporterConfig, YamlConfig } from './config'
+import { ExporterConfig, YamlConfig, CommonConfig } from './config'
 
 type RepoYaml = string | {
   name: string
   vsc_type: string
 }
 
-type CircleciYaml = {
+type CircleciYaml = CommonConfig & {
   baseUrl?: string
   repos: RepoYaml[]
-  exporter: ExporterConfig
 }
 
-export type CircleciConfig = {
+export type CircleciConfig = CommonConfig & {
   baseUrl?: string
   repos: {
     vscType: string
     owner: string
     repo: string
+    fullname: string
   }[]
-  exporter: ExporterConfig
 }
 
 export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
@@ -38,12 +37,14 @@ const parseRepos = (repos: RepoYaml[]): CircleciConfig['repos'] => {
     if (typeof repoNameOrObj === 'string') {
       const vscType = 'github'
       const [owner, repo] = repoNameOrObj.split('/')
-      return { vscType, owner, repo }
+      const fullname = `${vscType}/${owner}/${repo}`
+      return { vscType, owner, repo, fullname }
     }
     else {
       const vscType = repoNameOrObj.vsc_type ?? 'github'
       const [owner, repo] = repoNameOrObj.name.split('/')
-      return { vscType, owner, repo }
+      const fullname = `${vscType}/${owner}/${repo}`
+      return { vscType, owner, repo, fullname }
     }
   })
 }

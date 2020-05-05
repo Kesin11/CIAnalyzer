@@ -116,11 +116,9 @@ export class CircleciClient {
       }
     })
     let recentBuilds = res.data as RecentBuildResponse[]
-    if (fromRunId) {
-      recentBuilds.filter((build) => build.build_num > fromRunId)
-    }
-
-    console.log(`${owner}/${repo}:`, recentBuilds.length)
+    recentBuilds = (fromRunId)
+      ? recentBuilds.filter((build) => build.build_num > fromRunId)
+      : recentBuilds
 
     // Add dummy workflow data if job is not belong to workflow
     for (const build of recentBuilds) {

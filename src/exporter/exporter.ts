@@ -8,7 +8,12 @@ export interface Exporter {
 
 export class CompositExporter implements Exporter {
   exporters: (Exporter | undefined)[]
-  constructor(service: string, config: ExporterConfig) {
+  constructor(service: string, config?: ExporterConfig) {
+    if (!config) {
+      this.exporters = [ new LocalExporter(service) ]
+      return
+    }
+
     this.exporters = Object.entries(config).map(([exporter, options]) => {
       switch (exporter) {
         case 'local':

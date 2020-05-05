@@ -7,7 +7,7 @@ type WorkflowReport = {
   service: 'circleci',
   workflowId: string, // = ${repository}-${workflowName}
   workflowRunId: string, // = ${repository}-${workflowName}-${buildNumber}
-  buildNumber: number, // first(jobs.buildNumber): CircleCI does not provide workflow number
+  buildNumber: number, // last(jobs.buildNumber): CircleCI does not provide workflow number
   workflowName: string,
   createdAt: Date, // = min(jobs queued_at)
   trigger: string // = why
@@ -53,7 +53,7 @@ export class CircleciAnalyzer implements Analyzer {
     const lastJob = last(sortedJobs)!
     const repository = `${firstJob.username}/${firstJob.reponame}`
     const workflowName = workflowRun.workflow_name
-    const workflowBuildNumber = firstJob.build_num
+    const workflowBuildNumber = lastJob.build_num
     const workflowRunId = `${repository}-${workflowName}-${workflowBuildNumber}`
 
     const jobReports: JobReport[] = sortedJobs.map((job) => {
