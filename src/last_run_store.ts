@@ -38,6 +38,10 @@ export class LastRunStore {
     return {}
   }
 
+  getLastRun (repo: string): number | undefined {
+    return this.store[repo]?.lastRun
+  }
+
   setLastRun (repo: string, lastRun: number) {
     this.store[repo] = {
       lastRun,

@@ -16,6 +16,7 @@ export type CircleciConfig = CommonConfig & {
     vscType: string
     owner: string
     repo: string
+    fullname: string
   }[]
 }
 
@@ -36,12 +37,14 @@ const parseRepos = (repos: RepoYaml[]): CircleciConfig['repos'] => {
     if (typeof repoNameOrObj === 'string') {
       const vscType = 'github'
       const [owner, repo] = repoNameOrObj.split('/')
-      return { vscType, owner, repo }
+      const fullname = `${vscType}/${owner}/${repo}`
+      return { vscType, owner, repo, fullname }
     }
     else {
       const vscType = repoNameOrObj.vsc_type ?? 'github'
       const [owner, repo] = repoNameOrObj.name.split('/')
-      return { vscType, owner, repo }
+      const fullname = `${vscType}/${owner}/${repo}`
+      return { vscType, owner, repo, fullname }
     }
   })
 }

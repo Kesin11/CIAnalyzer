@@ -5,6 +5,7 @@ export type GithubConfig = CommonConfig & {
   repos: {
     owner: string
     repo: string
+    fullname: string
   }[]
 }
 
@@ -13,9 +14,9 @@ export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
 
   const githubConfig = config.github
   // overwrite repos
-  githubConfig.repos = githubConfig.repos.map((repoFullname: string) => {
-    const [owner, repo] = repoFullname.split('/')
-    return { owner, repo }
+  githubConfig.repos = githubConfig.repos.map((fullname: string) => {
+    const [owner, repo] = fullname.split('/')
+    return { owner, repo, fullname }
   })
 
   return githubConfig as GithubConfig

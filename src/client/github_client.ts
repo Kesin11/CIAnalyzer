@@ -36,7 +36,7 @@ export class GithubClient {
     })
 
     return (fromRunId)
-      ? workflowRuns.filter((workflowRun) => workflowRun.run.id > fromRunId)
+      ? workflowRuns.filter((workflowRun) => workflowRun.run.run_number > fromRunId)
       : workflowRuns
   }
 
