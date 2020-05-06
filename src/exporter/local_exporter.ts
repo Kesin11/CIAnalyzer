@@ -26,6 +26,8 @@ export class LocalExporter implements Exporter {
 
     const formated = this.formatter(reports)
     fs.writeFileSync(outputPath, formated, { encoding: 'utf8' })
+
+    console.info(`(Local) Export reports to ${outputPath}`)
   }
 
   formatJson (reports: WorkflowReport[]): string {

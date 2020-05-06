@@ -55,7 +55,7 @@ export class BigqueryExporter implements Exporter {
       throw errors
     }
 
-    console.info(`Load ${tmpJsonPath} to ${this.dataset}.${this.table} completed. tmp file will delete.`)
+    console.info(`(BigQuery) Load ${tmpJsonPath} to ${this.dataset}.${this.table} completed. tmp file will be delete.`)
 
     await fs.promises.unlink(tmpJsonPath)
   }

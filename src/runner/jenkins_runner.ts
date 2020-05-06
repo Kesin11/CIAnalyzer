@@ -9,6 +9,7 @@ import { JenkinsConfig, parseConfig } from "../config/jenkins_config"
 import { LastRunStore } from "../last_run_store"
 
 export class JenkinsRunner implements Runner {
+  service: string = 'jenkins'
   client: JenkinsClient | undefined
   analyzer: JenkinsAnalyzer 
   config: JenkinsConfig | undefined
@@ -41,6 +42,7 @@ export class JenkinsRunner implements Runner {
 
     let reports: WorkflowReport[] = []
     for (const job of jobs) {
+      console.info(`Fetching ${this.service} - ${job.name} ...`)
       const jobReports: WorkflowReport[] = []
       const fromRunId = this.store.getLastRun(job.name)
       const runs = await this.client.fetchJobRuns(job, fromRunId)
@@ -56,9 +58,11 @@ export class JenkinsRunner implements Runner {
       reports = reports.concat(jobReports)
     }
 
-    const exporter = new CompositExporter('jenkins', this.config.exporter)
+    console.info(`Exporting ${this.service} workflow reports ...`)
+    const exporter = new CompositExporter(this.service, this.config.exporter)
     await exporter.exportReports(reports)
 
     this.store.save()
+    console.info(`Success: done execute '${this.service}'`)
   }
 }

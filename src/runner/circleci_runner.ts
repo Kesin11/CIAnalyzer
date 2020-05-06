@@ -9,6 +9,7 @@ import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
 
 export class CircleciRunner implements Runner {
+  service: string = 'circleci'
   client: CircleciClient
   analyzer: CircleciAnalyzer 
   config: CircleciConfig | undefined
@@ -33,6 +34,7 @@ export class CircleciRunner implements Runner {
 
     let reports: WorkflowReport[] = []
     for (const repo of this.config.repos) {
+      console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
       const repoReports: WorkflowReport[] = []
       const fromRunId = this.store.getLastRun(repo.fullname)
       const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, repo.vscType, fromRunId)
@@ -55,9 +57,11 @@ export class CircleciRunner implements Runner {
       reports = reports.concat(repoReports)
     }
 
-    const exporter = new CompositExporter('circleci', this.config.exporter)
+    console.info(`Exporting ${this.service} workflow reports ...`)
+    const exporter = new CompositExporter(this.service, this.config.exporter)
     await exporter.exportReports(reports)
 
     this.store.save()
+    console.info(`Success: done execute '${this.service}'`)
   }
 }

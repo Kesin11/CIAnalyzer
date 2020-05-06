@@ -9,6 +9,7 @@ import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
 
 export class GithubRunner implements Runner {
+  service: string = 'github'
   client: GithubClient
   analyzer: GithubAnalyzer 
   config: GithubConfig | undefined
@@ -33,6 +34,7 @@ export class GithubRunner implements Runner {
 
     let reports: WorkflowReport[] = []
     for (const repo of this.config.repos) {
+      console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
       const repoReports: WorkflowReport[] = []
       const fromRunId = this.store.getLastRun(repo.fullname)
       const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, fromRunId)
@@ -48,9 +50,11 @@ export class GithubRunner implements Runner {
       reports = reports.concat(repoReports)
     }
 
-    const exporter = new CompositExporter('github', this.config.exporter)
+    console.info(`Exporting ${this.service} workflow reports ...`)
+    const exporter = new CompositExporter(this.service, this.config.exporter)
     await exporter.exportReports(reports)
 
     this.store.save()
+    console.info(`Success: done execute '${this.service}'`)
   }
 }
