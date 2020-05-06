@@ -35,10 +35,12 @@ docker run \
   --mount type=bind,src=${PWD}/ci_analyzer.yaml,dst=/app/ci_analyzer.yaml \
   --mount type=bind,src=${PWD}/output,dst=/app/output \
   --mount type=bind,src=${PWD}/.ci_analyzer,dst=/app/.ci_analyzer \
+  --mount type=bind,src=/path/to/gcp/service_account.json,dst=/app/service_account.json
   -e GITHUB_TOKEN=${GITHUB_TOKEN} \
   -e CIRCLECI_TOKEN=${CIRCLECI_TOKEN} \
   -e JENKINS_USER=${JENKINS_USER} \
   -e JENKINS_TOKEN=${JENKINS_TOKEN} \
+  -e GOOGLE_APPLICATION_CREDENTIALS=/app/service_account.json \
   ci_analyzer:latest
 ```
 
