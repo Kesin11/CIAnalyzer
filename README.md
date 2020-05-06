@@ -21,6 +21,21 @@ npm ci
 ### debug
 - CI_ANALYZER_DEBUG=1
 
+## Setup BigQuery
+You have to create dataset before execute.
+
+You have to create table. example:
+
+```bash
+bq mk
+  --project_id=${YOUR_GCP_PROJECT_ID} \
+  --table \
+  --time_partitioning_field=createdAt \
+  ${DATASET}.${TABLE} \
+  ./bigquery_schema/workflow_report.json
+```
+
+
 ## Change config
 Edit config [ci_analyzer.yaml](./ci_analyzer.yaml)
 
