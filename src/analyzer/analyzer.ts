@@ -14,11 +14,12 @@ export type WorkflowReport = {
   repository: string
   headSha: string
   branch: string
+  jobs: JobReport[]
   startedAt: Date
   completedAt: Date
   workflowDurationSec: number
   sumJobsDurationSec: number
-  jobs: JobReport[]
+  successCount: 0 | 1 // = 'SUCCESS': 1, others: 0. For create average success rate in dashboard
 }
 
 export type JobReport = {

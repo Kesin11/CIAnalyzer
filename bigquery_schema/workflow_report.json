@@ -41,6 +41,11 @@
     "type": "STRING"
   }, 
   {
+    "mode": "NULLABLE", 
+    "name": "successCount", 
+    "type": "INTEGER"
+  }, 
+  {
     "description": "bq-datetime", 
     "mode": "NULLABLE", 
     "name": "startedAt", 

@@ -22,6 +22,7 @@ type WorkflowReport = {
   completedAt: Date // = max(jobs completedAt)
   workflowDurationSec: number // = completedAt - startedAt
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
+  successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
 }
 
 type JobReport = {
@@ -89,6 +90,7 @@ export class GithubAnalyzer implements Analyzer {
 
     const startedAt = min(jobReports.map((job) => job.startedAt )) || new Date(workflow.created_at)
     const completedAt = max(jobReports.map((job) => job.completedAt )) || new Date(workflow.created_at)
+    const status = this.normalizeStatus(workflow.conclusion as unknown as string)
     // workflow
     return {
       service: 'github',
@@ -98,7 +100,7 @@ export class GithubAnalyzer implements Analyzer {
       workflowName,
       createdAt: new Date(workflow.created_at),
       trigger: workflow.event,
-      status: this.normalizeStatus(workflow.conclusion as unknown as string),
+      status,
       repository: workflow.repository.full_name,
       headSha: workflow.head_sha,
       branch: workflow.head_branch,
@@ -107,6 +109,7 @@ export class GithubAnalyzer implements Analyzer {
       completedAt,
       workflowDurationSec: diffSec(startedAt, completedAt),
       sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec'),
+      successCount: (status === 'SUCCESS') ? 1 : 0,
     }
   }
 

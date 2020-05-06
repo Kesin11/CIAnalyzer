@@ -20,6 +20,7 @@ type WorkflowReport = {
   completedAt: Date // = Date(endTimeMillis)
   workflowDurationSec: number // = durationMillis / 1000
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
+  successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
 }
 
 type JobReport = {
@@ -79,6 +80,7 @@ export class JenkinsAnalyzer implements Analyzer {
       }
     })
 
+    const status = this.normalizeStatus(run.status)
     // workflow
     return {
       service: 'jenkins',
@@ -88,7 +90,7 @@ export class JenkinsAnalyzer implements Analyzer {
       workflowName: jobName,
       createdAt: new Date(run.startTimeMillis),
       trigger: this.detectTrigger(build),
-      status: this.normalizeStatus(run.status),
+      status,
       repository: this.detectRepository(build),
       headSha: this.detectHeadSha(build),
       branch: this.detectBranch(build),
@@ -97,6 +99,7 @@ export class JenkinsAnalyzer implements Analyzer {
       completedAt: new Date(run.startTimeMillis + run.durationMillis),
       workflowDurationSec: run.durationMillis / 1000,
       sumJobsDurationSec: secRound(sumBy(jobReports, 'sumStepsDurationSec')),
+      successCount: (status === 'SUCCESS') ? 1 : 0,
     }
   }
 
