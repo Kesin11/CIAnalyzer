@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
+import { axiosRequestLogger } from './client'
 
 // ref: https://github.com/jenkinsci/pipeline-stage-view-plugin/blob/master/rest-api/src/main/java/com/cloudbees/workflow/rest/external/StatusExt.java
 export type JenkinsStatus = 'SUCCESS' | 'FAILED' | 'ABORTED' | 'NOT_EXECUTED' | 'IN_PROGRESS' | 'PAUSED_PENDING_INPUT' | 'UNSTABLE'
@@ -151,10 +152,7 @@ export class JenkinsClient {
     });
 
     if (process.env['CI_ANALYZER_DEBUG']) {
-      this.axios.interceptors.request.use(request => {
-        console.error('Starting Request: ', request)
-        return request
-      })
+      this.axios.interceptors.request.use(axiosRequestLogger)
     }
   }
 

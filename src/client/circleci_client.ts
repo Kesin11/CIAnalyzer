@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import { groupBy } from 'lodash'
+import { axiosRequestLogger } from './client'
 
 const DEBUG_PER_PAGE = 10
 
@@ -95,10 +96,7 @@ export class CircleciClient {
     });
 
     if (process.env['CI_ANALYZER_DEBUG']) {
-      this.axios.interceptors.request.use(request => {
-        console.error('Starting Request: ', request)
-        return request
-      })
+      this.axios.interceptors.request.use(axiosRequestLogger)
     }
   }
 

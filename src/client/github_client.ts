@@ -8,6 +8,7 @@ export class GithubClient {
     this.octokit = new Octokit({
       auth: token,
       baseUrl: (baseUrl) ? baseUrl : 'https://api.github.com',
+      log: (process.env['CI_ANALYZER_DEBUG']) ? console : undefined,
     })
   }
 
