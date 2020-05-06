@@ -1,0 +1,44 @@
+pipeline {
+  agent any
+  stages {
+    stage('docker build') {
+      agent any
+      environment {
+        DOCKER_BUILDKIT = '1'
+      }
+      steps {
+        checkout scm
+        sh "docker build -t ci_analyzer:cron ."
+      }
+    }
+    stage('Run') {
+      agent any
+      environment {
+        JENKINS = credentials('jenkins_user_token')
+        GITHUB_TOKEN = credentials('ci_analyzer_github_token')
+        CIRCLECI_TOKEN = credentials('ci_analyzer_circleci_token')
+        SERVICE_ACCOUNT = credentials('ci_analyzer_service_account')
+        CONFIG_FILE = "ci_analyzer_jenkins.yaml"
+      }
+      steps {
+        sh """
+          mkdir -p output
+          mkdir -p .ci_analyzer
+        """
+        sh """
+          docker run \
+            --mount type=bind,src=${PWD}/${CONFIG_FILE},dst=/app/ci_analyzer.yaml \
+            --mount type=bind,src=${PWD}/output,dst=/app/output \
+            --mount type=bind,src=${PWD}/.ci_analyzer,dst=/app/.ci_analyzer \
+            --mount type=bind,src=${SERVICE_ACCOUNT},dst=/app/service_account.json \
+            -e GITHUB_TOKEN=${GITHUB_TOKEN} \
+            -e CIRCLECI_TOKEN=${CIRCLECI_TOKEN} \
+            -e JENKINS_USER=${JENKINS_USR} \
+            -e JENKINS_TOKEN=${JENKINS_PSW} \
+            -e GOOGLE_APPLICATION_CREDENTIALS=/app/service_account.json \
+            ci_analyzer:cron
+        """
+      }
+    }
+  }
+}
