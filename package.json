@@ -4,6 +4,7 @@
   "description": "Analyze each CI service build metrics.",
   "main": "dist/index.js",
   "scripts": {
+    "start": "node dist/index.js",
     "clean": "rimraf dist",
     "build": "tsc -b",
     "build:watch": "tsc -b -w",
