@@ -59,6 +59,8 @@ docker run \
   ci_analyzer:latest
 ```
 
+See sample [cron jenkins job script](./cron.jenkinsfile)
+
 ## mount
 - ci_analyzer.yaml: Your config file.
 - output/: `local_exporter` output default directory. you can change it by config.
