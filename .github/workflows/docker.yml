@@ -18,8 +18,8 @@ jobs:
           DOCKER_USERNAME: kesin11
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       - name: docker build
-        run: docker build -t docker.pkg.github.com/kesin11/ci_analyzer/ci_analyzer:latest .
+        run: docker build -t docker.pkg.github.com/kesin11/cianalyzer/ci_analyzer:latest .
         env:
           DOCKER_BUILDKIT: 1
       - name: docker push
-        run: docker push docker.pkg.github.com/kesin11/ci_analyzer/ci_analyzer:latest
+        run: docker push docker.pkg.github.com/kesin11/cianalyzer/ci_analyzer:latest
