@@ -1,16 +1,6 @@
 pipeline {
   agent any
   stages {
-    stage('docker build') {
-      agent any
-      environment {
-        DOCKER_BUILDKIT = '1'
-      }
-      steps {
-        checkout scm
-        sh "docker build -t ci_analyzer:cron ."
-      }
-    }
     stage('Run') {
       agent any
       environment {
@@ -36,7 +26,7 @@ pipeline {
             -e JENKINS_USER=${JENKINS_USR} \
             -e JENKINS_TOKEN=${JENKINS_PSW} \
             -e GOOGLE_APPLICATION_CREDENTIALS=/app/service_account.json \
-            ci_analyzer:cron
+            docker.io/kesin/ci_analyzer:latest
         """
       }
     }
