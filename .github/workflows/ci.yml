@@ -36,13 +36,3 @@ jobs:
         run: npm run build
       - name: Test
         run: npm run test
-
-  docker_build:
-    runs-on: ubuntu-latest
-    container:
-      image: "docker"
-    steps:
-      - uses: actions/checkout@v2
-      - run: docker build -t ci_analyzer .
-        env:
-          DOCKER_BUILDKIT: 1
