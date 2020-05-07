@@ -1,9 +1,8 @@
 name: "Publish docker image"
-# on:
-#   push:
-#     branches:
-#       - master
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   docker_build_and_push:
