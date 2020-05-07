@@ -1,13 +1,24 @@
-name: "Docker build"
-on: push
+name: "Publish docker image"
+on:
+  push:
+    branches:
+      - master
 
 jobs:
-  docker-build:
+  docker_build_and_push:
     runs-on: ubuntu-latest
     container:
       image: "docker"
     steps:
       - uses: actions/checkout@v2
-      - run: docker build -t ci_analyzer .
+      - name: docker login
+        run: echo ${DOCKER_PASSWORD} | docker login docker.pkg.github.com --username ${DOCKER_USERNAME} --password-stdin
+        env:
+          DOCKER_USERNAME: kesin11
+          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      - name: docker build
+        run: docker build -t docker.pkg.github.com/kesin11/cianalyzer/ci_analyzer:latest .
         env:
           DOCKER_BUILDKIT: 1
+      - name: docker push
+        run: docker push docker.pkg.github.com/kesin11/cianalyzer/ci_analyzer:latest
