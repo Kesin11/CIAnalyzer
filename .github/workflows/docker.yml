@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: docker login
-        run: docker login docker.pkg.github.com --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
+        run: echo ${DOCKER_PASSWORD} | docker login docker.pkg.github.com --username ${DOCKER_USERNAME} --password-stdin
         env:
           DOCKER_USERNAME: kesin11
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
