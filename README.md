@@ -4,6 +4,7 @@ Export multi CI service build data for analyzing.
 # Install
 ```bash
 npm ci
+npm run build
 ```
 
 # USAGE
@@ -39,12 +40,16 @@ bq mk
 ## Change config
 Edit config [ci_analyzer.yaml](./ci_analyzer.yaml)
 
-## Execute
+## Execute using nodejs
 ```bash
 npm run start
+
+npx ci_analyzer
+
+node dist/index.js -c your_custom_config.yaml
 ```
 
-# Execute using docker image
+# Execute using docker image (recommend)
 ```bash
 docker run \
   --mount type=bind,src=${PWD}/ci_analyzer.yaml,dst=/app/ci_analyzer.yaml \
