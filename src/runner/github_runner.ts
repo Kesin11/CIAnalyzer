@@ -7,6 +7,7 @@ import { GithubConfig, parseConfig } from "../config/github_config"
 import { WorkflowReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
+import { GithubRepositoryClient } from "../client/github_repository_client"
 
 export class GithubRunner implements Runner {
   service: string = 'github'
@@ -14,12 +15,14 @@ export class GithubRunner implements Runner {
   analyzer: GithubAnalyzer 
   config: GithubConfig | undefined
   store: LastRunStore
+  repoClient: GithubRepositoryClient
   constructor(public yamlConfig: YamlConfig) {
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
     this.client = new GithubClient(GITHUB_TOKEN)
     this.analyzer = new GithubAnalyzer()
     this.store = new LastRunStore('github', this.config?.lastRunStore)
+    this.repoClient = new GithubRepositoryClient(GITHUB_TOKEN, this.config?.vscBaseUrl?.github)
   }
 
   private setRepoLastRun(reponame: string, reports: WorkflowReport[]) {
@@ -38,10 +41,11 @@ export class GithubRunner implements Runner {
       const repoReports: WorkflowReport[] = []
       const fromRunId = this.store.getLastRun(repo.fullname)
       const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, fromRunId)
+      const tagMap = await this.repoClient.fetchRepositoryTagMap(repo.owner, repo.repo)
 
       for (const workflowRun of workflowRuns) {
         const jobs = await this.client.fetchJobs(repo.owner, repo.repo, workflowRun.run.id)
-        const report = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs)
+        const report = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs, tagMap)
 
         repoReports.push(report)
       }
