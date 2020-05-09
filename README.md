@@ -1,4 +1,8 @@
 # CIAnalyzer
+![CI](https://github.com/Kesin11/CIAnalyzer/workflows/CI/badge.svg)
+![Docker build](https://github.com/Kesin11/CIAnalyzer/workflows/Docker%20build/badge.svg)
+![Docker Pulls](https://img.shields.io/docker/pulls/kesin/ci_analyzer)
+
 Export multi CI service build data for analyzing.
 
 # Install
@@ -8,7 +12,7 @@ npm run build
 ```
 
 # USAGE
-## Set ENV
+## Setup ENV first
 ### auth
 
 - services
@@ -22,10 +26,11 @@ npm run build
 ### debug
 - CI_ANALYZER_DEBUG=1
 
-## Setup BigQuery
-You have to create dataset before execute.
+## Setup BigQuery (Optional)
+If you want `bigquery_exporter`, you need to setup BigQuery before execute.
 
-You have to create table. example:
+You have to create dataset and table.  
+example:
 
 ```bash
 bq mk
@@ -37,8 +42,8 @@ bq mk
 ```
 
 
-## Change config
-Edit config [ci_analyzer.yaml](./ci_analyzer.yaml)
+## Edit config yaml
+Edit config yaml [ci_analyzer.yaml](./ci_analyzer.yaml) or copy to another one and editing it.
 
 ## Execute using nodejs
 ```bash
@@ -49,8 +54,10 @@ npx ci_analyzer
 node dist/index.js -c your_custom_config.yaml
 ```
 
-# Execute using docker image (recommend)
+## Execute using docker (recommend)
 ```bash
+docker pull kesin/ci_analyzer:lates
+
 docker run \
   --mount type=bind,src=${PWD}/ci_analyzer.yaml,dst=/app/ci_analyzer.yaml \
   --mount type=bind,src=${PWD}/output,dst=/app/output \
@@ -66,13 +73,13 @@ docker run \
 
 See sample [cron jenkins job script](./cron.jenkinsfile)
 
-## mount
+### mount
 - ci_analyzer.yaml: Your config file.
 - output/: `local_exporter` output default directory. you can change it by config.
 - .ci_analyzer/: CIAnalyzer internal using directory for multi purpose.
   - Store last run number.
 
-## network
+### network
 If your jenkins is working on docker host machine, you should not use "localhost" to jenkins.baseUrl config. Docker can not access your Jenkins server by "localhost".
 
 For resolve this issue, you should use host machine IP address. For example, "http://192.168.0.1:8080".
