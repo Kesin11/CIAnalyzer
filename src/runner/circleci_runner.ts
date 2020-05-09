@@ -7,6 +7,7 @@ import { CircleciConfig, parseConfig } from "../config/circleci_config"
 import { WorkflowReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
+import { GithubRepositoryClient } from "../client/github_repository_client"
 
 export class CircleciRunner implements Runner {
   service: string = 'circleci'
@@ -14,12 +15,16 @@ export class CircleciRunner implements Runner {
   analyzer: CircleciAnalyzer 
   config: CircleciConfig | undefined
   store: LastRunStore
+  repoClient: GithubRepositoryClient
   constructor(public yamlConfig: YamlConfig) {
     const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
     this.client = new CircleciClient(CIRCLECI_TOKEN, this.config?.baseUrl)
     this.analyzer = new CircleciAnalyzer()
     this.store = new LastRunStore('circleci', this.config?.lastRunStore)
+
+    const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
+    this.repoClient = new GithubRepositoryClient(GITHUB_TOKEN, this.config?.vscBaseUrl?.github)
   }
 
   private setRepoLastRun(reponame: string, reports: WorkflowReport[]) {
@@ -38,6 +43,7 @@ export class CircleciRunner implements Runner {
       const repoReports: WorkflowReport[] = []
       const fromRunId = this.store.getLastRun(repo.fullname)
       const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, repo.vscType, fromRunId)
+      const tagMap = await this.repoClient.fetchRepositoryTagMap(repo.owner, repo.repo)
 
       for (const workflowRun of workflowRuns) {
         const jobs = await Promise.all(workflowRun.build_nums.map((buildNum) => {
@@ -48,7 +54,7 @@ export class CircleciRunner implements Runner {
             buildNum
             )
         }))
-        const report = this.analyzer.createWorkflowReport(workflowRun, jobs)
+        const report = this.analyzer.createWorkflowReport(workflowRun, jobs, tagMap)
 
         repoReports.push(report)
       }

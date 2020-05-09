@@ -1,6 +1,7 @@
 import { sumBy, min, max, sortBy, first, last } from "lodash"
 import { Status, diffSec, Analyzer, secRound } from "./analyzer"
 import { WorkflowRun, SingleBuildResponse, CircleciStatus } from "../client/circleci_client"
+import { RepositoryTagMap } from "../client/github_repository_client"
 
 type WorkflowReport = {
   // workflow
@@ -15,6 +16,7 @@ type WorkflowReport = {
   repository: string,
   headSha: string, // = vcs_revision
   branch: string,
+  tag: string, // Detect from Github API response
   jobs: JobReport[],
   startedAt: Date, // = min(jobs start_time)
   completedAt: Date // = max(jobs stop_time)
@@ -48,7 +50,7 @@ type StepReport = {
 export class CircleciAnalyzer implements Analyzer {
   constructor() { }
 
-  createWorkflowReport( workflowRun: WorkflowRun, jobs: SingleBuildResponse[]): WorkflowReport {
+  createWorkflowReport( workflowRun: WorkflowRun, jobs: SingleBuildResponse[], tagMap: RepositoryTagMap): WorkflowReport {
     const sortedJobs = sortBy(jobs, 'build_num')
     const firstJob = first(sortedJobs)!
     const lastJob = last(sortedJobs)!
@@ -106,6 +108,7 @@ export class CircleciAnalyzer implements Analyzer {
       repository,
       headSha: firstJob.vcs_revision,
       branch: firstJob.branch,
+      tag: tagMap.get(firstJob.vcs_revision) ?? '',
       jobs: jobReports,
       startedAt,
       completedAt,
