@@ -169,9 +169,12 @@ export class JenkinsAnalyzer implements Analyzer {
     switch (action._class) {
       case "hudson.plugins.git.util.BuildData":
         const branch = first(action.lastBuiltRevision.branch)?.name
-        // Remove 'refs/remotes/origin' prefix.
-        const matched = branch?.match(/(refs\/remotes\/origin\/)?(.+)/)
-        return (matched && matched[2]) ? matched[2] : ''
+        if (!branch) return ''
+        // Remove 'refs | remotes | origin' prefix.
+        return branch
+          .split('/')
+          .filter((prefix) => !['refs', 'remotes', 'origin'].includes(prefix))
+          .join('/')
       case "org.jenkinsci.plugins.ghprb.GhprbParametersAction":
         const repoParam = action.parameters.find((param) => param.name === "GIT_BRANCH")
         return repoParam?.value ?? ''
