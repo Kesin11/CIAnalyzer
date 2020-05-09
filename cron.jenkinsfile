@@ -16,6 +16,7 @@ pipeline {
           mkdir -p .ci_analyzer
         """
         sh """
+          docker pull kesin/ci_analyzer:latest
           docker run \
             --mount type=bind,src=${CONFIG_FILE_PATH},dst=/app/ci_analyzer.yaml \
             --mount type=bind,src=${WORKSPACE}/output,dst=/app/output \
@@ -26,7 +27,7 @@ pipeline {
             -e JENKINS_USER=${JENKINS_USR} \
             -e JENKINS_TOKEN=${JENKINS_PSW} \
             -e GOOGLE_APPLICATION_CREDENTIALS=/app/service_account.json \
-            docker.io/kesin/ci_analyzer:latest
+            kesin/ci_analyzer:latest
         """
       }
     }
