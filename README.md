@@ -1,7 +1,7 @@
 # CIAnalyzer
-![CI](https://github.com/Kesin11/CIAnalyzer/workflows/CI/badge.svg)
-![Docker build](https://github.com/Kesin11/CIAnalyzer/workflows/Docker%20build/badge.svg)
-![Docker Pulls](https://img.shields.io/docker/pulls/kesin/ci_analyzer)
+[![CI](https://github.com/Kesin11/CIAnalyzer/workflows/CI/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
+[![Docker build](https://github.com/Kesin11/CIAnalyzer/workflows/Docker%20build/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
+[![Docker Pulls](https://img.shields.io/docker/pulls/kesin/ci_analyzer)](https://hub.docker.com/r/kesin/ci_analyzer)
 
 Export multi CI service build data for analyzing.
 
