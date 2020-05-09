@@ -1,8 +1,10 @@
 {
   "name": "ci_analyzer",
   "version": "0.1.0",
-  "description": "Analyze each CI service build metrics.",
-  "main": "dist/index.js",
+  "description": "Export multiple CI service build data for analyzing.",
+  "bin": {
+    "ci_analyzer": "dist/index.js"
+  },
   "scripts": {
     "start": "node dist/index.js",
     "clean": "rimraf dist",
