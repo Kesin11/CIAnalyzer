@@ -1,6 +1,7 @@
 import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods'
 import { sumBy, min, max } from 'lodash'
 import { Analyzer, diffSec, Status } from './analyzer'
+import { RepositoryTagMap } from '../client/github_repository_client'
 export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listRepoWorkflowRuns']['response']['data']['workflow_runs'][0]
 export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']['jobs']
 
@@ -17,6 +18,7 @@ type WorkflowReport = {
   repository: string,
   headSha: string,
   branch: string,
+  tag: string, // Detect from Github API response
   jobs: JobReport[],
   startedAt: Date, // = min(jobs startedAt)
   completedAt: Date // = max(jobs completedAt)
@@ -50,7 +52,7 @@ type StepReport = {
 export class GithubAnalyzer implements Analyzer {
   constructor() { }
 
-  createWorkflowReport(workflowName: string, workflow: WorkflowRunsItem, jobs: JobsItem): WorkflowReport {
+  createWorkflowReport(workflowName: string, workflow: WorkflowRunsItem, jobs: JobsItem, tagMap: RepositoryTagMap): WorkflowReport {
     const buildNumber = workflow.run_number
     const repository = workflow.repository.full_name
     const workflowId = `${repository}-${workflowName}`
@@ -104,6 +106,7 @@ export class GithubAnalyzer implements Analyzer {
       repository: workflow.repository.full_name,
       headSha: workflow.head_sha,
       branch: workflow.head_branch,
+      tag: tagMap.get(workflow.head_sha) ?? '',
       jobs: jobReports,
       startedAt,
       completedAt,

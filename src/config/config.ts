@@ -11,6 +11,9 @@ export type YamlConfig = {
 export type CommonConfig = {
   exporter?: ExporterConfig
   lastRunStore?: string
+  vscBaseUrl?: {
+    github?: string
+  }
 }
 
 export type ExporterConfig = {
