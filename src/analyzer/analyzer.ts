@@ -14,6 +14,7 @@ export type WorkflowReport = {
   repository: string
   headSha: string
   branch: string
+  tag: string
   jobs: JobReport[]
   startedAt: Date
   completedAt: Date

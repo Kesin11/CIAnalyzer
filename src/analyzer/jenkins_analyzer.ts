@@ -15,6 +15,7 @@ type WorkflowReport = {
   repository: string, // build api: remoteUrls[0]
   headSha: string, // = build api: lastBuiltRevision.SHA1 or sha1
   branch: string, // = build api: lastBuiltRevision.branch[0].name or GIT_BRANCH
+  tag: string, // tag is not supported in Jenkins yet
   jobs: JobReport[],
   startedAt: Date, // = Date(startTimeMillis)
   completedAt: Date // = Date(endTimeMillis)
@@ -94,6 +95,7 @@ export class JenkinsAnalyzer implements Analyzer {
       repository: this.detectRepository(build),
       headSha: this.detectHeadSha(build),
       branch: this.detectBranch(build),
+      tag: '',
       jobs: jobReports,
       startedAt: new Date(run.startTimeMillis),
       completedAt: new Date(run.startTimeMillis + run.durationMillis),
