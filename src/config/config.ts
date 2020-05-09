@@ -30,5 +30,10 @@ export const loadConfig = (configPath?: string): YamlConfig => {
   const config = yaml.safeLoad(fs.readFileSync(configPath, 'utf8'))
   // TODO: Add File open error handling
 
+  if (process.env['CI_ANALYZER_DEBUG']) {
+    console.debug('Parsed config file:')
+    console.debug(JSON.stringify(config, null, 2))
+  }
+
   return config as YamlConfig
 }

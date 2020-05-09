@@ -3,7 +3,10 @@ github:
   repos:
     - Kesin11/CIAnalyzer
     - Kesin11/Firestore-simple
-  exporter:
+  vscBaseUrl:
+    # Currently only support github
+    github: https://api.github.com #default
+  exporter: &exporter
     local:
       outDir: ./output # default: output
       # format: json # default: json
@@ -21,14 +24,10 @@ circleci:
     - Kesin11/CIAnalyzer
     # - name: Kesin11/CIAnalyzer
     #   vsc_type: github # github or bitbucket. default: github
-  exporter:
-    local:
-      outDir: ./output
-      format: json_lines
-    bigquery:
-      project: common-dev-242504
-      dataset: ci_analyzer
-      table: bigquery_exporter
+  vscBaseUrl:
+    # Currently only support github
+    github: https://api.github.com #default
+  exporter: *exporter # Can use yaml anchor
 
 jenkins:
   baseUrl: http://localhost:8080 # Your jenkins url
@@ -37,12 +36,5 @@ jenkins:
     - ci_analyzer_push
     - build-pipeline
     - build-pipeline-nested
-  exporter:
-    local:
-      outDir: ./output
-      format: json_lines
-    bigquery:
-      project: common-dev-242504
-      dataset: ci_analyzer
-      table: bigquery_exporter
+  exporter: *exporter
   lastRunStore: ./.ci_analyzer/last_run/jenkins/localhost.json
