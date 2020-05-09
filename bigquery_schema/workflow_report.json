@@ -22,6 +22,11 @@
   }, 
   {
     "mode": "NULLABLE", 
+    "name": "tag", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
     "name": "headSha", 
     "type": "STRING"
   }, 
