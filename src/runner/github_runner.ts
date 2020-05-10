@@ -39,19 +39,27 @@ export class GithubRunner implements Runner {
     for (const repo of this.config.repos) {
       console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
       const repoReports: WorkflowReport[] = []
-      const fromRunId = this.store.getLastRun(repo.fullname)
-      const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, fromRunId)
-      const tagMap = await this.repoClient.fetchRepositoryTagMap(repo.owner, repo.repo)
 
-      for (const workflowRun of workflowRuns) {
-        const jobs = await this.client.fetchJobs(repo.owner, repo.repo, workflowRun.run.id)
-        const report = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs, tagMap)
+      try {
+        const fromRunId = this.store.getLastRun(repo.fullname)
+        const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, fromRunId)
+        const tagMap = await this.repoClient.fetchRepositoryTagMap(repo.owner, repo.repo)
 
-        repoReports.push(report)
+        for (const workflowRun of workflowRuns) {
+          const jobs = await this.client.fetchJobs(repo.owner, repo.repo, workflowRun.run.id)
+          const report = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs, tagMap)
+
+          repoReports.push(report)
+        }
+
+        this.setRepoLastRun(repo.fullname, repoReports)
+        reports = reports.concat(repoReports)
       }
-
-      this.setRepoLastRun(repo.fullname, repoReports)
-      reports = reports.concat(repoReports)
+      catch (error) {
+        console.error(`Some error raised in '${repo.fullname}', so it skipped.`)
+        console.error(error)
+        continue
+      }
     }
 
     console.info(`Exporting ${this.service} workflow reports ...`)

@@ -44,18 +44,26 @@ export class JenkinsRunner implements Runner {
     for (const job of jobs) {
       console.info(`Fetching ${this.service} - ${job.name} ...`)
       const jobReports: WorkflowReport[] = []
-      const fromRunId = this.store.getLastRun(job.name)
-      const runs = await this.client.fetchJobRuns(job, fromRunId)
 
-      for (const run of runs) {
-        const build = await this.client.fetchBuild(job, Number(run.id))
-        const report = this.analyzer.createWorkflowReport(job.name, run, build)
+      try {
+        const fromRunId = this.store.getLastRun(job.name)
+        const runs = await this.client.fetchJobRuns(job, fromRunId)
 
-        jobReports.push(report)
+        for (const run of runs) {
+          const build = await this.client.fetchBuild(job, Number(run.id))
+          const report = this.analyzer.createWorkflowReport(job.name, run, build)
+
+          jobReports.push(report)
+        }
+
+        this.setRepoLastRun(job.name, jobReports)
+        reports = reports.concat(jobReports)
       }
-
-      this.setRepoLastRun(job.name, jobReports)
-      reports = reports.concat(jobReports)
+      catch (error) {
+        console.error(`Some error raised in '${job.name}', so it skipped.`)
+        console.error(error)
+        continue
+      }
     }
 
     console.info(`Exporting ${this.service} workflow reports ...`)
