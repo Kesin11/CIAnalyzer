@@ -22,7 +22,7 @@ export type ExporterConfig = {
   }
 }
 
-const defaultPath = path.join(__dirname, '../../ci_analyzer.yaml')
+const defaultPath = './ci_analyzer.yaml'
 
 export const loadConfig = (configPath?: string): YamlConfig => {
   configPath = configPath ?? defaultPath

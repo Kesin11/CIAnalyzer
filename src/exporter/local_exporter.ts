@@ -5,7 +5,7 @@ import { WorkflowReport } from "../analyzer/analyzer"
 import { Exporter } from "./exporter"
 
 type Format = 'json' | 'json_lines'
-const defaultOutDir = path.join(__dirname, '../../output')
+const defaultOutDir = 'output'
 
 export class LocalExporter implements Exporter {
   service: string
@@ -13,7 +13,9 @@ export class LocalExporter implements Exporter {
   formatter: (report: WorkflowReport[]) => string
   constructor(service: string, outDir?: string, format?: Format) {
     this.service = service
-    this.outDir = outDir ?? defaultOutDir
+    this.outDir = (outDir)
+      ? path.resolve(outDir)
+      : path.resolve(defaultOutDir)
     format = format ?? 'json'
     this.formatter = (format === 'json') ? this.formatJson : this.formatJsonLines
   }

@@ -8,16 +8,7 @@ type Store = {
   }
 }
 
-  // Resolve relative path to abs that from repo root directory path.
- const resolveToAbsPath = (filePath: string): string => {
-    if (path.isAbsolute(filePath)) {
-      return path.resolve(filePath)
-    }
-
-    return path.resolve(__dirname, '..', filePath)
-  }
-
-const defaultDir = path.join(__dirname, '..', '.ci_analyzer/last_run')
+const defaultDir = path.join('.ci_analyzer', 'last_run')
 
 export class LastRunStore {
   filePath: string
@@ -25,8 +16,8 @@ export class LastRunStore {
 
   constructor(service: string, filePath?: string) {
     this.filePath = (filePath)
-      ? resolveToAbsPath(filePath)
-      : resolveToAbsPath(path.join(defaultDir, `${service}.json`))
+      ? path.resolve(filePath)
+      : path.resolve(path.join(defaultDir, `${service}.json`))
     this.store = this.readStore(this.filePath)
   }
 

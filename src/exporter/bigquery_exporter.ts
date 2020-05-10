@@ -29,7 +29,7 @@ export class BigqueryExporter implements Exporter {
     await fs.promises.writeFile(tmpJsonPath, reportJson)
 
     // Load WorkflowReport table schema
-    const schemaPath = path.resolve(__dirname, '../../bigquery_schema/workflow_report.json')
+    const schemaPath = path.resolve(__dirname, '..', '..', 'bigquery_schema/workflow_report.json')
     const schemaFile = await fs.promises.readFile(schemaPath)
     const schema = JSON.parse(schemaFile.toString())
 
