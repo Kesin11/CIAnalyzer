@@ -12,8 +12,9 @@
     "build:watch": "tsc -b -w",
     "lint": "echo \"We have not lint yet\"",
     "test": "jest",
-    "test:ci": "jest",
-    "test:watch": "jest --watch"
+    "test:ci": "jest --coverage",
+    "test:watch": "jest --watch",
+    "coverage": "codecov"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,7 @@
     "@types/lodash": "4.14.150",
     "@types/node": "13.13.4",
     "@types/yargs": "15.0.4",
+    "codecov": "3.6.5",
     "jest": "25.5.0",
     "rimraf": "3.0.2",
     "ts-jest": "25.4.0",
