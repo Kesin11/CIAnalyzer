@@ -56,7 +56,7 @@ node dist/index.js -c your_custom_config.yaml
 
 ## Execute using docker (recommend)
 ```bash
-docker pull kesin/ci_analyzer:lates
+docker pull kesin/ci_analyzer:latest
 
 docker run \
   --mount type=bind,src=${PWD}/ci_analyzer.yaml,dst=/app/ci_analyzer.yaml \

@@ -18,4 +18,4 @@ RUN npm install --production
 COPY . .
 COPY --from=ts-builder /build/dist ./dist
 
-CMD [ "npm", "run", "start" ]
+ENTRYPOINT [ "npm", "run", "start", "--" ]
