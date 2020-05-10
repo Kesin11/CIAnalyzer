@@ -1,4 +1,4 @@
-import { ExporterConfig, YamlConfig, CommonConfig } from './config'
+import { YamlConfig, CommonConfig } from './config'
 
 type RepoYaml = string | {
   name: string
