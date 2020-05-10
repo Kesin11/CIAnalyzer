@@ -84,5 +84,10 @@ If your jenkins is working on docker host machine, you should not use "localhost
 
 For resolve this issue, you should use host machine IP address. For example, "http://192.168.0.1:8080".
 
+## Execute on some CI services
+It is good idea to execute with cron on some CI services.
+
+We put sample code for some services. See [sample](./sample/README.md) directory.
+
 # LICENSE
 MIT

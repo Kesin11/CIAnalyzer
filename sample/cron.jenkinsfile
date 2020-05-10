@@ -4,11 +4,11 @@ pipeline {
     stage('Run') {
       agent any
       environment {
-        JENKINS = credentials('jenkins_user_token')
-        GITHUB_TOKEN = credentials('ci_analyzer_github_token')
-        CIRCLECI_TOKEN = credentials('ci_analyzer_circleci_token')
-        SERVICE_ACCOUNT = credentials('ci_analyzer_service_account')
-        CONFIG_FILE_PATH = credentials('ci_analyzer_cron_config')
+        JENKINS = credentials('jenkins_user_token') // user name and password
+        GITHUB_TOKEN = credentials('ci_analyzer_github_token') // secret text
+        CIRCLECI_TOKEN = credentials('ci_analyzer_circleci_token') // secret text
+        SERVICE_ACCOUNT = credentials('ci_analyzer_service_account') // secret file
+        CONFIG_FILE_PATH = credentials('ci_analyzer_cron_config') // secret text
       }
       steps {
         sh """
