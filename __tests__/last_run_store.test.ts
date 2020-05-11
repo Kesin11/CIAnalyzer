@@ -52,11 +52,31 @@ describe('LastRunStore', () => {
     expect(lastRunStore.getLastRun(repo)).toEqual(100)
   })
 
-  it('setLastRun', () => {
-    const lastRunStore = new LastRunStore('github', storePath)
-    lastRunStore.setLastRun(repo, 100)
+  describe('setLastRun', () => {
+    it('should accept when value is undefined', () => {
+      const lastRunStore = new LastRunStore('github', storePath)
+      lastRunStore.setLastRun(repo, 100)
 
-    expect(lastRunStore.store[repo].lastRun).toEqual(100)
+      expect(lastRunStore.store[repo].lastRun).toEqual(100)
+    })
+
+    it('should accept when value is less than arg', () => {
+      const lastRun = 100
+      const lastRunStore = new LastRunStore('github', storePath)
+      lastRunStore.setLastRun(repo, 99)
+      lastRunStore.setLastRun(repo, lastRun)
+
+      expect(lastRunStore.store[repo].lastRun).toEqual(lastRun)
+    })
+
+    it('should not accept when value is larger than arg', () => {
+      const lastRun = 100
+      const lastRunStore = new LastRunStore('github', storePath)
+      lastRunStore.setLastRun(repo, 101)
+      lastRunStore.setLastRun(repo, lastRun)
+
+      expect(lastRunStore.store[repo].lastRun).toEqual(101)
+    })
   })
 
   it('save', () => {

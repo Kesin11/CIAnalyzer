@@ -34,6 +34,9 @@ export class LastRunStore {
   }
 
   setLastRun (repo: string, lastRun: number) {
+    const stored = this.getLastRun(repo) ?? 0
+    if (stored >= lastRun) return
+
     this.store[repo] = {
       lastRun,
       updatedAt: new Date()
