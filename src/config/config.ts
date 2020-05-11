@@ -1,5 +1,4 @@
 import fs from 'fs'
-import path from 'path'
 import yaml from 'js-yaml'
 
 export type YamlConfig = {
@@ -28,7 +27,6 @@ export const loadConfig = (configPath?: string): YamlConfig => {
   configPath = configPath ?? defaultPath
 
   const config = yaml.safeLoad(fs.readFileSync(configPath, 'utf8'))
-  // TODO: Add File open error handling
 
   if (process.env['CI_ANALYZER_DEBUG']) {
     console.debug('Parsed config file:')

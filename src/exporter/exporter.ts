@@ -18,9 +18,9 @@ export class CompositExporter implements Exporter {
     this.exporters = Object.entries(config).map(([exporter, options]) => {
       switch (exporter) {
         case 'local':
-          return new LocalExporter(service, options.outDir, options.format)
+          return new LocalExporter(service, { outDir: options.outDir, format: options.format })
         case 'bigquery':
-          return new BigqueryExporter(options.project, options.dataset, options.table, options.maxBadRecords)
+          return new BigqueryExporter(options.project, options.dataset, options.table, { maxBadRecords: options.maxBadRecords })
         default:
           return undefined
       }
