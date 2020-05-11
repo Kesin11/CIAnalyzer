@@ -139,7 +139,8 @@ export type ParametersAction = {
 export class JenkinsClient {
   private axios: AxiosInstance
   constructor(baseUrl: string, user?: string, token?: string) {
-    // TODO: Show warning if only USER or TOKEN is undefined.
+    if ((user && !token) || (!user && token)) throw 'Only $JENKSIN_USER or $JENKINS_TOKEN is undefined.'
+
     const auth = (user && token) ? {
       username: user,
       password: token,
