@@ -20,7 +20,7 @@ export class CompositExporter implements Exporter {
         case 'local':
           return new LocalExporter(service, options.outDir, options.format)
         case 'bigquery':
-          return new BigqueryExporter(options.project, options.dataset, options.table, options.maxBadRecords)
+          return new BigqueryExporter(options.project, options.dataset, options.table, { maxBadRecords: options.maxBadRecords })
         default:
           return undefined
       }

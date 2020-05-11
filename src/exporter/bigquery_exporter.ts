@@ -10,15 +10,18 @@ export class BigqueryExporter implements Exporter {
   bigquery: BigQuery
   dataset: string
   table: string
-  maxBadRecords?: number
-  constructor(projectId?: string, dataset?: string, table?: string, maxBadRecords?: number) {
+  maxBadRecords: number
+  constructor(
+    projectId?: string, dataset?: string, table?: string,
+    options?: { maxBadRecords?: number }
+  ) {
     if (!projectId || !dataset || !table) {
       throw "Must need 'project', 'dataset', 'table' params for BigQuery exporter"
     }
     this.bigquery = new BigQuery({ projectId })
     this.dataset = dataset
     this.table = table
-    this.maxBadRecords = maxBadRecords ?? 0
+    this.maxBadRecords = options?.maxBadRecords ?? 0
   }
 
   async exportReports (reports: WorkflowReport[]) {
