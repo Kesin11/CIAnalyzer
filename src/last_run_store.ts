@@ -1,58 +1,47 @@
-import fs from 'fs'
-import path from 'path'
+import { LocalStore, Store } from "./store/local_store"
 
-type Store = {
+type LastRun = {
   [repo: string]: {
     lastRun: number
     updatedAt: Date
   }
 }
 
-const defaultDir = path.join('.ci_analyzer', 'last_run')
-
 export class LastRunStore {
-  filePath: string
   store: Store
+  lastRun: LastRun
 
-  constructor(service: string, filePath?: string) {
-    this.filePath = (filePath)
-      ? path.resolve(filePath)
-      : path.resolve(path.join(defaultDir, `${service}.json`))
-    this.store = this.readStore(this.filePath)
+  static async init(service: string, filePath?: string) {
+    const store = new LocalStore(service, filePath)
+    const self = new LastRunStore(store)
+    await self.readStore()
+    return self
   }
 
-  private readStore(filePath: string): Store {
-    if (fs.existsSync(filePath)) {
-      return JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8' }))
-    }
+  constructor(store: Store) {
+    this.store = store
+    this.lastRun = {}
+  }
 
-    return {}
+  private async readStore(): Promise<void> {
+    this.lastRun = await this.store.read()
   }
 
   getLastRun (repo: string): number | undefined {
-    return this.store[repo]?.lastRun
+    return this.lastRun[repo]?.lastRun
   }
 
-  setLastRun (repo: string, lastRun: number) {
+  setLastRun (repo: string, lastRun: number): void {
     const stored = this.getLastRun(repo) ?? 0
     if (stored >= lastRun) return
 
-    this.store[repo] = {
+    this.lastRun[repo] = {
       lastRun,
       updatedAt: new Date()
     }
   }
 
-  save () {
-    // Reload store file
-    const store = this.readStore(this.filePath)
-    const newStore = { ...store, ...this.store }
-
-    // Write store file
-    const outDir = path.dirname(this.filePath)
-    fs.mkdirSync(outDir, { recursive: true })
-    fs.writeFileSync(this.filePath, JSON.stringify(newStore, null, 2))
-
-    this.store = newStore
+  async save (): Promise<void> {
+    this.lastRun = await this.store.write(this.lastRun)
   }
 }
