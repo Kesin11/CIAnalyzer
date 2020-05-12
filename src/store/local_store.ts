@@ -1,11 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-
-export interface Store {
-  read<T extends AnyObject>(): Promise<T>
-  write<T extends AnyObject>(newStore: T): Promise<T>
-}
-type AnyObject = {[key: string]: any}
+import { Store, AnyObject } from './store'
 
 const defaultDir = path.join('.ci_analyzer', 'last_run')
 

@@ -1,4 +1,5 @@
-import { LocalStore, Store } from "./store/local_store"
+import { Store } from "./store/store"
+import { LocalStore } from "./store/local_store"
 
 type LastRun = {
   [repo: string]: {
