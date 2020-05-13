@@ -14,14 +14,13 @@ export class CircleciRunner implements Runner {
   client: CircleciClient
   analyzer: CircleciAnalyzer 
   config: CircleciConfig | undefined
-  store: LastRunStore
+  store?: LastRunStore
   repoClient: GithubRepositoryClient
   constructor(public yamlConfig: YamlConfig) {
     const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
     this.client = new CircleciClient(CIRCLECI_TOKEN, this.config?.baseUrl)
     this.analyzer = new CircleciAnalyzer()
-    this.store = new LastRunStore('circleci', this.config?.lastRunStore)
 
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
     this.repoClient = new GithubRepositoryClient(GITHUB_TOKEN, this.config?.vscBaseUrl?.github)
@@ -30,12 +29,13 @@ export class CircleciRunner implements Runner {
   private setRepoLastRun(reponame: string, reports: WorkflowReport[]) {
     const lastRunReport = maxBy(reports, 'buildNumber')
     if (lastRunReport) {
-      this.store.setLastRun(reponame, lastRunReport.buildNumber)
+      this.store?.setLastRun(reponame, lastRunReport.buildNumber)
     }
   }
 
   async run () {
     if (!this.config) return
+    this.store = await LastRunStore.init(this.service, this.config?.lastRunStore)
 
     let reports: WorkflowReport[] = []
     for (const repo of this.config.repos) {

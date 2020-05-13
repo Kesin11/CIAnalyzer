@@ -1,5 +1,7 @@
 import { Store } from "./store/store"
 import { LocalStore } from "./store/local_store"
+import { LastRunStoreConfig } from "./config/config"
+import { GcsStore } from "./store/gcs_store"
 
 type LastRun = {
   [repo: string]: {
@@ -12,8 +14,21 @@ export class LastRunStore {
   store: Store
   lastRun: LastRun
 
-  static async init(service: string, filePath?: string) {
-    const store = new LocalStore(service, filePath)
+  static async init(service: string, config?: LastRunStoreConfig) {
+    let store
+    if (!config) {
+      store = new LocalStore(service)
+    }
+    else if (config.backend === 'local') {
+      store = new LocalStore(service, config.path)
+    }
+    else if (config.backend === 'gcs') {
+      store = new GcsStore(service, config.project, config.bucket, config.path)
+    }
+    else {
+      throw `Error: Unknown LastRunStore.backend type. ${config}`
+    }
+
     const self = new LastRunStore(store)
     await self.readStore()
     return self

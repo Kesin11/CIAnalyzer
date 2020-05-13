@@ -9,7 +9,7 @@ export type YamlConfig = {
 
 export type CommonConfig = {
   exporter?: ExporterConfig
-  lastRunStore?: string
+  lastRunStore?: LastRunStoreConfig
   vscBaseUrl?: {
     github?: string
   }
@@ -19,6 +19,16 @@ export type ExporterConfig = {
   [exporterName: string]: {
     [options: string]: any
   }
+}
+
+export type LastRunStoreConfig = {
+  backend: 'local'
+  path: string
+} | {
+  backend: 'gcs'
+  project: string
+  bucket: string
+  path: string
 }
 
 const defaultPath = './ci_analyzer.yaml'

@@ -14,26 +14,26 @@ export class GithubRunner implements Runner {
   client: GithubClient
   analyzer: GithubAnalyzer 
   config: GithubConfig | undefined
-  store: LastRunStore
+  store?: LastRunStore
   repoClient: GithubRepositoryClient
   constructor(public yamlConfig: YamlConfig) {
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
     this.client = new GithubClient(GITHUB_TOKEN)
     this.analyzer = new GithubAnalyzer()
-    this.store = new LastRunStore('github', this.config?.lastRunStore)
     this.repoClient = new GithubRepositoryClient(GITHUB_TOKEN, this.config?.vscBaseUrl?.github)
   }
 
   private setRepoLastRun(reponame: string, reports: WorkflowReport[]) {
     const lastRunReport = maxBy(reports, 'buildNumber')
     if (lastRunReport) {
-      this.store.setLastRun(reponame, lastRunReport.buildNumber)
+      this.store?.setLastRun(reponame, lastRunReport.buildNumber)
     }
   }
 
   async run () {
     if (!this.config) return
+    this.store = await LastRunStore.init(this.service, this.config?.lastRunStore)
 
     let reports: WorkflowReport[] = []
     for (const repo of this.config.repos) {
