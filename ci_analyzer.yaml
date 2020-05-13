@@ -16,7 +16,9 @@ github:
       dataset: ci_analyzer
       table: bigquery_exporter
       maxBadRecords: 0 # default: 0. If set > 0, skip bad record. This option should only be used for workaround.
-  lastRunStore: ./.ci_analyzer/last_run/github.json # default: ./.ci_analyzer/last_run/${service}.json
+  lastRunStore:
+    backend: local # default: local
+    path: .ci_analyzer/last_run/github.json # default: .ci_analyzer/last_run/${service}.json
 
 circleci:
   # baseUrl: https://circleci.com/api/v1.1 # default
@@ -28,6 +30,11 @@ circleci:
     # Currently only support github
     github: https://api.github.com #default
   exporter: *exporter # Can use yaml anchor
+  lastRunStore:
+    backend: gcs
+    project: common-dev-242504
+    bucket: kesin11-ci-analyzer
+    path: ci_analyzer/last_run/circleci.json # (Optional) default: ci_analyzer/last_run/${service}.json
 
 jenkins:
   baseUrl: http://localhost:8080 # Your jenkins url
@@ -37,4 +44,3 @@ jenkins:
     - build-pipeline
     - build-pipeline-nested
   exporter: *exporter
-  lastRunStore: ./.ci_analyzer/last_run/jenkins/localhost.json
