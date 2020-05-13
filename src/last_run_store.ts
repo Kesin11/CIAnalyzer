@@ -1,58 +1,63 @@
-import fs from 'fs'
-import path from 'path'
+import { Store } from "./store/store"
+import { LocalStore } from "./store/local_store"
+import { LastRunStoreConfig } from "./config/config"
+import { GcsStore } from "./store/gcs_store"
 
-type Store = {
+type LastRun = {
   [repo: string]: {
     lastRun: number
     updatedAt: Date
   }
 }
 
-const defaultDir = path.join('.ci_analyzer', 'last_run')
-
 export class LastRunStore {
-  filePath: string
   store: Store
+  lastRun: LastRun
 
-  constructor(service: string, filePath?: string) {
-    this.filePath = (filePath)
-      ? path.resolve(filePath)
-      : path.resolve(path.join(defaultDir, `${service}.json`))
-    this.store = this.readStore(this.filePath)
-  }
-
-  private readStore(filePath: string): Store {
-    if (fs.existsSync(filePath)) {
-      return JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8' }))
+  static async init(service: string, config?: LastRunStoreConfig) {
+    let store
+    if (!config) {
+      store = new LocalStore(service)
+    }
+    else if (config.backend === 'local') {
+      store = new LocalStore(service, config.path)
+    }
+    else if (config.backend === 'gcs') {
+      store = new GcsStore(service, config.project, config.bucket, config.path)
+    }
+    else {
+      throw `Error: Unknown LastRunStore.backend type '${(config as any).backend}'`
     }
 
-    return {}
+    const self = new LastRunStore(store)
+    await self.readStore()
+    return self
+  }
+
+  constructor(store: Store) {
+    this.store = store
+    this.lastRun = {}
+  }
+
+  private async readStore(): Promise<void> {
+    this.lastRun = await this.store.read()
   }
 
   getLastRun (repo: string): number | undefined {
-    return this.store[repo]?.lastRun
+    return this.lastRun[repo]?.lastRun
   }
 
-  setLastRun (repo: string, lastRun: number) {
+  setLastRun (repo: string, lastRun: number): void {
     const stored = this.getLastRun(repo) ?? 0
     if (stored >= lastRun) return
 
-    this.store[repo] = {
+    this.lastRun[repo] = {
       lastRun,
       updatedAt: new Date()
     }
   }
 
-  save () {
-    // Reload store file
-    const store = this.readStore(this.filePath)
-    const newStore = { ...store, ...this.store }
-
-    // Write store file
-    const outDir = path.dirname(this.filePath)
-    fs.mkdirSync(outDir, { recursive: true })
-    fs.writeFileSync(this.filePath, JSON.stringify(newStore, null, 2))
-
-    this.store = newStore
+  async save (): Promise<void> {
+    this.lastRun = await this.store.write(this.lastRun)
   }
 }

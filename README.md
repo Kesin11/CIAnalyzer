@@ -27,7 +27,7 @@ npm run build
 - CI_ANALYZER_DEBUG=1
 
 ## Setup BigQuery (Optional)
-If you want `bigquery_exporter`, you need to setup BigQuery before execute.
+If you want to use `bigquery_exporter`, you need to setup BigQuery before execute.
 
 You have to create dataset and table.  
 example:
@@ -41,6 +41,12 @@ bq mk
   ./bigquery_schema/workflow_report.json
 ```
 
+## Setup GCS bucket (Optional)
+It you want to use `lastRunStore.backend: gcs`, you need to create GCS bucket before execute.
+
+```bash
+gsutil mb gs://${BUCKET_NAME}
+```
 
 ## Edit config yaml
 Edit config yaml [ci_analyzer.yaml](./ci_analyzer.yaml) or copy to another one and editing it.
@@ -48,9 +54,7 @@ Edit config yaml [ci_analyzer.yaml](./ci_analyzer.yaml) or copy to another one a
 ## Execute using nodejs
 ```bash
 npm run start
-
-npx ci_analyzer
-
+# or
 node dist/index.js -c your_custom_config.yaml
 ```
 

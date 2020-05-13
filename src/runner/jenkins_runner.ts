@@ -13,11 +13,10 @@ export class JenkinsRunner implements Runner {
   client: JenkinsClient | undefined
   analyzer: JenkinsAnalyzer 
   config: JenkinsConfig | undefined
-  store: LastRunStore
+  store?: LastRunStore
   constructor(public yamlConfig: YamlConfig) {
     this.config = parseConfig(yamlConfig)
     this.analyzer = new JenkinsAnalyzer()
-    this.store = new LastRunStore('jenkins', this.config?.lastRunStore)
 
     if (!this.config) return
     const JENKINS_USER = process.env['JENKINS_USER']
@@ -28,13 +27,14 @@ export class JenkinsRunner implements Runner {
   private setRepoLastRun(jobname: string, reports: WorkflowReport[]) {
     const lastRunReport = maxBy(reports, 'buildNumber')
     if (lastRunReport) {
-      this.store.setLastRun(jobname, lastRunReport.buildNumber)
+      this.store?.setLastRun(jobname, lastRunReport.buildNumber)
     }
   }
 
   async run () {
     if (!this.config) return
     if (!this.client) return
+    this.store = await LastRunStore.init(this.service, this.config?.lastRunStore)
 
     const allJobs = await this.client.fetchJobs()
     const configJobs = this.config.jobs
