@@ -26,7 +26,7 @@ export class LastRunStore {
       store = new GcsStore(service, config.project, config.bucket, config.path)
     }
     else {
-      throw `Error: Unknown LastRunStore.backend type. ${config}`
+      throw `Error: Unknown LastRunStore.backend type '${(config as any).backend}'`
     }
 
     const self = new LastRunStore(store)
