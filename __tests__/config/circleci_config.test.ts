@@ -4,6 +4,7 @@ describe('parseConfig', () => {
   describe('repos', () => {
     it('vscType should github when value is repo string', () => {
       const config = {
+        configDir: __dirname,
         circleci: {
           repos: [ 'owner/repo' ]
         }
@@ -22,6 +23,7 @@ describe('parseConfig', () => {
 
     it('vscType should same as provides when value is object', () => {
       const config = {
+        configDir: __dirname,
         circleci: {
           repos: [{ name: 'owner/repo', vsc_type: 'bitbucket' }]
         }
@@ -40,6 +42,7 @@ describe('parseConfig', () => {
 
     it('vscType should github when object vsc_type is null', () => {
       const config = {
+        configDir: __dirname,
         circleci: {
           repos: [{ name: 'owner/repo' }]
         }
