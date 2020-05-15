@@ -65,7 +65,7 @@ export class GithubRunner implements Runner {
     }
 
     console.info(`Exporting ${this.service} workflow reports ...`)
-    const exporter = new CompositExporter(this.service, this.config.exporter)
+    const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
     await exporter.exportReports(reports)
 
     this.store.save()
