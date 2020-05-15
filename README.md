@@ -75,7 +75,7 @@ docker run \
   ci_analyzer:latest
 ```
 
-See sample [cron jenkins job script](./cron.jenkinsfile)
+See sample [cron jenkins job script](./sample/cron.jenkinsfile)
 
 ### mount
 - ci_analyzer.yaml: Your config file.
