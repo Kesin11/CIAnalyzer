@@ -9,16 +9,16 @@ export interface Exporter {
 
 export class CompositExporter implements Exporter {
   exporters: (Exporter | undefined)[]
-  constructor(service: string, config?: ExporterConfig) {
+  constructor(service: string, configDir: string, config?: ExporterConfig) {
     if (!config) {
-      this.exporters = [ new LocalExporter(service) ]
+      this.exporters = [ new LocalExporter(service, configDir) ]
       return
     }
 
     this.exporters = Object.entries(config).map(([exporter, options]) => {
       switch (exporter) {
         case 'local':
-          return new LocalExporter(service, { outDir: options.outDir, format: options.format })
+          return new LocalExporter(service, configDir, { outDir: options.outDir, format: options.format })
         case 'bigquery':
           return new BigqueryExporter(options.project, options.dataset, options.table, { maxBadRecords: options.maxBadRecords })
         default:

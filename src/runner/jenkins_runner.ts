@@ -12,9 +12,11 @@ export class JenkinsRunner implements Runner {
   service: string = 'jenkins'
   client: JenkinsClient | undefined
   analyzer: JenkinsAnalyzer 
+  configDir: string
   config: JenkinsConfig | undefined
   store?: LastRunStore
   constructor(public yamlConfig: YamlConfig) {
+    this.configDir = yamlConfig.configDir
     this.config = parseConfig(yamlConfig)
     this.analyzer = new JenkinsAnalyzer()
 
@@ -34,7 +36,7 @@ export class JenkinsRunner implements Runner {
   async run () {
     if (!this.config) return
     if (!this.client) return
-    this.store = await LastRunStore.init(this.service, this.config?.lastRunStore)
+    this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
 
     const allJobs = await this.client.fetchJobs()
     const configJobs = this.config.jobs
@@ -67,7 +69,7 @@ export class JenkinsRunner implements Runner {
     }
 
     console.info(`Exporting ${this.service} workflow reports ...`)
-    const exporter = new CompositExporter(this.service, this.config.exporter)
+    const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
     await exporter.exportReports(reports)
 
     this.store.save()

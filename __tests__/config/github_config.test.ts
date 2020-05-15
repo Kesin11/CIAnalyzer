@@ -2,6 +2,7 @@ import { parseConfig } from '../../src/config/github_config'
 
 describe('parseConfig', () => {
   const config = {
+    configDir: __dirname,
     github: {
       repos: [
         'owner/repo'

@@ -13,12 +13,14 @@ export class LocalExporter implements Exporter {
   formatter: (report: WorkflowReport[]) => string
   constructor(
     service: string,
+    configDir: string,
     options?: { outDir?: string, format?: Format }
   ) {
     this.service = service
-    this.outDir = (options?.outDir)
-      ? path.resolve(options.outDir)
-      : path.resolve(defaultOutDir)
+    const _outDir = options?.outDir ?? defaultOutDir
+    this.outDir = (path.isAbsolute(_outDir))
+      ? _outDir
+      : path.resolve(configDir, _outDir)
     const format = options?.format ?? 'json'
     this.formatter = (format === 'json') ? this.formatJson : this.formatJsonLines
   }

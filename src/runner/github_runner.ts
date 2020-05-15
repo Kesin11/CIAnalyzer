@@ -13,11 +13,13 @@ export class GithubRunner implements Runner {
   service: string = 'github'
   client: GithubClient
   analyzer: GithubAnalyzer 
+  configDir: string
   config: GithubConfig | undefined
   store?: LastRunStore
   repoClient: GithubRepositoryClient
   constructor(public yamlConfig: YamlConfig) {
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
+    this.configDir = yamlConfig.configDir
     this.config = parseConfig(yamlConfig)
     this.client = new GithubClient(GITHUB_TOKEN)
     this.analyzer = new GithubAnalyzer()
@@ -33,7 +35,7 @@ export class GithubRunner implements Runner {
 
   async run () {
     if (!this.config) return
-    this.store = await LastRunStore.init(this.service, this.config?.lastRunStore)
+    this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
 
     let reports: WorkflowReport[] = []
     for (const repo of this.config.repos) {
@@ -63,7 +65,7 @@ export class GithubRunner implements Runner {
     }
 
     console.info(`Exporting ${this.service} workflow reports ...`)
-    const exporter = new CompositExporter(this.service, this.config.exporter)
+    const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
     await exporter.exportReports(reports)
 
     this.store.save()

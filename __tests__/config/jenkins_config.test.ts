@@ -4,6 +4,7 @@ describe('parseConfig', () => {
   describe('repos', () => {
     it('should have valid job names', () => {
       const config = {
+        configDir: __dirname,
         jenkins: {
           baseUrl: 'http://localhost:8080',
           jobs: [ 'sample-job' ]
