@@ -6,11 +6,12 @@ const defaultDir = path.join('.ci_analyzer', 'last_run')
 
 export class LocalStore implements Store {
   filePath: string
-  constructor(service: string, filePath?: string) {
+  constructor(service: string, configDir: string, filePath?: string) {
 
-  this.filePath = (filePath)
-    ? path.resolve(filePath)
-    : path.resolve(path.join(defaultDir, `${service}.json`))
+    const _filePath = filePath ?? path.join(defaultDir, `${service}.json`)
+    this.filePath = (path.isAbsolute(_filePath))
+      ? _filePath
+      : path.resolve(configDir, _filePath)
   }
 
   async read<T extends AnyObject>(): Promise<T> {

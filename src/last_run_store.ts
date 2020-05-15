@@ -14,13 +14,13 @@ export class LastRunStore {
   store: Store
   lastRun: LastRun
 
-  static async init(service: string, config?: LastRunStoreConfig) {
+  static async init(service: string, configDir: string, config?: LastRunStoreConfig) {
     let store
     if (!config) {
-      store = new LocalStore(service)
+      store = new LocalStore(service, configDir)
     }
     else if (config.backend === 'local') {
-      store = new LocalStore(service, config.path)
+      store = new LocalStore(service, configDir, config.path)
     }
     else if (config.backend === 'gcs') {
       store = new GcsStore(service, config.project, config.bucket, config.path)

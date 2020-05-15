@@ -15,7 +15,8 @@ describe('LocalStore', () => {
       os.tmpdir(),
       `${createRandomStr()}.json`
     )
-    localStore = new LocalStore('test', storePath)
+    const configDir = path.dirname(storePath)
+    localStore = new LocalStore('test', configDir, storePath)
   })
   afterEach(async () => {
     try {
