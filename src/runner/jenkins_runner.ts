@@ -48,8 +48,8 @@ export class JenkinsRunner implements Runner {
       const jobReports: WorkflowReport[] = []
 
       try {
-        const fromRunId = this.store.getLastRun(job.name)
-        const runs = await this.client.fetchJobRuns(job, fromRunId)
+        const lastRunId = this.store.getLastRun(job.name)
+        const runs = await this.client.fetchJobRuns(job, lastRunId)
 
         for (const run of runs) {
           const build = await this.client.fetchBuild(job, Number(run.id))

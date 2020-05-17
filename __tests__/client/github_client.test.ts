@@ -24,29 +24,29 @@ describe('GithubClient', () => {
     })
 
     it('when lastRunId is undef and has not in_pregress runs', async () => {
-      const fromId = undefined
-      const actual = client.filterWorkflowRuns(allCompletedRuns, fromId)
+      const lastRunId = undefined
+      const actual = client.filterWorkflowRuns(allCompletedRuns, lastRunId)
 
       expect(actual.map((run) => run.run_number)).toEqual([2,3,4,5,6])
     })
 
     it('when defined lastRunId and has not in_pregress runs', async () => {
-      const fromId = 2
-      const actual = client.filterWorkflowRuns(allCompletedRuns, fromId)
+      const lastRunId = 2
+      const actual = client.filterWorkflowRuns(allCompletedRuns, lastRunId)
 
       expect(actual.map((run) => run.run_number)).toEqual([3,4,5,6])
     })
 
     it('when lastRunId is undef and has in_pregress runs', async () => {
-      const fromId = undefined
-      const actual = client.filterWorkflowRuns(hasInprogressRuns, fromId)
+      const lastRunId = undefined
+      const actual = client.filterWorkflowRuns(hasInprogressRuns, lastRunId)
 
       expect(actual.map((run) => run.run_number)).toEqual([2,3,4])
     })
 
     it('when defined lastRunId and has in_pregress runs', async () => {
-      const fromId = 2
-      const actual = client.filterWorkflowRuns(hasInprogressRuns, fromId)
+      const lastRunId = 2
+      const actual = client.filterWorkflowRuns(hasInprogressRuns, lastRunId)
 
       expect(actual.map((run) => run.run_number)).toEqual([3,4])
     })

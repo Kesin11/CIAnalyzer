@@ -45,8 +45,8 @@ export class CircleciRunner implements Runner {
       const repoReports: WorkflowReport[] = []
 
       try {
-        const fromRunId = this.store.getLastRun(repo.fullname)
-        const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, repo.vscType, fromRunId)
+        const lastRunId = this.store.getLastRun(repo.fullname)
+        const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, repo.vscType, lastRunId)
         const tagMap = await this.repoClient.fetchRepositoryTagMap(repo.owner, repo.repo)
 
         for (const workflowRun of workflowRuns) {

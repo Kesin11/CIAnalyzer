@@ -166,7 +166,7 @@ export class JenkinsClient {
     })
   }
 
-  async fetchJobRuns(job: JobResponse, fromRunId?: number) {
+  async fetchJobRuns(job: JobResponse, lastRunId?: number) {
     const res = await this.axios.get(`job/${job.name}/wfapi/runs`, {
       params: {
         fullStages: "true"
@@ -174,8 +174,8 @@ export class JenkinsClient {
     })
 
     const runs = res.data as WfapiRunResponse[]
-    return (fromRunId)
-      ? runs.filter((run) => Number(run.id) > fromRunId)
+    return (lastRunId)
+      ? runs.filter((run) => Number(run.id) > lastRunId)
       : runs
   }
 

@@ -20,7 +20,7 @@ export class GithubClient {
   }
 
   // see: https://developer.github.com/v3/actions/workflow-runs/#list-repository-workflow-runs
-  async fetchWorkflowRuns(owner: string, repo: string, fromRunId?: number) {
+  async fetchWorkflowRuns(owner: string, repo: string, lastRunId?: number) {
     const workflows = await this.fetchWorkflows(owner, repo)
     const workflowIdMap = new Map((
       workflows.map((workflow) => [String(workflow.id), workflow.name])
@@ -33,7 +33,7 @@ export class GithubClient {
       // page: 1, // order desc
     })
 
-    const filterdWorkflowRuns = this.filterWorkflowRuns(runs.data.workflow_runs, fromRunId)
+    const filterdWorkflowRuns = this.filterWorkflowRuns(runs.data.workflow_runs, lastRunId)
 
     // Attach workflow name
     return filterdWorkflowRuns.map((run) => {
@@ -45,14 +45,14 @@ export class GithubClient {
     })
   }
 
-  filterWorkflowRuns (runs: WorkflowRunsItem[], fromRunId?: number): WorkflowRunsItem[] {
+  filterWorkflowRuns (runs: WorkflowRunsItem[], lastRunId?: number): WorkflowRunsItem[] {
     const lastInprogress = maxBy(
       runs.filter((run) => run.status as RunStatus === 'in_progress'),
       (run) => run.run_number
     )
-    // Filter to: fromRunId < Id < lastInprogressId
-    runs = (fromRunId)
-      ? runs.filter((run) => run.run_number > fromRunId)
+    // Filter to: lastRunId < Id < lastInprogressId
+    runs = (lastRunId)
+      ? runs.filter((run) => run.run_number > lastRunId)
       : runs
     runs = (lastInprogress)
       ? runs.filter((run) => run.run_number < lastInprogress.run_number)

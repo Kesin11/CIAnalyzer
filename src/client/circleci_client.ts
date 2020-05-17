@@ -100,7 +100,7 @@ export class CircleciClient {
     }
   }
 
-  async fetchWorkflowRuns(owner: string, repo: string, vcsType: string, fromRunId?: number) {
+  async fetchWorkflowRuns(owner: string, repo: string, vcsType: string, lastRunId?: number) {
     // https://circleci.com/api/v1.1/project/:vcs-type/:username/:project?circle-token=:token&limit=20&offset=5&filter=completed
     const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}`, {
       params: {
@@ -114,8 +114,8 @@ export class CircleciClient {
       }
     })
     let recentBuilds = res.data as RecentBuildResponse[]
-    recentBuilds = (fromRunId)
-      ? recentBuilds.filter((build) => build.build_num > fromRunId)
+    recentBuilds = (lastRunId)
+      ? recentBuilds.filter((build) => build.build_num > lastRunId)
       : recentBuilds
 
     // Add dummy workflow data if job is not belong to workflow
