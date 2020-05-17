@@ -6,9 +6,7 @@
     "type": "git",
     "url": "git+https://github.com/Kesin11/CIAnalyzer.git"
   },
-  "keywords": [
-    "CI"
-  ],
+  "keywords": ["CI"],
   "author": "kesin1202000@gmail.com",
   "license": "MIT",
   "bugs": {
@@ -27,7 +25,9 @@
     "test": "jest",
     "test:ci": "jest --coverage",
     "test:watch": "jest --watch",
-    "coverage": "codecov"
+    "coverage": "codecov",
+    "release:prepare": "shipjs prepare",
+    "release:trigger": "shipjs trigger"
   },
   "dependencies": {
     "@google-cloud/bigquery": "4.7.0",
@@ -48,6 +48,7 @@
     "codecov": "3.6.5",
     "jest": "26.0.1",
     "rimraf": "3.0.2",
+    "shipjs": "0.19.0",
     "ts-jest": "26.0.0",
     "typescript": "3.9.2"
   }
