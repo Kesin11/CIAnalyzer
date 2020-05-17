@@ -1,6 +1,13 @@
-import { Octokit } from "@octokit/rest";
+import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
+import { maxBy } from "lodash";
+
+// Oktokit document: https://octokit.github.io/rest.js/v17#actions
 
 const DEBUG_PER_PAGE = 10
+
+type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listRepoWorkflowRuns']['response']['data']['workflow_runs'][0]
+// see: https://developer.github.com/v3/checks/runs/#create-a-check-run
+type RunStatus = 'queued' | 'in_progress' | 'completed'
 
 export class GithubClient {
   private octokit: Octokit
@@ -22,23 +29,35 @@ export class GithubClient {
     const runs = await this.octokit.actions.listRepoWorkflowRuns({
       owner,
       repo,
-      status: "completed",
       per_page: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : 100, // API default is 100
       // page: 1, // order desc
     })
 
+    const filterdWorkflowRuns = this.filterWorkflowRuns(runs.data.workflow_runs, fromRunId)
+
     // Attach workflow name
-    const workflowRuns = runs.data.workflow_runs.map((run) => {
+    return filterdWorkflowRuns.map((run) => {
       const workflowId = run.workflow_url.split('/').pop()! // parse workflow_url
       return {
         name: workflowIdMap.get(workflowId)!,
         run: run
       }
     })
+  }
 
-    return (fromRunId)
-      ? workflowRuns.filter((workflowRun) => workflowRun.run.run_number > fromRunId)
-      : workflowRuns
+  filterWorkflowRuns (runs: WorkflowRunsItem[], fromRunId?: number): WorkflowRunsItem[] {
+    const lastInprogress = maxBy(
+      runs.filter((run) => run.status as RunStatus === 'in_progress'),
+      (run) => run.run_number
+    )
+    // Filter to: fromRunId < Id < lastInprogressId
+    runs = (fromRunId)
+      ? runs.filter((run) => run.run_number > fromRunId)
+      : runs
+    runs = (lastInprogress)
+      ? runs.filter((run) => run.run_number < lastInprogress.run_number)
+      : runs
+    return runs
   }
 
   // see: https://developer.github.com/v3/actions/workflows/#list-repository-workflows
