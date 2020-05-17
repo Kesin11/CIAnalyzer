@@ -31,24 +31,24 @@
   },
   "dependencies": {
     "@google-cloud/bigquery": "4.7.0",
-    "@google-cloud/storage": "4.7.0",
-    "@octokit/rest": "17.6.0",
+    "@google-cloud/storage": "5.0.0",
+    "@octokit/rest": "17.9.0",
     "axios": "0.19.2",
-    "dayjs": "1.8.26",
+    "dayjs": "1.8.27",
     "js-yaml": "3.13.1",
     "lodash": "4.17.15",
     "yargs": "15.3.1"
   },
   "devDependencies": {
-    "@types/jest": "25.2.1",
-    "@types/js-yaml": "3.12.3",
-    "@types/lodash": "4.14.150",
-    "@types/node": "13.13.4",
-    "@types/yargs": "15.0.4",
+    "@types/jest": "25.2.2",
+    "@types/js-yaml": "3.12.4",
+    "@types/lodash": "4.14.151",
+    "@types/node": "14.0.1",
+    "@types/yargs": "15.0.5",
     "codecov": "3.6.5",
-    "jest": "25.5.0",
+    "jest": "26.0.1",
     "rimraf": "3.0.2",
-    "ts-jest": "25.4.0",
-    "typescript": "3.8.3"
+    "ts-jest": "26.0.0",
+    "typescript": "3.9.2"
   }
 }
