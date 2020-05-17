@@ -6,7 +6,9 @@
     "type": "git",
     "url": "git+https://github.com/Kesin11/CIAnalyzer.git"
   },
-  "keywords": ["CI"],
+  "keywords": [
+    "CI"
+  ],
   "author": "kesin1202000@gmail.com",
   "license": "MIT",
   "bugs": {
