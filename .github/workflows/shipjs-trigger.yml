@@ -7,17 +7,14 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    container:
-      image: "node:lts"
     steps:
       - uses: actions/checkout@v2
         with:
           ref: master
+      - uses: actions/setup-node@v1
+        with:
+          registry-url: "https://registry.npmjs.org"
       - run: npm ci
-          
-      # - uses: actions/setup-node@v1
-      #   with:
-      #     registry-url: "https://registry.npmjs.org"
       # - run: |
       #     if [ -f "yarn.lock" ]; then
       #       yarn install
