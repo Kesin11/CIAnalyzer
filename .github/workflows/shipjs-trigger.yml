@@ -7,10 +7,13 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    container:
+      image: "node:lts"
     steps:
       - uses: actions/checkout@v2
         with:
           ref: master
+      - run: npm ci
           
       # - uses: actions/setup-node@v1
       #   with:
