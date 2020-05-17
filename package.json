@@ -2,6 +2,19 @@
   "name": "ci_analyzer",
   "version": "0.1.0",
   "description": "Export multiple CI service build data for analyzing.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kesin11/CIAnalyzer.git"
+  },
+  "keywords": [
+    "CI"
+  ],
+  "author": "kesin1202000@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Kesin11/CIAnalyzer/issues"
+  },
+  "homepage": "https://github.com/Kesin11/CIAnalyzer#readme",
   "bin": {
     "ci_analyzer": "dist/index.js"
   },
@@ -16,19 +29,16 @@
     "test:watch": "jest --watch",
     "coverage": "codecov"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Kesin11/CIAnalyzer.git"
+  "dependencies": {
+    "@google-cloud/bigquery": "4.7.0",
+    "@google-cloud/storage": "4.7.0",
+    "@octokit/rest": "17.6.0",
+    "axios": "0.19.2",
+    "dayjs": "1.8.26",
+    "js-yaml": "3.13.1",
+    "lodash": "4.17.15",
+    "yargs": "15.3.1"
   },
-  "keywords": [
-    "CI"
-  ],
-  "author": "kesin1202000@gmail.com",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Kesin11/CIAnalyzer/issues"
-  },
-  "homepage": "https://github.com/Kesin11/CIAnalyzer#readme",
   "devDependencies": {
     "@types/jest": "25.2.1",
     "@types/js-yaml": "3.12.3",
@@ -40,15 +50,5 @@
     "rimraf": "3.0.2",
     "ts-jest": "25.4.0",
     "typescript": "3.8.3"
-  },
-  "dependencies": {
-    "@google-cloud/bigquery": "4.7.0",
-    "@google-cloud/storage": "4.7.0",
-    "@octokit/rest": "17.6.0",
-    "axios": "0.19.2",
-    "dayjs": "1.8.26",
-    "js-yaml": "3.13.1",
-    "lodash": "4.17.15",
-    "yargs": "15.3.1"
   }
 }
