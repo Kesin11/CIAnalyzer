@@ -20,6 +20,7 @@
     "start": "node dist/index.js",
     "clean": "rimraf dist",
     "build": "tsc -b",
+    "build:clean": "npm run clean && npm run build",
     "build:watch": "tsc -b -w",
     "lint": "echo \"We have not lint yet\"",
     "test": "jest",
