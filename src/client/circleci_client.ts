@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
-import { groupBy } from 'lodash'
+import { groupBy, maxBy, max } from 'lodash'
 import { axiosRequestLogger } from './client'
 
 const DEBUG_PER_PAGE = 10
@@ -80,6 +80,7 @@ export type WorkflowRun = {
   vcs_type: string,
   build_nums: number[]
   lifecycles: RecentBuildResponse['lifecycle'][]
+  last_build_num: number
 }
 
 export class CircleciClient {
@@ -100,7 +101,7 @@ export class CircleciClient {
     }
   }
 
-  async fetchWorkflowRuns(owner: string, repo: string, vcsType: string, fromRunId?: number) {
+  async fetchWorkflowRuns(owner: string, repo: string, vcsType: string, lastRunId?: number) {
     // https://circleci.com/api/v1.1/project/:vcs-type/:username/:project?circle-token=:token&limit=20&offset=5&filter=completed
     const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}`, {
       params: {
@@ -114,8 +115,8 @@ export class CircleciClient {
       }
     })
     let recentBuilds = res.data as RecentBuildResponse[]
-    recentBuilds = (fromRunId)
-      ? recentBuilds.filter((build) => build.build_num > fromRunId)
+    recentBuilds = (lastRunId)
+      ? recentBuilds.filter((build) => build.build_num > lastRunId)
       : recentBuilds
 
     // Add dummy workflow data if job is not belong to workflow
@@ -138,20 +139,35 @@ export class CircleciClient {
     }), 'workflow_id')
     const workflowRuns: WorkflowRun[] = Object.values(groupedBuilds).map((builds) => {
       const build = builds[0]
+      const build_nums = builds.map((build) => build.build_num)
       return {
         workflow_id: build.workflow_id,
         workflow_name: build.workflow_name,
         reponame: build.reponame,
         username: build.username,
         vcs_type: build.vcs_type,
-        build_nums: builds.map((build) => build.build_num),
-        lifecycles: builds.map((build) => build.lifecycle)
+        build_nums,
+        lifecycles: builds.map((build) => build.lifecycle),
+        last_build_num: max(build_nums)!,
       }
-    }).filter((run) => { // Filter workflow which has build that is not finished yet.
-      return run.lifecycles.every((lifecycle) => lifecycle === 'finished')
     })
 
-    return workflowRuns
+    return this.filterWorkflowRuns(workflowRuns)
+  }
+
+  filterWorkflowRuns (runs: WorkflowRun[]): WorkflowRun[] {
+    const hasNotFinishedRuns = runs.filter((run) => {
+      return !run.lifecycles.every((lifecycle) => lifecycle === 'finished')
+    })
+    const lastInprogress = maxBy(
+      hasNotFinishedRuns,
+      (run) => run.last_build_num,
+    )
+    // Filter to: Id < lastInprogressId
+    runs = (lastInprogress)
+      ? runs.filter((run) => run.last_build_num < lastInprogress.last_build_num)
+      : runs
+    return runs
   }
 
   async fetchJobs(owner: string, repo: string, vcsType: string, runId: number) {
