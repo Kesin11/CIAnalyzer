@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import { axiosRequestLogger } from './client'
+import { maxBy } from 'lodash'
 
 // ref: https://github.com/jenkinsci/pipeline-stage-view-plugin/blob/master/rest-api/src/main/java/com/cloudbees/workflow/rest/external/StatusExt.java
 export type JenkinsStatus = 'SUCCESS' | 'FAILED' | 'ABORTED' | 'NOT_EXECUTED' | 'IN_PROGRESS' | 'PAUSED_PENDING_INPUT' | 'UNSTABLE'
@@ -174,9 +175,22 @@ export class JenkinsClient {
     })
 
     const runs = res.data as WfapiRunResponse[]
-    return (lastRunId)
+    return this.filterJobRuns(runs, lastRunId)
+  }
+
+  filterJobRuns (runs: WfapiRunResponse[], lastRunId?: number): WfapiRunResponse[] {
+    const lastInprogress = maxBy(
+      runs.filter((run) => run.status === 'IN_PROGRESS' || run.status === 'NOT_EXECUTED' ),
+      (run) => Number(run.id)
+    )
+    // Filter to: lastRunId < Id < lastInprogressId
+    runs = (lastRunId)
       ? runs.filter((run) => Number(run.id) > lastRunId)
       : runs
+    runs = (lastInprogress)
+      ? runs.filter((run) => Number(run.id) < Number(lastInprogress.id))
+      : runs
+    return runs
   }
 
   async fetchJobRun(job: JobResponse, runId: number) {
