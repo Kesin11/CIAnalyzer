@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
-import { groupBy, maxBy, max } from 'lodash'
+import { groupBy, max, minBy } from 'lodash'
 import { axiosRequestLogger } from './client'
 
 const DEBUG_PER_PAGE = 10
@@ -155,17 +155,17 @@ export class CircleciClient {
     return this.filterWorkflowRuns(workflowRuns)
   }
 
+  // Filter to: Id < firstInprogressId
   filterWorkflowRuns (runs: WorkflowRun[]): WorkflowRun[] {
     const hasNotFinishedRuns = runs.filter((run) => {
       return !run.lifecycles.every((lifecycle) => lifecycle === 'finished')
     })
-    const lastInprogress = maxBy(
+    const firstInprogress = minBy(
       hasNotFinishedRuns,
       (run) => run.last_build_num,
     )
-    // Filter to: Id < lastInprogressId
-    runs = (lastInprogress)
-      ? runs.filter((run) => run.last_build_num < lastInprogress.last_build_num)
+    runs = (firstInprogress)
+      ? runs.filter((run) => run.last_build_num < firstInprogress.last_build_num)
       : runs
     return runs
   }
