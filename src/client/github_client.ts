@@ -1,5 +1,5 @@
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
-import { maxBy } from "lodash";
+import { minBy } from "lodash";
 
 // Oktokit document: https://octokit.github.io/rest.js/v17#actions
 
@@ -45,17 +45,17 @@ export class GithubClient {
     })
   }
 
+  // Filter to: lastRunId < Id < firstInprogressId
   filterWorkflowRuns (runs: WorkflowRunsItem[], lastRunId?: number): WorkflowRunsItem[] {
-    const lastInprogress = maxBy(
-      runs.filter((run) => run.status as RunStatus === 'in_progress'),
-      (run) => run.run_number
-    )
-    // Filter to: lastRunId < Id < lastInprogressId
     runs = (lastRunId)
       ? runs.filter((run) => run.run_number > lastRunId)
       : runs
-    runs = (lastInprogress)
-      ? runs.filter((run) => run.run_number < lastInprogress.run_number)
+    const firstInprogress = minBy(
+      runs.filter((run) => run.status as RunStatus === 'in_progress'),
+      (run) => run.run_number
+    )
+    runs = (firstInprogress)
+      ? runs.filter((run) => run.run_number < firstInprogress.run_number)
       : runs
     return runs
   }

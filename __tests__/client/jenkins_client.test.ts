@@ -40,16 +40,8 @@ describe('JenkinsClient', () => {
     const hasInprogressRuns = [
       { id: '2', status: 'SUCCESS' },
       { id: '3', status: 'FAILED' },
-      { id: '4', status: 'ABORTED' },
+      { id: '4', status: 'IN_PROGRESS' },
       { id: '5', status: 'IN_PROGRESS' },
-      { id: '6', status: 'SUCCESS' },
-    ] as any
-
-    const hasNotexecutedRuns = [
-      { id: '2', status: 'SUCCESS' },
-      { id: '3', status: 'FAILED' },
-      { id: '4', status: 'ABORTED' },
-      { id: '5', status: 'NOT_EXECUTED' },
       { id: '6', status: 'SUCCESS' },
     ] as any
 
@@ -76,14 +68,14 @@ describe('JenkinsClient', () => {
       const lastRunId = undefined
       const actual = client.filterJobRuns(hasInprogressRuns, lastRunId)
 
-      expect(actual.map((run) => run.id)).toEqual(['2','3','4'])
+      expect(actual.map((run) => run.id)).toEqual(['2','3'])
     })
 
     it('when defined lastRunId and has in_pregress runs', async () => {
       const lastRunId = 2
       const actual = client.filterJobRuns(hasInprogressRuns, lastRunId)
 
-      expect(actual.map((run) => run.id)).toEqual(['3','4'])
+      expect(actual.map((run) => run.id)).toEqual(['3'])
     })
   })
 })

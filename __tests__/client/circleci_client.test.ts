@@ -9,7 +9,8 @@ const allCompletedRuns = [
 const hasInprogressRuns = [
   { build_nums: [2,3], last_build_num: 3, lifecycles: ['finished','finished'] },
   { build_nums: [4,5], last_build_num: 5, lifecycles: ['finished','running'] },
-  { build_nums: [6,7], last_build_num: 7, lifecycles: ['finished','finished'] },
+  { build_nums: [6,7], last_build_num: 7, lifecycles: ['running','queued'] },
+  { build_nums: [8,9], last_build_num: 9, lifecycles: ['finished','finished'] },
 ] as any
 
 describe('CircleciClient', () => {
