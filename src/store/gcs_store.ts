@@ -29,15 +29,11 @@ export class GcsStore implements Store {
     const res = await this.file.exists()
     if (res[0]) {
       const data = await this.file.download()
-      if (process.env['CI_ANALYZER_DEBUG']) {
-        console.debug(`(GcsStore) ${this.gcsPath} was successfully loaded.`)
-      }
+      console.info(`(GcsStore) ${this.gcsPath} was successfully loaded.`)
       return JSON.parse(data.toString())
     }
 
-    if (process.env['CI_ANALYZER_DEBUG']) {
-      console.debug(`(GcsStore) ${this.gcsPath} was not found, empty object is used instead.`)
-    }
+    console.info(`(GcsStore) ${this.gcsPath} was not found, empty object is used instead.`)
     return {} as T
   }
 

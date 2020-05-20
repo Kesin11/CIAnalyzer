@@ -17,9 +17,11 @@ export class LocalStore implements Store {
   async read<T extends AnyObject>(): Promise<T> {
     try {
       await fs.promises.access(this.filePath)
+      console.info(`(LocalStore) ${this.filePath} was successfully loaded.`)
       return JSON.parse(await fs.promises.readFile(this.filePath, { encoding: 'utf8' }))
     }
     catch (error) {
+      console.info(`(LocalStore) ${this.filePath} was not found, empty object is used instead.`)
       return {} as T
     }
   }
