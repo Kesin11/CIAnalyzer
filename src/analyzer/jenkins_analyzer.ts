@@ -22,6 +22,7 @@ type WorkflowReport = {
   workflowDurationSec: number // = durationMillis / 1000
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
+  parameters: JobParameter[]
 }
 
 type JobReport = {
@@ -44,6 +45,11 @@ type StepReport = {
   startedAt: Date, // Date(startTimeMillis)
   completedAt: Date, // Date(startTimeMillis + durationMillis)
   stepDurationSec: number // durationMillis / 1000
+}
+
+type JobParameter = {
+  name: string
+  value: string
 }
 
 export class JenkinsAnalyzer implements Analyzer {
@@ -102,6 +108,7 @@ export class JenkinsAnalyzer implements Analyzer {
       workflowDurationSec: run.durationMillis / 1000,
       sumJobsDurationSec: secRound(sumBy(jobReports, 'sumStepsDurationSec')),
       successCount: (status === 'SUCCESS') ? 1 : 0,
+      parameters: this.detectParameters(build),
     }
   }
 
@@ -183,14 +190,14 @@ export class JenkinsAnalyzer implements Analyzer {
     }
   }
 
-  detectParameters(build: BuildResponse): {[key: string]: string} {
+  detectParameters(build: BuildResponse): JobParameter[] {
     const action = build.actions.find((action) => {
       return action._class === "hudson.model.ParametersAction"
     }) as ParametersAction | undefined
-    if (!action) return {}
+    if (!action) return []
 
-    return Object.fromEntries(
-      action.parameters.map((obj) => [obj.name, obj.value])
-    )
+    return action.parameters.map((param) => {
+      return { name: param.name, value: String(param.value ?? '') }
+    })
   }
 }

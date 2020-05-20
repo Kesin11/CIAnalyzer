@@ -131,9 +131,9 @@ export type ParametersAction = {
   _class: "hudson.model.ParametersAction"
   parameters:
     {
-      _class: "hudson.model.StringParameterValue"
+      _class: string // ex: "hudson.model.StringParameterValue"
       name: string // "TIMEOUT",
-      value: string // "10"
+      value?: string | number | boolean // "10"
     }[]
 }
 
