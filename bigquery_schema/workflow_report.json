@@ -179,5 +179,22 @@
     "mode": "REPEATED", 
     "name": "jobs", 
     "type": "RECORD"
+  },
+  {
+    "fields": [
+      {
+        "mode": "NULLABLE", 
+        "name": "name", 
+        "type": "STRING"
+      }, 
+      {
+        "mode": "NULLABLE", 
+        "name": "value", 
+        "type": "STRING"
+      } 
+    ], 
+    "mode": "REPEATED", 
+    "name": "parameters", 
+    "type": "RECORD"
   }
 ]
