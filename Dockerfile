@@ -10,7 +10,7 @@ RUN npm run clean && npm run build
 
 # Setup production stage
 FROM node:12-alpine
-WORKDIR /app
+WORKDIR /ci_analyzer
 
 COPY package*.json ./
 RUN npm install --production
@@ -18,4 +18,8 @@ RUN npm install --production
 COPY . .
 COPY --from=ts-builder /build/dist ./dist
 
-ENTRYPOINT [ "npm", "run", "start", "--" ]
+# Resolve nodejs pid=1 problem
+RUN apk add --no-cache tini
+ENTRYPOINT [ "/sbin/tini", "--", "node", "/ci_analyzer/dist/index.js" ]
+
+WORKDIR /app
