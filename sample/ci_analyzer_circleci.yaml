@@ -1,0 +1,18 @@
+# Export to BigQuery and Local
+# Save LastRun to Local file
+circleci:
+  repos:
+    - name: Kesin11/CIAnalyzer
+  vscBaseUrl:
+    github: https://api.github.com
+  exporter:
+    local:
+      outDir: output
+      format: json
+    bigquery:
+      project: common-dev-242504
+      dataset: ci_analyzer
+      table: bigquery_exporter
+  lastRunStore:
+    backend: local
+    path: ./.ci_analyzer/circleci.json
