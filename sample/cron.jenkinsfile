@@ -16,13 +16,13 @@ pipeline {
           docker run \
             --mount type=bind,src=${WORKSPACE},dst=/app/ \
             --mount type=bind,src=${SERVICE_ACCOUNT},dst=/service_account.json \
-            --mount type=bind,src=${CONFIG_FILE_PATH},dst=/ci_analyzer.yaml \
+            --mount type=bind,src=${CONFIG_FILE_PATH},dst=/app/ci_analyzer.yaml \
             -e GITHUB_TOKEN=${GITHUB_TOKEN} \
             -e CIRCLECI_TOKEN=${CIRCLECI_TOKEN} \
             -e JENKINS_USER=${JENKINS_USR} \
             -e JENKINS_TOKEN=${JENKINS_PSW} \
             -e GOOGLE_APPLICATION_CREDENTIALS=/service_account.json \
-            kesin/ci_analyzer:latest -c /ci_analyzer.yaml
+            kesin/ci_analyzer:latest
         """
       }
     }
