@@ -17,19 +17,19 @@ jobs:
             - cache-${CACHE_VERSION}-
       - run:
           name: Run CIAnalyzer
-          command: node /app/dist/index.js -c ./ci_analyzer.yaml
+          command: ci_analyzer -c sample/ci_analyzer_circleci.yaml
           environment:
             GIIHUB_TOKEN: $GITHUB_TOKEN
             CIRCLECI_TOKEN: $CIRCLECI_TOKEN
             GOOGLE_APPLICATION_CREDENTIALS: service_account.json
       - store_artifacts:
           name: Store local_exporter output files
-          path: output
+          path: sample/output
       - save_cache:
           name: Save last run store files
           key: cache-${CACHE_VERSION}-{{ .BuildNum }}
           paths:
-          - .ci_analyzer
+          - sample/.ci_analyzer
 workflows:
   version: 2
   cron:

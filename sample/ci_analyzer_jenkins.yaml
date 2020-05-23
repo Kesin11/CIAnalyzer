@@ -1,0 +1,19 @@
+# Export to BigQuery and Local
+# Save LastRun to GoogleCloudStorage(GCS)
+jenkins:
+  baseUrl: http://192.168.0.1:8080 # Your jenkins url
+  jobs:
+    - ci_analyzer
+  exporter:
+    local:
+      outDir: ./output
+      format: json
+    bigquery:
+      project: common-dev-242504
+      dataset: ci_analyzer
+      table: bigquery_exporter
+  lastRunStore:
+    backend: gcs
+    project: common-dev-242504
+    bucket: kesin11-ci-analyzer
+    path: last_run/sample/jenkins.json
