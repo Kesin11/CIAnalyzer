@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import yargs from 'yargs'
 import { loadConfig } from './config/config'
 import { CompositRunner } from './runner/runner'
