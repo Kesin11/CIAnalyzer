@@ -1,3 +1,13 @@
+# [1.0.0](https://github.com/Kesin11/CIAnalyzer/compare/v0.2.0...v1.0.0) (2020-05-24)
+
+
+### Features
+
+* Add 'ci_analyzer' command alias it can use inside docker ([b967e34](https://github.com/Kesin11/CIAnalyzer/commit/b967e343916cc1a7406adc97f7d945fa7be7875f))
+* Change dir structure inside docker for improve mouting volume ([69c4cc9](https://github.com/Kesin11/CIAnalyzer/commit/69c4cc936d2ba4532c14d180640c42800ccd1321))
+
+
+
 # [0.2.0](https://github.com/Kesin11/CIAnalyzer/compare/v0.1.2...v0.2.0) (2020-05-21)
 
 
