@@ -1,5 +1,7 @@
 # [1.0.0](https://github.com/Kesin11/CIAnalyzer/compare/v0.2.0...v1.0.0) (2020-05-24)
 
+CIAnalyzer reached version 1.0.0 :tada::tada:  
+It will be follow [Semantic Versioning](https://semver.org/)
 
 ### Features
 
