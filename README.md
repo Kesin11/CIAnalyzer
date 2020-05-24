@@ -84,6 +84,12 @@ CIAnalyzer is designed as a tool that runs every time, not as an agent. It's a  
 
 Please check [sample](./sample/README.md), then copy it and edit to your configuration.
 
+# Roadmap
+- [ ] Collect test data (maybe support JUnit XML)
+- [ ] Output queued waiting duration time
+- [ ] Support Bitrise
+- [ ] collect any of JSON data from build artifacts
+
 # Architecture
 ![CIAnalyzer Architecture](https://user-images.githubusercontent.com/1324862/82753868-34232e00-9e04-11ea-84b4-1c88821dbdaa.png)
 
