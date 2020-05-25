@@ -84,6 +84,109 @@ CIAnalyzer is designed as a tool that runs every time, not as an agent. It's a  
 
 Please check [sample](./sample/README.md), then copy it and edit to your configuration.
 
+## Sample output JSON
+```json
+{
+  "service": "circleci",
+  "workflowId": "Kesin11/CIAnalyzer-ci",
+  "buildNumber": 306,
+  "workflowRunId": "Kesin11/CIAnalyzer-ci-306",
+  "workflowName": "ci",
+  "createdAt": "2020-05-21T01:08:06.800Z",
+  "trigger": "github",
+  "status": "SUCCESS",
+  "repository": "Kesin11/CIAnalyzer",
+  "headSha": "09f1d6d398c108936ff7973139fcbf1793d74f8f",
+  "branch": "master",
+  "tag": "v0.2.0",
+  "jobs": [
+    {
+      "workflowRunId": "Kesin11/CIAnalyzer-ci-306",
+      "buildNumber": 306,
+      "jobId": "24f03e1a-1699-4237-971c-ebc6c9b19baa",
+      "jobName": "build_and_test",
+      "status": "SUCCESS",
+      "startedAt": "2020-05-21T01:08:28.347Z",
+      "completedAt": "2020-05-21T01:08:53.469Z",
+      "jobDurationSec": 25.122,
+      "sumStepsDurationSec": 24.738,
+      "steps": [
+        {
+          "name": "Spin Up Environment",
+          "status": "SUCCESS",
+          "number": 0,
+          "startedAt": "2020-05-21T01:08:28.390Z",
+          "completedAt": "2020-05-21T01:08:30.710Z",
+          "stepDurationSec": 2.32
+        },
+        {
+          "name": "Preparing Environment Variables",
+          "status": "SUCCESS",
+          "number": 99,
+          "startedAt": "2020-05-21T01:08:30.956Z",
+          "completedAt": "2020-05-21T01:08:30.984Z",
+          "stepDurationSec": 0.028
+        },
+        {
+          "name": "Checkout code",
+          "status": "SUCCESS",
+          "number": 101,
+          "startedAt": "2020-05-21T01:08:30.993Z",
+          "completedAt": "2020-05-21T01:08:31.502Z",
+          "stepDurationSec": 0.509
+        },
+        {
+          "name": "Restoring Cache",
+          "status": "SUCCESS",
+          "number": 102,
+          "startedAt": "2020-05-21T01:08:31.509Z",
+          "completedAt": "2020-05-21T01:08:32.737Z",
+          "stepDurationSec": 1.228
+        },
+        {
+          "name": "npm ci",
+          "status": "SUCCESS",
+          "number": 103,
+          "startedAt": "2020-05-21T01:08:32.747Z",
+          "completedAt": "2020-05-21T01:08:37.335Z",
+          "stepDurationSec": 4.588
+        },
+        {
+          "name": "Build",
+          "status": "SUCCESS",
+          "number": 104,
+          "startedAt": "2020-05-21T01:08:37.341Z",
+          "completedAt": "2020-05-21T01:08:43.371Z",
+          "stepDurationSec": 6.03
+        },
+        {
+          "name": "Test",
+          "status": "SUCCESS",
+          "number": 105,
+          "startedAt": "2020-05-21T01:08:43.381Z",
+          "completedAt": "2020-05-21T01:08:53.369Z",
+          "stepDurationSec": 9.988
+        },
+        {
+          "name": "Save npm cache",
+          "status": "SUCCESS",
+          "number": 106,
+          "startedAt": "2020-05-21T01:08:53.376Z",
+          "completedAt": "2020-05-21T01:08:53.423Z",
+          "stepDurationSec": 0.047
+        }
+      ]
+    }
+  ],
+  "startedAt": "2020-05-21T01:08:09.632Z",
+  "completedAt": "2020-05-21T01:08:53.469Z",
+  "workflowDurationSec": 40.752,
+  "sumJobsDurationSec": 39.959,
+  "successCount": 1,
+  "parameters": []
+}
+```
+
 # Roadmap
 - [ ] Collect test data (maybe support JUnit XML)
 - [ ] Output queued waiting duration time
