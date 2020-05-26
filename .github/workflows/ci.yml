@@ -36,6 +36,11 @@ jobs:
         run: npm run build
       - name: Test
         run: npm run test:ci
+      - uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: test_results
+          path: junit/*.xml
       - uses: codecov/codecov-action@v1
         name: Upload coverage
         with:
