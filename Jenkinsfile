@@ -30,6 +30,11 @@ pipeline {
         sh "npm run build"
         sh "npm run test:ci"
       }
+      post {
+        always {
+          archiveArtifacts artifacts: 'junit/*.xml'
+        }
+      }
     }
     stage('docker build') {
       agent any

@@ -106,3 +106,4 @@ dist
 
 example/
 .ci_analyzer/
+junit/
