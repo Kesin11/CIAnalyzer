@@ -1,10 +1,11 @@
 import { LocalExporter } from "./local_exporter";
-import { WorkflowReport } from "../analyzer/analyzer";
+import { WorkflowReport, TestReport } from "../analyzer/analyzer";
 import { ExporterConfig } from "../config/config";
 import { BigqueryExporter } from "./bigquery_exporter";
 
 export interface Exporter {
   exportReports(reports: WorkflowReport[]): Promise<void>
+  exportTestReports(reports: TestReport[]): Promise<void>
 }
 
 export class CompositExporter implements Exporter {
@@ -30,6 +31,12 @@ export class CompositExporter implements Exporter {
   async exportReports(reports: WorkflowReport[]) {
     await Promise.all(
       this.exporters.map((exporter) => exporter?.exportReports(reports))
+    )
+  }
+
+  async exportTestReports(reports: TestReport[]) {
+    await Promise.all(
+      this.exporters.map((exporter) => exporter?.exportTestReports(reports))
     )
   }
 }

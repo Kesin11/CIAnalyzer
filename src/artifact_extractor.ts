@@ -39,11 +39,5 @@ export class ArtifactExtractor {
         return !entry.isDirectory &&
           globs.some((glob) => minimatch(entry.entryName, glob))
       })
-      // .forEach((zipEntry) => {
-      //   console.log(zipEntry.toString()) // outputs zip entries information
-      //   console.log(zipEntry.entryName) // "zip_test/nest/nest.txt"
-      //   console.log(zipEntry.name) // next.txt
-      //   if (!zipEntry.isDirectory) console.log(zipEntry.getData().toString('utf8'))
-      // })
   }
 }

@@ -1,5 +1,8 @@
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
+import axios, { AxiosInstance } from 'axios'
+import { axiosRequestLogger } from './client'
 import { minBy } from "lodash";
+import { ArtifactExtractor } from "../artifact_extractor";
 
 // Oktokit document: https://octokit.github.io/rest.js/v17#actions
 
@@ -11,12 +14,23 @@ type RunStatus = 'queued' | 'in_progress' | 'completed'
 
 export class GithubClient {
   private octokit: Octokit
+  private axios: AxiosInstance
   constructor(token: string, baseUrl?: string) {
     this.octokit = new Octokit({
       auth: token,
       baseUrl: (baseUrl) ? baseUrl : 'https://api.github.com',
       log: (process.env['CI_ANALYZER_DEBUG']) ? console : undefined,
     })
+
+    this.axios = axios.create({
+      baseURL: (baseUrl) ? baseUrl : 'https://api.github.com',
+      timeout: 1000,
+      auth: { username: '', password: token },
+    });
+
+    if (process.env['CI_ANALYZER_DEBUG']) {
+      this.axios.interceptors.request.use(axiosRequestLogger)
+    }
   }
 
   // see: https://developer.github.com/v3/actions/workflow-runs/#list-repository-workflow-runs
@@ -79,5 +93,34 @@ export class GithubClient {
       run_id: runId
     })
     return jobs.data.jobs
+  }
+
+  async fetchArtifacts(owner: string, repo: string, runId: number) {
+    const res = await this.octokit.actions.listWorkflowRunArtifacts({
+      owner,
+      repo,
+      run_id: runId
+    })
+    return res.data.artifacts
+  }
+
+  async fetchTests(owner: string, repo: string, runId: number, globs: string[]) {
+    // Skip if test file globs not provided
+    if (globs.length < 1) return []
+
+    const artifacts = await this.fetchArtifacts(owner, repo, runId)
+
+    const artifactsExtractor = new ArtifactExtractor()
+    for (const artifact of artifacts) {
+      const res = await this.axios.get(
+        artifact.archive_download_url,
+        { responseType: 'arraybuffer'}
+      )
+      await artifactsExtractor.put(artifact.name, res.data)
+    }
+
+    const tests = await artifactsExtractor.extract(globs)
+    await artifactsExtractor.rmTmpZip()
+    return tests
   }
 }

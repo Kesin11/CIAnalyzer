@@ -10,6 +10,7 @@ export type YamlConfig = {
 }
 
 export type CommonConfig = {
+  baseUrl?: string
   exporter?: ExporterConfig
   lastRunStore?: LastRunStoreConfig
   vscBaseUrl?: {

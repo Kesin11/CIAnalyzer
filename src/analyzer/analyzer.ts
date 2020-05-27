@@ -1,4 +1,5 @@
 import { round } from "lodash"
+import { TestSuites } from 'junit2json'
 
 export type Status = 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
 
@@ -49,6 +50,14 @@ export type StepReport = {
 type JobParameter = {
   name: string
   value: string
+}
+
+export type TestReport = {
+  workflowId: string
+  workflowRunId: string
+  buildNumber: number
+  workflowName: string
+  testSuites: TestSuites
 }
 
 export interface Analyzer {
