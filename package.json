@@ -36,6 +36,7 @@
     "@google-cloud/bigquery": "4.7.0",
     "@google-cloud/storage": "5.0.0",
     "@octokit/rest": "17.9.0",
+    "adm-zip": "0.4.14",
     "axios": "0.19.2",
     "dayjs": "1.8.27",
     "js-yaml": "3.13.1",
@@ -43,6 +44,7 @@
     "yargs": "15.3.1"
   },
   "devDependencies": {
+    "@types/adm-zip": "0.4.33",
     "@types/jest": "25.2.2",
     "@types/js-yaml": "3.12.4",
     "@types/lodash": "4.14.151",
