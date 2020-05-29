@@ -1,7 +1,8 @@
 import { sumBy, min, max, sortBy, first, last } from "lodash"
-import { Status, diffSec, Analyzer, secRound } from "./analyzer"
-import { WorkflowRun, SingleBuildResponse, CircleciStatus } from "../client/circleci_client"
+import { Status, diffSec, Analyzer, secRound, TestReport } from "./analyzer"
+import { WorkflowRun, SingleBuildResponse, CircleciStatus, TestResponse } from "../client/circleci_client"
 import { RepositoryTagMap } from "../client/github_repository_client"
+import { TestSuites, TestSuite, TestCase } from "junit2json"
 
 type WorkflowReport = {
   // workflow
@@ -57,6 +58,7 @@ export class CircleciAnalyzer implements Analyzer {
     const lastJob = last(sortedJobs)!
     const repository = `${firstJob.username}/${firstJob.reponame}`
     const workflowName = workflowRun.workflow_name
+    const workflowId = `${repository}-${workflowName}`
     const workflowBuildNumber = lastJob.build_num
     const workflowRunId = `${repository}-${workflowName}-${workflowBuildNumber}`
 
@@ -99,7 +101,7 @@ export class CircleciAnalyzer implements Analyzer {
     // workflow
     return {
       service: 'circleci',
-      workflowId: `${repository}-${workflowName}` ,
+      workflowId: workflowId,
       buildNumber: workflowBuildNumber,
       workflowRunId,
       workflowName,
@@ -135,5 +137,57 @@ export class CircleciAnalyzer implements Analyzer {
       default:
         return 'OTHER';
     }
+  }
+
+  async createTestReports( workflowRun: WorkflowRun, jobs: SingleBuildResponse[], tests: TestResponse[]): Promise<TestReport[]> {
+    const sortedJobs = sortBy(jobs, 'build_num')
+    const firstJob = first(sortedJobs)!
+    const lastJob = last(sortedJobs)!
+    const repository = `${firstJob.username}/${firstJob.reponame}`
+    const workflowName = workflowRun.workflow_name
+    const workflowId = `${repository}-${workflowName}`
+    const workflowBuildNumber = lastJob.build_num
+    const workflowRunId = `${repository}-${workflowName}-${workflowBuildNumber}`
+
+    const testSuiteList: TestSuite[] = []
+    // Filter empty test witch comes from build that has not stored test results.
+    tests = tests.filter((test) => test.tests.length > 0)
+    if (tests.length === 0) return []
+
+    for (const test of tests) {
+      const testCases: TestCase[] = test.tests.map((test) => {
+        return {
+          classname: test.classname,
+          name: test.name,
+          time: test.run_time,
+          failure: (test.result === 'success') ?  undefined : [{ inner: test.message }],
+        }
+      })
+      const testSuite: TestSuite = {
+        name: jobs.find((job) => job.build_num === test.run_id)?.workflows.job_name ?? '',
+        time: secRound(sumBy(testCases, 'time')),
+        tests: testCases.length,
+        failures: testCases.filter((testcase) => testcase.failure !== undefined).length,
+        timestamp: firstJob.start_time,
+        testcase: testCases,
+      }
+      testSuiteList.push(testSuite)
+    }
+
+    const testSuites: TestSuites = {
+      name: workflowName,
+      time: secRound(sumBy(testSuiteList, 'time')),
+      tests: sumBy(testSuiteList, 'tests'),
+      failures: sumBy(testSuiteList, 'failures'),
+      testsuite: testSuiteList,
+    }
+
+    return [{
+      workflowId,
+      workflowRunId,
+      buildNumber: workflowBuildNumber,
+      workflowName,
+      testSuites,
+    }]
   }
 }
