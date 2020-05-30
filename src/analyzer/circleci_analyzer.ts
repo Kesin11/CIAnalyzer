@@ -149,45 +149,41 @@ export class CircleciAnalyzer implements Analyzer {
     const workflowBuildNumber = lastJob.build_num
     const workflowRunId = `${repository}-${workflowName}-${workflowBuildNumber}`
 
-    const testSuiteList: TestSuite[] = []
-    // Filter empty test witch comes from build that has not stored test results.
-    tests = tests.filter((test) => test.tests.length > 0)
-    if (tests.length === 0) return []
-
-    for (const test of tests) {
-      const testCases: TestCase[] = test.tests.map((test) => {
+    const testSuiteList: TestSuite[] = tests
+      .filter((test) => test.tests.length > 0)
+      .map((test) => {
+        const testCases: TestCase[] = test.tests.map((test) => {
+          return {
+            classname: test.classname,
+            name: test.name,
+            time: test.run_time,
+            failure: (test.result === 'success') ?  undefined : [{ inner: test.message }],
+          }
+        })
         return {
-          classname: test.classname,
-          name: test.name,
-          time: test.run_time,
-          failure: (test.result === 'success') ?  undefined : [{ inner: test.message }],
+          name: jobs.find((job) => job.build_num === test.run_id)?.workflows.job_name ?? '',
+          time: secRound(sumBy(testCases, 'time')),
+          tests: testCases.length,
+          failures: testCases.filter((testcase) => testcase.failure !== undefined).length,
+          timestamp: firstJob.start_time,
+          testcase: testCases,
         }
       })
-      const testSuite: TestSuite = {
-        name: jobs.find((job) => job.build_num === test.run_id)?.workflows.job_name ?? '',
-        time: secRound(sumBy(testCases, 'time')),
-        tests: testCases.length,
-        failures: testCases.filter((testcase) => testcase.failure !== undefined).length,
-        timestamp: firstJob.start_time,
-        testcase: testCases,
-      }
-      testSuiteList.push(testSuite)
-    }
 
-    const testSuites: TestSuites = {
-      name: workflowName,
-      time: secRound(sumBy(testSuiteList, 'time')),
-      tests: sumBy(testSuiteList, 'tests'),
-      failures: sumBy(testSuiteList, 'failures'),
-      testsuite: testSuiteList,
-    }
+    if (testSuiteList.length === 0 ) return []
 
     return [{
       workflowId,
       workflowRunId,
       buildNumber: workflowBuildNumber,
       workflowName,
-      testSuites,
+      testSuites: {
+        name: workflowName,
+        time: secRound(sumBy(testSuiteList, 'time')),
+        tests: sumBy(testSuiteList, 'tests'),
+        failures: sumBy(testSuiteList, 'failures'),
+        testsuite: testSuiteList,
+      }
     }]
   }
 }
