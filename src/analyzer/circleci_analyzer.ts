@@ -2,7 +2,7 @@ import { sumBy, min, max, sortBy, first, last } from "lodash"
 import { Status, diffSec, Analyzer, secRound, TestReport } from "./analyzer"
 import { WorkflowRun, SingleBuildResponse, CircleciStatus, TestResponse } from "../client/circleci_client"
 import { RepositoryTagMap } from "../client/github_repository_client"
-import { TestSuites, TestSuite, TestCase } from "junit2json"
+import { TestSuite, TestCase } from "junit2json"
 
 type WorkflowReport = {
   // workflow
@@ -157,7 +157,8 @@ export class CircleciAnalyzer implements Analyzer {
             classname: test.classname,
             name: test.name,
             time: test.run_time,
-            failure: (test.result === 'success') ?  undefined : [{ inner: test.message }],
+            failure: (test.result === 'failure') ? [{ inner: test.message }] : undefined,
+            skipped: (test.result === 'skipped') ? [{ message: test.message }] : undefined,
           }
         })
         return {
@@ -165,6 +166,7 @@ export class CircleciAnalyzer implements Analyzer {
           time: secRound(sumBy(testCases, 'time')),
           tests: testCases.length,
           failures: testCases.filter((testcase) => testcase.failure !== undefined).length,
+          skipped: testCases.filter((testcase) => testcase.skipped !== undefined).length,
           timestamp: firstJob.start_time,
           testcase: testCases,
         }

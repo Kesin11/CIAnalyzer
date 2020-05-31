@@ -88,7 +88,7 @@ export type TestResponse = {
     classname: string
     file?: string
     name: string
-    result: "success" | "failure"
+    result: "success" | "failure" | "skipped"
     run_time: number
     message?: string
     source: string
