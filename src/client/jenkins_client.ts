@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import { axiosRequestLogger } from './client'
 import { minBy } from 'lodash'
+import minimatch from 'minimatch'
 
 // ref: https://github.com/jenkinsci/pipeline-stage-view-plugin/blob/master/rest-api/src/main/java/com/cloudbees/workflow/rest/external/StatusExt.java
 export type JenkinsStatus = 'SUCCESS' | 'FAILED' | 'ABORTED' | 'NOT_EXECUTED' | 'IN_PROGRESS' | 'PAUSED_PENDING_INPUT' | 'UNSTABLE'
@@ -75,7 +76,15 @@ type StageFlowNode = {
 }
 
 export type BuildResponse = {
+  id: string // '80'
+  number: number // 80
+  fullDisplayName: string // "ci_analyzer #90",
   actions: (CauseAction | BuildData | GhprbParametersAction | ParametersAction)[]
+  artifacts: {
+    displayPath: string // "junit.xml",
+    fileName: string // "junit.xml",
+    relativePath: string // "junit/junit.xml"
+  }[]
 }
 
 export type CauseAction = {
@@ -137,6 +146,11 @@ export type ParametersAction = {
     }[]
 }
 
+export type Artifacts = {
+  path: string
+  data: ArrayBuffer
+}
+
 export class JenkinsClient {
   private axios: AxiosInstance
   constructor(baseUrl: string, user?: string, token?: string) {
@@ -167,8 +181,8 @@ export class JenkinsClient {
     })
   }
 
-  async fetchJobRuns(job: JobResponse, lastRunId?: number) {
-    const res = await this.axios.get(`job/${job.name}/wfapi/runs`, {
+  async fetchJobRuns(jobName: string, lastRunId?: number) {
+    const res = await this.axios.get(`job/${jobName}/wfapi/runs`, {
       params: {
         fullStages: "true"
       }
@@ -193,15 +207,43 @@ export class JenkinsClient {
     return runs
   }
 
-  async fetchJobRun(job: JobResponse, runId: number) {
-    const res = await this.axios.get(`job/${job.name}/${runId}/wfapi/describe`)
+  async fetchJobRun(jobName: string, runId: number) {
+    const res = await this.axios.get(`job/${jobName}/${runId}/wfapi/describe`)
 
     return res.data as WfapiRunResponse
   }
 
-  async fetchBuild(job: JobResponse, runId: number) {
-    const res = await this.axios.get(`job/${job.name}/${runId}/api/json`)
+  async fetchBuild(jobName: string, runId: number) {
+    const res = await this.axios.get(`job/${jobName}/${runId}/api/json`)
 
     return res.data as BuildResponse
+  }
+
+  async fetchArtifacts(jobName: string, runId: number, paths: string[]): Promise<Artifacts[]> {
+    const artifacts = []
+    for (const path of paths) {
+      const res = await this.axios.get(
+        `job/${jobName}/${runId}/artifact/${path}`,
+        { responseType: 'arraybuffer'}
+      )
+      artifacts.push({
+        path,
+        data: res.data as ArrayBuffer
+      })
+    }
+    return artifacts
+  }
+
+  async fetchTests(build: BuildResponse, globs: string[]): Promise<Artifacts[]> {
+    // Skip if test file globs not provided
+    if (globs.length < 1) return []
+
+    const artifactPaths = build.artifacts.map((artifact) => artifact.relativePath )
+    const testPaths = artifactPaths.filter((path) => {
+      return globs.some((glob) => minimatch(path, glob))
+    })
+
+    const jobName = build.fullDisplayName.split(' ')[0]
+    return this.fetchArtifacts(jobName, build.number, testPaths)
   }
 }

@@ -1,7 +1,7 @@
 import { maxBy } from "lodash"
 import { Runner } from "./runner"
 import { YamlConfig } from "../config/config"
-import { WorkflowReport } from "../analyzer/analyzer"
+import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { JenkinsClient } from "../client/jenkins_client"
 import { JenkinsAnalyzer } from "../analyzer/jenkins_analyzer"
@@ -39,30 +39,36 @@ export class JenkinsRunner implements Runner {
     this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
 
     const allJobs = await this.client.fetchJobs()
-    const configJobs = this.config.jobs
-    const jobs = allJobs.filter((job) => configJobs.includes(job.name))
+    const allJobMap = new Map(allJobs.map((job) => [job.name, job]))
+    const configJobs = this.config.jobs.filter((job) => allJobMap.get(job.name))
 
     let reports: WorkflowReport[] = []
-    for (const job of jobs) {
-      console.info(`Fetching ${this.service} - ${job.name} ...`)
+    let testReports: TestReport[] = []
+    for (const configJob of configJobs) {
+      console.info(`Fetching ${this.service} - ${configJob.name} ...`)
       const jobReports: WorkflowReport[] = []
+      let repoTestReports: TestReport[] = []
 
       try {
-        const lastRunId = this.store.getLastRun(job.name)
-        const runs = await this.client.fetchJobRuns(job, lastRunId)
+        const lastRunId = this.store.getLastRun(configJob.name)
+        const runs = await this.client.fetchJobRuns(configJob.name, lastRunId)
 
         for (const run of runs) {
-          const build = await this.client.fetchBuild(job, Number(run.id))
-          const report = this.analyzer.createWorkflowReport(job.name, run, build)
+          const build = await this.client.fetchBuild(configJob.name, Number(run.id))
+          const tests = await this.client.fetchTests(build, configJob.testGlob)
+          const report = this.analyzer.createWorkflowReport(configJob.name, run, build)
+          const testReports = await this.analyzer.createTestReports(configJob.name, run, tests)
 
           jobReports.push(report)
+          repoTestReports = repoTestReports.concat(testReports)
         }
 
-        this.setRepoLastRun(job.name, jobReports)
+        this.setRepoLastRun(configJob.name, jobReports)
         reports = reports.concat(jobReports)
+        testReports = testReports.concat(repoTestReports)
       }
       catch (error) {
-        console.error(`Some error raised in '${job.name}', so it skipped.`)
+        console.error(`Some error raised in '${configJob.name}', so it skipped.`)
         console.error(error)
         continue
       }
@@ -71,6 +77,7 @@ export class JenkinsRunner implements Runner {
     console.info(`Exporting ${this.service} workflow reports ...`)
     const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
     await exporter.exportReports(reports)
+    await exporter.exportTestReports(testReports)
 
     this.store.save()
     console.info(`Success: done execute '${this.service}'`)
