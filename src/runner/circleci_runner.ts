@@ -39,11 +39,11 @@ export class CircleciRunner implements Runner {
     if (!this.config) return
     this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
 
-    let reports: WorkflowReport[] = []
+    let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
     for (const repo of this.config.repos) {
       console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
-      const repoReports: WorkflowReport[] = []
+      const repoWorkflowReports: WorkflowReport[] = []
       let repoTestReports: TestReport[] = []
 
       try {
@@ -68,15 +68,15 @@ export class CircleciRunner implements Runner {
               buildNum
             )
           }))
-          const report = this.analyzer.createWorkflowReport(workflowRun, jobs, tagMap)
+          const workflowReport = this.analyzer.createWorkflowReport(workflowRun, jobs, tagMap)
           const testReports = await this.analyzer.createTestReports(workflowRun, jobs, tests)
 
-          repoReports.push(report)
+          repoWorkflowReports.push(workflowReport)
           repoTestReports = repoTestReports.concat(testReports)
         }
 
-        this.setRepoLastRun(repo.fullname, repoReports)
-        reports = reports.concat(repoReports)
+        this.setRepoLastRun(repo.fullname, repoWorkflowReports)
+        workflowReports = workflowReports.concat(repoWorkflowReports)
         testReports = testReports.concat(repoTestReports)
       }
       catch (error) {
@@ -88,9 +88,8 @@ export class CircleciRunner implements Runner {
 
     console.info(`Exporting ${this.service} workflow reports ...`)
     const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
-    await exporter.exportReports(reports)
+    await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
-
 
     this.store.save()
     console.info(`Success: done execute '${this.service}'`)

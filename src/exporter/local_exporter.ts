@@ -25,7 +25,7 @@ export class LocalExporter implements Exporter {
     this.formatter = (format === 'json') ? this.formatJson : this.formatJsonLines
   }
 
-  async exportReports (reports: WorkflowReport[]) {
+  async exportWorkflowReports (reports: WorkflowReport[]) {
     fs.mkdirSync(this.outDir, { recursive: true })
 
     const now = dayjs()

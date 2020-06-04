@@ -4,7 +4,7 @@ import { ExporterConfig } from "../config/config";
 import { BigqueryExporter } from "./bigquery_exporter";
 
 export interface Exporter {
-  exportReports(reports: WorkflowReport[]): Promise<void>
+  exportWorkflowReports(reports: WorkflowReport[]): Promise<void>
   exportTestReports(reports: TestReport[]): Promise<void>
 }
 
@@ -28,9 +28,9 @@ export class CompositExporter implements Exporter {
     })
   }
 
-  async exportReports(reports: WorkflowReport[]) {
+  async exportWorkflowReports(reports: WorkflowReport[]) {
     await Promise.all(
-      this.exporters.map((exporter) => exporter?.exportReports(reports))
+      this.exporters.map((exporter) => exporter?.exportWorkflowReports(reports))
     )
   }
 
