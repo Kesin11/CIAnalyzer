@@ -4,7 +4,7 @@ import { YamlConfig } from "../config/config"
 import { GithubClient } from "../client/github_client"
 import { GithubAnalyzer } from "../analyzer/github_analyzer"
 import { GithubConfig, parseConfig } from "../config/github_config"
-import { WorkflowReport } from "../analyzer/analyzer"
+import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
 import { GithubRepositoryClient } from "../client/github_repository_client"
@@ -38,9 +38,11 @@ export class GithubRunner implements Runner {
     this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
 
     let reports: WorkflowReport[] = []
+    let testReports: TestReport[] = []
     for (const repo of this.config.repos) {
       console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
       const repoReports: WorkflowReport[] = []
+      let repoTestReports: TestReport[] = []
 
       try {
         const lastRunId = this.store.getLastRun(repo.fullname)
@@ -49,24 +51,28 @@ export class GithubRunner implements Runner {
 
         for (const workflowRun of workflowRuns) {
           const jobs = await this.client.fetchJobs(repo.owner, repo.repo, workflowRun.run.id)
-          const report = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs, tagMap)
+          const tests = await this.client.fetchTests(repo.owner, repo.repo, workflowRun.run.id, repo.testGlob)
+          const workflowReport = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs, tagMap)
+          const testReports = await this.analyzer.createTestReports(workflowRun.name, workflowRun.run, tests)
 
-          repoReports.push(report)
+          repoReports.push(workflowReport)
+          repoTestReports = repoTestReports.concat(testReports)
         }
-
-        this.setRepoLastRun(repo.fullname, repoReports)
-        reports = reports.concat(repoReports)
       }
       catch (error) {
         console.error(`Some error raised in '${repo.fullname}', so it skipped.`)
         console.error(error)
         continue
       }
+      this.setRepoLastRun(repo.fullname, repoReports)
+      reports = reports.concat(repoReports)
+      testReports = testReports.concat(repoTestReports)
     }
 
     console.info(`Exporting ${this.service} workflow reports ...`)
     const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
     await exporter.exportReports(reports)
+    await exporter.exportTestReports(testReports)
 
     this.store.save()
     console.info(`Success: done execute '${this.service}'`)

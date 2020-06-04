@@ -67,7 +67,6 @@ type Steps = {
     run_time_millis: number,
   }[]
 }
-
 export type SingleBuildResponse = RecentBuildResponse & {
   steps: Steps[]
 }
@@ -82,6 +81,22 @@ export type WorkflowRun = {
   lifecycles: RecentBuildResponse['lifecycle'][]
   last_build_num: number
 }
+
+export type TestResponse = {
+  exceptions?: unknown[]
+  tests: {
+    classname: string
+    file?: string
+    name: string
+    result: "success" | "failure" | "skipped"
+    run_time: number
+    message?: string
+    source: string
+    source_type: string
+  }[]
+  run_id: number // Add for join workflow
+}
+
 
 export class CircleciClient {
   private axios: AxiosInstance
@@ -190,5 +205,13 @@ export class CircleciClient {
       workflow_id: `${repo}-workflow-${startTime.getTime()}`,
       workflow_name: 'workflow'
     }
+  }
+
+  async fetchTests(owner: string, repo: string, vcsType: string, runId: number) {
+    const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}/${runId}/tests`)
+    return {
+      ...res.data,
+      run_id: runId
+    } as TestResponse
   }
 }

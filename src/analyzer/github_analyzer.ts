@@ -1,7 +1,9 @@
 import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods'
 import { sumBy, min, max } from 'lodash'
-import { Analyzer, diffSec, Status } from './analyzer'
+import { Analyzer, diffSec, Status, TestReport } from './analyzer'
 import { RepositoryTagMap } from '../client/github_repository_client'
+import { TestSuites, parse } from 'junit2json'
+import AdmZip from 'adm-zip'
 export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listRepoWorkflowRuns']['response']['data']['workflow_runs'][0]
 export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']['jobs']
 
@@ -131,5 +133,30 @@ export class GithubAnalyzer implements Analyzer {
       default:
         return 'OTHER';
     }
+  }
+
+  async createTestReports(workflowName: string, workflow: WorkflowRunsItem, tests: AdmZip.IZipEntry[]): Promise<TestReport[]> {
+    const buildNumber = workflow.run_number
+    const repository = workflow.repository.full_name
+    const workflowId = `${repository}-${workflowName}`
+    const workflowRunId = `${repository}-${workflowName}-${buildNumber}`
+
+    const testReports: TestReport[] = []
+    for (const test of tests) {
+      const xmlString = test.getData().toString('utf-8')
+      try {
+        const testSuites = await parse(xmlString)
+        testReports.push({
+          workflowId,
+          workflowRunId,
+          buildNumber,
+          workflowName,
+          testSuites,
+        })
+      } catch (error) {
+        console.error(`Error: Could not parse as JUnit XML. ${test.entryName}`)
+      }
+    }
+    return testReports
   }
 }

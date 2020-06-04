@@ -4,7 +4,7 @@ import { YamlConfig } from "../config/config"
 import { CircleciClient } from "../client/circleci_client"
 import { CircleciAnalyzer } from "../analyzer/circleci_analyzer"
 import { CircleciConfig, parseConfig } from "../config/circleci_config"
-import { WorkflowReport } from "../analyzer/analyzer"
+import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
 import { GithubRepositoryClient } from "../client/github_repository_client"
@@ -40,9 +40,11 @@ export class CircleciRunner implements Runner {
     this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
 
     let reports: WorkflowReport[] = []
+    let testReports: TestReport[] = []
     for (const repo of this.config.repos) {
       console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
       const repoReports: WorkflowReport[] = []
+      let repoTestReports: TestReport[] = []
 
       try {
         const lastRunId = this.store.getLastRun(repo.fullname)
@@ -58,13 +60,24 @@ export class CircleciRunner implements Runner {
               buildNum
               )
           }))
+          const tests = await Promise.all(workflowRun.build_nums.map((buildNum) => {
+            return this.client.fetchTests(
+              workflowRun.username,
+              workflowRun.reponame,
+              workflowRun.vcs_type,
+              buildNum
+            )
+          }))
           const report = this.analyzer.createWorkflowReport(workflowRun, jobs, tagMap)
+          const testReports = await this.analyzer.createTestReports(workflowRun, jobs, tests)
 
           repoReports.push(report)
+          repoTestReports = repoTestReports.concat(testReports)
         }
 
         this.setRepoLastRun(repo.fullname, repoReports)
         reports = reports.concat(repoReports)
+        testReports = testReports.concat(repoTestReports)
       }
       catch (error) {
         console.error(`Some error raised in '${repo.fullname}', so it skipped.`)
@@ -76,6 +89,8 @@ export class CircleciRunner implements Runner {
     console.info(`Exporting ${this.service} workflow reports ...`)
     const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
     await exporter.exportReports(reports)
+    await exporter.exportTestReports(testReports)
+
 
     this.store.save()
     console.info(`Success: done execute '${this.service}'`)

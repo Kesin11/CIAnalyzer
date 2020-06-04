@@ -1,6 +1,7 @@
-import { Status, Analyzer, secRound } from "./analyzer"
-import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction } from "../client/jenkins_client"
+import { Status, Analyzer, secRound, TestReport } from "./analyzer"
+import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, Artifacts } from "../client/jenkins_client"
 import { sumBy, first } from "lodash"
+import { parse } from "junit2json"
 
 type WorkflowReport = {
   // workflow
@@ -57,7 +58,9 @@ export class JenkinsAnalyzer implements Analyzer {
 
   createWorkflowReport(jobName: string, run: WfapiRunResponse, build: BuildResponse): WorkflowReport {
     const buildNumber = Number(run.id)
+    const workflowId = `jenkins-${jobName}`
     const workflowRunId = `jenkins-${jobName}-${run.id}`
+    const workflowName = jobName
 
     const jobReports: JobReport[] = run.stages.map((stage) => {
       const stepReports: StepReport[] = stage.stageFlowNodes.map((node) => {
@@ -91,10 +94,10 @@ export class JenkinsAnalyzer implements Analyzer {
     // workflow
     return {
       service: 'jenkins',
-      workflowId: `jenkins-${jobName}`,
+      workflowId,
       workflowRunId,
       buildNumber,
-      workflowName: jobName,
+      workflowName,
       createdAt: new Date(run.startTimeMillis),
       trigger: this.detectTrigger(build),
       status,
@@ -125,6 +128,31 @@ export class JenkinsAnalyzer implements Analyzer {
       default:
         return 'OTHER';
     }
+  }
+
+  async createTestReports(jobName: string, run: WfapiRunResponse, junitArtifacts: Artifacts[]): Promise<TestReport[]> {
+    const buildNumber = Number(run.id)
+    const workflowId = `jenkins-${jobName}`
+    const workflowRunId = `jenkins-${jobName}-${run.id}`
+    const workflowName = jobName
+
+    const testReports: TestReport[] = []
+    for (const artifact of junitArtifacts) {
+      try {
+        const xmlString = Buffer.from(artifact.data).toString('utf8')
+        const testSuites = await parse(xmlString)
+        testReports.push({
+          workflowId,
+          workflowRunId,
+          buildNumber,
+          workflowName,
+          testSuites,
+        })
+      } catch (error) {
+        console.error(`Error: Could not parse as JUnit XML. ${artifact.path}`)
+      }
+    }
+    return testReports
   }
 
   detectTrigger(build: BuildResponse): string {

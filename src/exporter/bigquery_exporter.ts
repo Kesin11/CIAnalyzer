@@ -3,7 +3,7 @@ import path from "path"
 import fs from "fs"
 import crypto from "crypto"
 import { BigQuery } from '@google-cloud/bigquery'
-import { WorkflowReport } from "../analyzer/analyzer"
+import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { Exporter } from "./exporter"
 
 export class BigqueryExporter implements Exporter {
@@ -66,4 +66,6 @@ export class BigqueryExporter implements Exporter {
   formatJsonLines (reports: WorkflowReport[]): string {
     return reports.map((report) => JSON.stringify(report)).join("\n")
   }
+
+  async exportTestReports (reports: TestReport[]) { }
 }
