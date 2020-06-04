@@ -6,12 +6,10 @@ type RepoYaml = string | {
 }
 
 type CircleciYaml = CommonConfig & {
-  baseUrl?: string
   repos: RepoYaml[]
 }
 
 export type CircleciConfig = CommonConfig & {
-  baseUrl?: string
   repos: {
     vscType: string
     owner: string
