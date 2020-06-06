@@ -1,6 +1,6 @@
 import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods'
 import { sumBy, min, max } from 'lodash'
-import { Analyzer, diffSec, Status, TestReport } from './analyzer'
+import { Analyzer, diffSec, Status, TestReport, WorkflowParams } from './analyzer'
 import { RepositoryTagMap } from '../client/github_repository_client'
 import { TestSuites, parse } from 'junit2json'
 import AdmZip from 'adm-zip'
@@ -55,11 +55,20 @@ type StepReport = {
 export class GithubAnalyzer implements Analyzer {
   constructor() { }
 
-  createWorkflowReport(workflowName: string, workflow: WorkflowRunsItem, jobs: JobsItem, tagMap: RepositoryTagMap): WorkflowReport {
+  createWorkflowParams(workflowName: string, workflow: WorkflowRunsItem): WorkflowParams {
     const buildNumber = workflow.run_number
     const repository = workflow.repository.full_name
-    const workflowId = `${repository}-${workflowName}`
-    const workflowRunId = `${repository}-${workflowName}-${buildNumber}`
+    return {
+      workflowName,
+      buildNumber,
+      workflowId: `${repository}-${workflowName}`,
+      workflowRunId: `${repository}-${workflowName}-${buildNumber}`,
+    }
+  }
+
+  createWorkflowReport(workflowName: string, workflow: WorkflowRunsItem, jobs: JobsItem, tagMap: RepositoryTagMap): WorkflowReport {
+    const { workflowId, buildNumber, workflowRunId }
+      = this.createWorkflowParams(workflowName, workflow)
 
     const jobReports: JobReport[] = jobs.map((job) => {
       const stepReports: StepReport[] = job.steps.map((step) => {
@@ -136,10 +145,8 @@ export class GithubAnalyzer implements Analyzer {
   }
 
   async createTestReports(workflowName: string, workflow: WorkflowRunsItem, tests: AdmZip.IZipEntry[]): Promise<TestReport[]> {
-    const buildNumber = workflow.run_number
-    const repository = workflow.repository.full_name
-    const workflowId = `${repository}-${workflowName}`
-    const workflowRunId = `${repository}-${workflowName}-${buildNumber}`
+    const { workflowId, buildNumber, workflowRunId }
+      = this.createWorkflowParams(workflowName, workflow)
 
     const testReports: TestReport[] = []
     for (const test of tests) {
