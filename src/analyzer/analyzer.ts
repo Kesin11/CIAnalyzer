@@ -68,8 +68,9 @@ export type WorkflowParams = {
 }
 
 export interface Analyzer {
-  createWorkflowReport(...args: any[]): WorkflowReport
   createWorkflowParams(...args: any[]): WorkflowParams
+  createWorkflowReport(...args: any[]): WorkflowReport
+  createTestReports(...args: any[]): Promise<TestReport[]>
 }
 
 export const diffSec = (start: string | Date, end: string | Date): number => {
