@@ -146,7 +146,7 @@ export type ParametersAction = {
     }[]
 }
 
-export type Artifacts = {
+export type Artifact = {
   path: string
   data: ArrayBuffer
 }
@@ -219,7 +219,7 @@ export class JenkinsClient {
     return res.data as BuildResponse
   }
 
-  async fetchArtifacts(jobName: string, runId: number, paths: string[]): Promise<Artifacts[]> {
+  async fetchArtifacts(jobName: string, runId: number, paths: string[]): Promise<Artifact[]> {
     const artifacts = []
     for (const path of paths) {
       const res = await this.axios.get(
@@ -234,7 +234,7 @@ export class JenkinsClient {
     return artifacts
   }
 
-  async fetchTests(build: BuildResponse, globs: string[]): Promise<Artifacts[]> {
+  async fetchTests(build: BuildResponse, globs: string[]): Promise<Artifact[]> {
     // Skip if test file globs not provided
     if (globs.length < 1) return []
 

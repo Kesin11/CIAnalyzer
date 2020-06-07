@@ -4,6 +4,7 @@ import { Analyzer, diffSec, Status, TestReport, WorkflowParams } from './analyze
 import { RepositoryTagMap } from '../client/github_repository_client'
 import { TestSuites, parse } from 'junit2json'
 import AdmZip from 'adm-zip'
+import { Artifact } from '../client/jenkins_client'
 export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listRepoWorkflowRuns']['response']['data']['workflow_runs'][0]
 export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']['jobs']
 
@@ -144,13 +145,13 @@ export class GithubAnalyzer implements Analyzer {
     }
   }
 
-  async createTestReports(workflowName: string, workflow: WorkflowRunsItem, tests: AdmZip.IZipEntry[]): Promise<TestReport[]> {
+  async createTestReports(workflowName: string, workflow: WorkflowRunsItem, junitArtifacts: Artifact[]): Promise<TestReport[]> {
     const { workflowId, buildNumber, workflowRunId }
       = this.createWorkflowParams(workflowName, workflow)
 
     const testReports: TestReport[] = []
-    for (const test of tests) {
-      const xmlString = test.getData().toString('utf-8')
+    for (const artifact of junitArtifacts) {
+      const xmlString = Buffer.from(artifact.data).toString('utf8')
       try {
         const testSuites = await parse(xmlString)
         testReports.push({
@@ -161,7 +162,7 @@ export class GithubAnalyzer implements Analyzer {
           testSuites,
         })
       } catch (error) {
-        console.error(`Error: Could not parse as JUnit XML. ${test.entryName}`)
+        console.error(`Error: Could not parse as JUnit XML. ${artifact.path}`)
       }
     }
     return testReports

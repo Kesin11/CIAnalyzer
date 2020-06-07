@@ -1,5 +1,5 @@
 import { Status, Analyzer, secRound, TestReport, WorkflowParams } from "./analyzer"
-import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, Artifacts } from "../client/jenkins_client"
+import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, Artifact } from "../client/jenkins_client"
 import { sumBy, first } from "lodash"
 import { parse } from "junit2json"
 
@@ -137,7 +137,7 @@ export class JenkinsAnalyzer implements Analyzer {
     }
   }
 
-  async createTestReports(jobName: string, run: WfapiRunResponse, junitArtifacts: Artifacts[]): Promise<TestReport[]> {
+  async createTestReports(jobName: string, run: WfapiRunResponse, junitArtifacts: Artifact[]): Promise<TestReport[]> {
     const { workflowName, workflowId, buildNumber, workflowRunId }
       = this.createWorkflowParams(jobName, run.id)
 
