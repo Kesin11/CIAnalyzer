@@ -2,7 +2,7 @@ import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import axios, { AxiosInstance } from 'axios'
 import { axiosRequestLogger } from './client'
 import { minBy } from "lodash";
-import { ArtifactExtractor } from "../artifact_extractor";
+import { ZipExtractor } from "../zip_extractor";
 import { Artifact } from "./jenkins_client";
 
 // Oktokit document: https://octokit.github.io/rest.js/v17#actions
@@ -104,16 +104,16 @@ export class GithubClient {
     })
 
     // Unarchive zip artifacts
-    const artifactsExtractor = new ArtifactExtractor()
+    const zipExtractor = new ZipExtractor()
     for (const artifact of res.data.artifacts) {
       const res = await this.axios.get(
         artifact.archive_download_url,
         { responseType: 'arraybuffer'}
       )
-      await artifactsExtractor.put(artifact.name, res.data)
+      await zipExtractor.put(artifact.name, res.data)
     }
-    const zipEntries = await artifactsExtractor.extract(globs)
-    await artifactsExtractor.rmTmpZip()
+    const zipEntries = await zipExtractor.extract(globs)
+    await zipExtractor.rmTmpZip()
 
     return zipEntries.map((entry) => {
       return {

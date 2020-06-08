@@ -7,7 +7,7 @@ import minimatch from 'minimatch'
 
 const createRandomStr = () => crypto.randomBytes(8).toString('hex')
 
-export class ArtifactExtractor {
+export class ZipExtractor {
   zipPaths: string[] = []
   constructor() { }
 
