@@ -42,12 +42,12 @@ export class JenkinsRunner implements Runner {
     const allJobMap = new Map(allJobs.map((job) => [job.name, job]))
     const configJobs = this.config.jobs.filter((job) => allJobMap.get(job.name))
 
-    let reports: WorkflowReport[] = []
+    let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
     for (const configJob of configJobs) {
       console.info(`Fetching ${this.service} - ${configJob.name} ...`)
       const jobReports: WorkflowReport[] = []
-      let repoTestReports: TestReport[] = []
+      let jobTestReports: TestReport[] = []
 
       try {
         const lastRunId = this.store.getLastRun(configJob.name)
@@ -60,12 +60,12 @@ export class JenkinsRunner implements Runner {
           const testReports = await this.analyzer.createTestReports(configJob.name, run, tests)
 
           jobReports.push(report)
-          repoTestReports = repoTestReports.concat(testReports)
+          jobTestReports = jobTestReports.concat(testReports)
         }
 
         this.setRepoLastRun(configJob.name, jobReports)
-        reports = reports.concat(jobReports)
-        testReports = testReports.concat(repoTestReports)
+        workflowReports = workflowReports.concat(jobReports)
+        testReports = testReports.concat(jobTestReports)
       }
       catch (error) {
         console.error(`Some error raised in '${configJob.name}', so it skipped.`)
@@ -76,7 +76,7 @@ export class JenkinsRunner implements Runner {
 
     console.info(`Exporting ${this.service} workflow reports ...`)
     const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
-    await exporter.exportReports(reports)
+    await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
 
     this.store.save()

@@ -1,5 +1,5 @@
-import { Status, Analyzer, secRound, TestReport } from "./analyzer"
-import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, Artifacts } from "../client/jenkins_client"
+import { Status, Analyzer, secRound, TestReport, WorkflowParams } from "./analyzer"
+import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, Artifact } from "../client/jenkins_client"
 import { sumBy, first } from "lodash"
 import { parse } from "junit2json"
 
@@ -56,11 +56,18 @@ type JobParameter = {
 export class JenkinsAnalyzer implements Analyzer {
   constructor() { }
 
+  createWorkflowParams(jobName: string, runId: string): WorkflowParams {
+    return {
+      workflowName: jobName,
+      buildNumber: Number(runId),
+      workflowId: `jenkins-${jobName}`,
+      workflowRunId: `jenkins-${jobName}-${runId}`,
+    }
+  }
+
   createWorkflowReport(jobName: string, run: WfapiRunResponse, build: BuildResponse): WorkflowReport {
-    const buildNumber = Number(run.id)
-    const workflowId = `jenkins-${jobName}`
-    const workflowRunId = `jenkins-${jobName}-${run.id}`
-    const workflowName = jobName
+    const { workflowName, workflowId, buildNumber, workflowRunId }
+      = this.createWorkflowParams(jobName, run.id)
 
     const jobReports: JobReport[] = run.stages.map((stage) => {
       const stepReports: StepReport[] = stage.stageFlowNodes.map((node) => {
@@ -130,11 +137,9 @@ export class JenkinsAnalyzer implements Analyzer {
     }
   }
 
-  async createTestReports(jobName: string, run: WfapiRunResponse, junitArtifacts: Artifacts[]): Promise<TestReport[]> {
-    const buildNumber = Number(run.id)
-    const workflowId = `jenkins-${jobName}`
-    const workflowRunId = `jenkins-${jobName}-${run.id}`
-    const workflowName = jobName
+  async createTestReports(jobName: string, run: WfapiRunResponse, junitArtifacts: Artifact[]): Promise<TestReport[]> {
+    const { workflowName, workflowId, buildNumber, workflowRunId }
+      = this.createWorkflowParams(jobName, run.id)
 
     const testReports: TestReport[] = []
     for (const artifact of junitArtifacts) {

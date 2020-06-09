@@ -60,8 +60,17 @@ export type TestReport = {
   testSuites: TestSuites
 }
 
+export type WorkflowParams = {
+  workflowId: string
+  workflowRunId: string
+  buildNumber: number
+  workflowName: string
+}
+
 export interface Analyzer {
+  createWorkflowParams(...args: any[]): WorkflowParams
   createWorkflowReport(...args: any[]): WorkflowReport
+  createTestReports(...args: any[]): Promise<TestReport[]>
 }
 
 export const diffSec = (start: string | Date, end: string | Date): number => {

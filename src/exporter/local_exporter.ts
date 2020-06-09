@@ -25,16 +25,24 @@ export class LocalExporter implements Exporter {
     this.formatter = (format === 'json') ? this.formatJson : this.formatJsonLines
   }
 
-  async exportReports (reports: WorkflowReport[]) {
+  private exportReports(type: string, reports: unknown[]) {
     fs.mkdirSync(this.outDir, { recursive: true })
 
     const now = dayjs()
-    const outputPath = path.join(this.outDir, `${now.format('YYYYMMDD-HHmm')}-${this.service}.json`)
+    const outputPath = path.join(this.outDir, `${now.format('YYYYMMDD-HHmm')}-${type}-${this.service}.json`)
 
     const formated = this.formatter(reports)
     fs.writeFileSync(outputPath, formated, { encoding: 'utf8' })
 
-    console.info(`(Local) Export reports to ${outputPath}`)
+    console.info(`(Local) Export ${type} reports to ${outputPath}`)
+  }
+
+  async exportWorkflowReports (reports: WorkflowReport[]) {
+    this.exportReports('workflow', reports)
+  }
+
+  async exportTestReports (reports: TestReport[]) {
+    this.exportReports('test', reports)
   }
 
   formatJson (reports: unknown[]): string {
@@ -45,15 +53,4 @@ export class LocalExporter implements Exporter {
     return reports.map((report) => JSON.stringify(report)).join("\n")
   }
 
-  async exportTestReports (reports: TestReport[]) {
-    fs.mkdirSync(this.outDir, { recursive: true })
-
-    const now = dayjs()
-    const outputPath = path.join(this.outDir, `${now.format('YYYYMMDD-HHmm')}-test-${this.service}.json`)
-
-    const formated = this.formatter(reports)
-    fs.writeFileSync(outputPath, formated, { encoding: 'utf8' })
-
-    console.info(`(Local) Export test reports to ${outputPath}`)
-  }
 }

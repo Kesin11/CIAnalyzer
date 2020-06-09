@@ -24,7 +24,7 @@ export class BigqueryExporter implements Exporter {
     this.maxBadRecords = options?.maxBadRecords ?? 0
   }
 
-  async exportReports (reports: WorkflowReport[]) {
+  async exportWorkflowReports (reports: WorkflowReport[]) {
     // Write report as tmp json file
     const randString = crypto.randomBytes(8).toString('hex')
     const tmpJsonPath = path.resolve(os.tmpdir(), `ci_analyzer_${randString}.json`)

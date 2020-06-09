@@ -2,7 +2,8 @@ import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import axios, { AxiosInstance } from 'axios'
 import { axiosRequestLogger } from './client'
 import { minBy } from "lodash";
-import { ArtifactExtractor } from "../artifact_extractor";
+import { ZipExtractor } from "../zip_extractor";
+import { Artifact } from "./jenkins_client";
 
 // Oktokit document: https://octokit.github.io/rest.js/v17#actions
 
@@ -95,32 +96,37 @@ export class GithubClient {
     return jobs.data.jobs
   }
 
-  async fetchArtifacts(owner: string, repo: string, runId: number) {
+  async fetchArtifacts(owner: string, repo: string, runId: number, globs: string[]): Promise<Artifact[]> {
     const res = await this.octokit.actions.listWorkflowRunArtifacts({
       owner,
       repo,
       run_id: runId
     })
-    return res.data.artifacts
-  }
 
-  async fetchTests(owner: string, repo: string, runId: number, globs: string[]) {
-    // Skip if test file globs not provided
-    if (globs.length < 1) return []
-
-    const artifacts = await this.fetchArtifacts(owner, repo, runId)
-
-    const artifactsExtractor = new ArtifactExtractor()
-    for (const artifact of artifacts) {
+    // Unarchive zip artifacts
+    const zipExtractor = new ZipExtractor()
+    for (const artifact of res.data.artifacts) {
       const res = await this.axios.get(
         artifact.archive_download_url,
         { responseType: 'arraybuffer'}
       )
-      await artifactsExtractor.put(artifact.name, res.data)
+      await zipExtractor.put(artifact.name, res.data)
     }
+    const zipEntries = await zipExtractor.extract(globs)
+    await zipExtractor.rmTmpZip()
 
-    const tests = await artifactsExtractor.extract(globs)
-    await artifactsExtractor.rmTmpZip()
-    return tests
+    return zipEntries.map((entry) => {
+      return {
+        path: entry.entryName,
+        data: entry.getData()
+      }
+    })
+  }
+
+  async fetchTests(owner: string, repo: string, runId: number, globs: string[]): Promise<Artifact[]> {
+    // Skip if test file globs not provided
+    if (globs.length < 1) return []
+
+    return this.fetchArtifacts(owner, repo, runId, globs)
   }
 }
