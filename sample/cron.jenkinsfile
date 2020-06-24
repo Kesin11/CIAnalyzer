@@ -25,10 +25,10 @@ pipeline {
             kesin/ci_analyzer:latest
         """
       }
-    }
-    post {
-      always {
-        archiveArtifacts artifacts: 'output/**/*'
+      post {
+        always {
+          archiveArtifacts artifacts: 'output/**/*'
+        }
       }
     }
   }
