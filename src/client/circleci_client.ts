@@ -61,10 +61,10 @@ type Steps = {
   actions: {
     name: string
     status: CircleciStatus
-    end_time: string,
+    end_time: string | null, // Sometimes step log will be broken and return null
     start_time: string,
     step: number,
-    run_time_millis: number,
+    run_time_millis: number | null, // Sometimes step log will be broken and return null
   }[]
 }
 export type SingleBuildResponse = RecentBuildResponse & {
