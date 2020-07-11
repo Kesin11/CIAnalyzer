@@ -73,7 +73,9 @@ export class CircleciAnalyzer implements Analyzer {
       const stepReports: StepReport[] = job.steps.map((step) => {
         const action = first(step.actions)!
         const startedAt = new Date(action.start_time)
-        const completedAt = new Date(action.end_time)
+        // NOTE: Sometimes action.end_time will be broken, so it should be replaced when it's value is invalid.
+        const validatedEndTime = action.end_time ?? action.start_time
+        const completedAt = new Date(validatedEndTime)
         // step
         return {
           name: action.name,
