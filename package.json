@@ -40,7 +40,7 @@
     "axios": "0.19.2",
     "dayjs": "1.8.27",
     "js-yaml": "3.13.1",
-    "junit2json": "1.0.2",
+    "junit2json": "2.0.0",
     "lodash": "4.17.15",
     "minimatch": "3.0.4",
     "yargs": "15.3.1"
