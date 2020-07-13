@@ -153,7 +153,17 @@ export class GithubAnalyzer implements Analyzer {
     for (const artifact of junitArtifacts) {
       const xmlString = Buffer.from(artifact.data).toString('utf8')
       try {
-        const testSuites = await parse(xmlString)
+        const result = await parse(xmlString)
+        const testSuites = ('testsuite' in result) ? result : {
+          // Fill in testsuites property with testsuit values.
+          testsuite: [result],
+          name: workflowId,
+          time: result.time,
+          tests: result.tests,
+          failures: result.failures,
+          errors: result.errors,
+        }
+
         testReports.push({
           workflowId,
           workflowRunId,
