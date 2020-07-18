@@ -181,18 +181,21 @@ export class CircleciAnalyzer implements Analyzer {
 
     if (testSuiteList.length === 0 ) return []
 
-    return [{
-      workflowId,
-      workflowRunId,
-      buildNumber,
-      workflowName,
-      testSuites: {
+    const testSuites = {
         name: workflowName,
         time: secRound(sumBy(testSuiteList, 'time')),
         tests: sumBy(testSuiteList, 'tests'),
         failures: sumBy(testSuiteList, 'failures'),
         testsuite: testSuiteList,
       }
+    return [{
+      workflowId,
+      workflowRunId,
+      buildNumber,
+      workflowName,
+      testSuites,
+      status: (testSuites.failures > 0) ? 'FAILURE' : 'SUCCESS',
+      successCount: (testSuites.failures > 0) ? 0 : 1,
     }]
   }
 }

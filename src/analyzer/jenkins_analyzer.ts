@@ -162,6 +162,8 @@ export class JenkinsAnalyzer implements Analyzer {
           buildNumber,
           workflowName,
           testSuites,
+          status: (testSuites.failures && testSuites.failures > 0) ? 'FAILURE' : 'SUCCESS',
+          successCount: (testSuites.failures && testSuites.failures > 0) ? 0 : 1,
         })
       } catch (error) {
         console.error(`Error: Could not parse as JUnit XML. ${artifact.path}`)

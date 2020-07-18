@@ -2,6 +2,7 @@ import { round } from "lodash"
 import { TestSuites } from 'junit2json'
 
 export type Status = 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
+export type TestStatus = 'SUCCESS' | 'FAILURE'
 
 export type WorkflowReport = {
   service: string
@@ -58,6 +59,8 @@ export type TestReport = {
   buildNumber: number
   workflowName: string
   testSuites: TestSuites
+  status: TestStatus // = testSuites.failures > 0: 'FAILURE', else: 'SUCCESS'
+  successCount: 0 | 1 // = testSuites.failures > 0: 1, else: 1. For create average success rate in dashboard
 }
 
 export type WorkflowParams = {
