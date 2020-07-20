@@ -69,7 +69,7 @@ export class CircleciRunner implements Runner {
             )
           }))
           const workflowReport = this.analyzer.createWorkflowReport(workflowRun, jobs, tagMap)
-          const testReports = await this.analyzer.createTestReports(workflowRun, jobs, tests)
+          const testReports = await this.analyzer.createTestReports(workflowReport, jobs, tests)
 
           repoWorkflowReports.push(workflowReport)
           repoTestReports = repoTestReports.concat(testReports)

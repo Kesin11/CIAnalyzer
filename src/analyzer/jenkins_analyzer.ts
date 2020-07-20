@@ -137,10 +137,7 @@ export class JenkinsAnalyzer implements Analyzer {
     }
   }
 
-  async createTestReports(jobName: string, run: WfapiRunResponse, junitArtifacts: Artifact[]): Promise<TestReport[]> {
-    const { workflowName, workflowId, buildNumber, workflowRunId }
-      = this.createWorkflowParams(jobName, run.id)
-
+  async createTestReports(workflowReport: WorkflowReport, junitArtifacts: Artifact[]): Promise<TestReport[]> {
     const testReports: TestReport[] = []
     for (const artifact of junitArtifacts) {
       const xmlString = Buffer.from(artifact.data).toString('utf8')
@@ -149,7 +146,7 @@ export class JenkinsAnalyzer implements Analyzer {
         const testSuites = ('testsuite' in result) ? result : {
           // Fill in testsuites property with testsuit values.
           testsuite: [result],
-          name: workflowId,
+          name: workflowReport.workflowId,
           time: result.time,
           tests: result.tests,
           failures: result.failures,
@@ -157,10 +154,13 @@ export class JenkinsAnalyzer implements Analyzer {
         }
 
         testReports.push({
-          workflowId,
-          workflowRunId,
-          buildNumber,
-          workflowName,
+          workflowId: workflowReport.workflowId,
+          workflowRunId: workflowReport.workflowRunId,
+          buildNumber: workflowReport.buildNumber,
+          workflowName: workflowReport.workflowName,
+          createdAt: workflowReport.createdAt,
+          branch: workflowReport.branch,
+          service: workflowReport.service,
           testSuites,
           status: (testSuites.failures && testSuites.failures > 0) ? 'FAILURE' : 'SUCCESS',
           successCount: (testSuites.failures && testSuites.failures > 0) ? 0 : 1,

@@ -57,7 +57,7 @@ export class JenkinsRunner implements Runner {
           const build = await this.client.fetchBuild(configJob.name, Number(run.id))
           const tests = await this.client.fetchTests(build, configJob.testGlob)
           const report = this.analyzer.createWorkflowReport(configJob.name, run, build)
-          const testReports = await this.analyzer.createTestReports(configJob.name, run, tests)
+          const testReports = await this.analyzer.createTestReports(report, tests)
 
           jobReports.push(report)
           jobTestReports = jobTestReports.concat(testReports)

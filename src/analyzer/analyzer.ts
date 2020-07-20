@@ -58,6 +58,9 @@ export type TestReport = {
   workflowRunId: string
   buildNumber: number
   workflowName: string
+  createdAt: Date,
+  branch: string,
+  service: string,
   testSuites: TestSuites
   status: TestStatus // = testSuites.failures > 0: 'FAILURE', else: 'SUCCESS'
   successCount: 0 | 1 // = testSuites.failures > 0: 1, else: 1. For create average success rate in dashboard
