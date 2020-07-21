@@ -1,8 +1,29 @@
 [
   {
     "mode": "NULLABLE", 
+    "name": "successCount", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "status", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "branch", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
     "name": "workflowName", 
     "type": "STRING"
+  }, 
+  {
+    "description": "bq-datetime", 
+    "mode": "NULLABLE", 
+    "name": "createdAt", 
+    "type": "TIMESTAMP"
   }, 
   {
     "mode": "NULLABLE", 
@@ -10,16 +31,23 @@
     "type": "INTEGER"
   }, 
   {
-    "mode": "NULLABLE", 
-    "name": "workflowRunId", 
-    "type": "STRING"
-  }, 
-  {
     "fields": [
       {
         "fields": [
           {
             "fields": [
+              {
+                "fields": [
+                  {
+                    "mode": "NULLABLE", 
+                    "name": "inner", 
+                    "type": "STRING"
+                  }
+                ], 
+                "mode": "REPEATED", 
+                "name": "failure", 
+                "type": "RECORD"
+              }, 
               {
                 "mode": "NULLABLE", 
                 "name": "time", 
@@ -105,6 +133,16 @@
     "mode": "NULLABLE", 
     "name": "testSuites", 
     "type": "RECORD"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "service", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "workflowRunId", 
+    "type": "STRING"
   }, 
   {
     "mode": "NULLABLE", 
