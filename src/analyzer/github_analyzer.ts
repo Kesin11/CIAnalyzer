@@ -145,10 +145,7 @@ export class GithubAnalyzer implements Analyzer {
     }
   }
 
-  async createTestReports(workflowName: string, workflow: WorkflowRunsItem, junitArtifacts: Artifact[]): Promise<TestReport[]> {
-    const { workflowId, buildNumber, workflowRunId }
-      = this.createWorkflowParams(workflowName, workflow)
-
+  async createTestReports(workflowReport: WorkflowReport, junitArtifacts: Artifact[]): Promise<TestReport[]> {
     const testReports: TestReport[] = []
     for (const artifact of junitArtifacts) {
       const xmlString = Buffer.from(artifact.data).toString('utf8')
@@ -157,7 +154,7 @@ export class GithubAnalyzer implements Analyzer {
         const testSuites = ('testsuite' in result) ? result : {
           // Fill in testsuites property with testsuit values.
           testsuite: [result],
-          name: workflowId,
+          name: workflowReport.workflowId,
           time: result.time,
           tests: result.tests,
           failures: result.failures,
@@ -165,11 +162,16 @@ export class GithubAnalyzer implements Analyzer {
         }
 
         testReports.push({
-          workflowId,
-          workflowRunId,
-          buildNumber,
-          workflowName,
+          workflowId: workflowReport.workflowId,
+          workflowRunId: workflowReport.workflowRunId,
+          buildNumber: workflowReport.buildNumber,
+          workflowName: workflowReport.workflowName,
+          createdAt: workflowReport.createdAt,
+          branch: workflowReport.branch,
+          service: workflowReport.service,
           testSuites,
+          status: (testSuites.failures && testSuites.failures > 0) ? 'FAILURE' : 'SUCCESS',
+          successCount: (testSuites.failures && testSuites.failures > 0) ? 0 : 1,
         })
       } catch (error) {
         console.error(`Error: Could not parse as JUnit XML. ${artifact.path}`)

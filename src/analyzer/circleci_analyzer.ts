@@ -148,14 +148,7 @@ export class CircleciAnalyzer implements Analyzer {
     }
   }
 
-  async createTestReports( workflowRun: WorkflowRun, jobs: SingleBuildResponse[], tests: TestResponse[]): Promise<TestReport[]> {
-    const sortedJobs = sortBy(jobs, 'build_num')
-    const firstJob = first(sortedJobs)!
-    const lastJob = last(sortedJobs)!
-    const repository = `${firstJob.username}/${firstJob.reponame}`
-    const { workflowName, workflowId, buildNumber, workflowRunId }
-      = this.createWorkflowParams(workflowRun.workflow_name, repository, lastJob.build_num)
-
+  async createTestReports( workflowReport: WorkflowReport, jobs: SingleBuildResponse[], tests: TestResponse[]): Promise<TestReport[]> {
     const testSuiteList: TestSuite[] = tests
       .filter((test) => test.tests.length > 0)
       .map((test) => {
@@ -168,31 +161,38 @@ export class CircleciAnalyzer implements Analyzer {
             skipped: (test.result === 'skipped') ? [{ message: test.message }] : undefined,
           }
         })
+        const testJob = jobs.find((job) => job.build_num === test.run_id)
         return {
-          name: jobs.find((job) => job.build_num === test.run_id)?.workflows.job_name ?? '',
+          name: testJob?.workflows.job_name ?? '',
           time: secRound(sumBy(testCases, 'time')),
           tests: testCases.length,
           failures: testCases.filter((testcase) => testcase.failure !== undefined).length,
           skipped: testCases.filter((testcase) => testcase.skipped !== undefined).length,
-          timestamp: firstJob.start_time,
+          timestamp: testJob?.start_time,
           testcase: testCases,
         }
       })
 
     if (testSuiteList.length === 0 ) return []
 
+    const testSuites = {
+      name: workflowReport.workflowName,
+      time: secRound(sumBy(testSuiteList, 'time')),
+      tests: sumBy(testSuiteList, 'tests'),
+      failures: sumBy(testSuiteList, 'failures'),
+      testsuite: testSuiteList,
+    }
     return [{
-      workflowId,
-      workflowRunId,
-      buildNumber,
-      workflowName,
-      testSuites: {
-        name: workflowName,
-        time: secRound(sumBy(testSuiteList, 'time')),
-        tests: sumBy(testSuiteList, 'tests'),
-        failures: sumBy(testSuiteList, 'failures'),
-        testsuite: testSuiteList,
-      }
+      workflowId: workflowReport.workflowId,
+      workflowRunId: workflowReport.workflowRunId,
+      buildNumber: workflowReport.buildNumber,
+      workflowName: workflowReport.workflowName,
+      createdAt: workflowReport.createdAt,
+      branch: workflowReport.branch,
+      service: workflowReport.service,
+      testSuites,
+      status: (testSuites.failures > 0) ? 'FAILURE' : 'SUCCESS',
+      successCount: (testSuites.failures > 0) ? 0 : 1,
     }]
   }
 }

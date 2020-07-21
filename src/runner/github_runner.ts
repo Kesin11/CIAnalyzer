@@ -53,7 +53,7 @@ export class GithubRunner implements Runner {
           const jobs = await this.client.fetchJobs(repo.owner, repo.repo, workflowRun.run.id)
           const tests = await this.client.fetchTests(repo.owner, repo.repo, workflowRun.run.id, repo.testGlob)
           const workflowReport = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs, tagMap)
-          const testReports = await this.analyzer.createTestReports(workflowRun.name, workflowRun.run, tests)
+          const testReports = await this.analyzer.createTestReports(workflowReport, tests)
 
           repoWorkflowReports.push(workflowReport)
           repoTestReports = repoTestReports.concat(testReports)

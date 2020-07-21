@@ -1,0 +1,152 @@
+[
+  {
+    "mode": "NULLABLE", 
+    "name": "successCount", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "status", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "branch", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "workflowName", 
+    "type": "STRING"
+  }, 
+  {
+    "description": "bq-datetime", 
+    "mode": "NULLABLE", 
+    "name": "createdAt", 
+    "type": "TIMESTAMP"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "buildNumber", 
+    "type": "INTEGER"
+  }, 
+  {
+    "fields": [
+      {
+        "fields": [
+          {
+            "fields": [
+              {
+                "fields": [
+                  {
+                    "mode": "NULLABLE", 
+                    "name": "inner", 
+                    "type": "STRING"
+                  }
+                ], 
+                "mode": "REPEATED", 
+                "name": "failure", 
+                "type": "RECORD"
+              }, 
+              {
+                "mode": "NULLABLE", 
+                "name": "time", 
+                "type": "FLOAT"
+              }, 
+              {
+                "mode": "NULLABLE", 
+                "name": "name", 
+                "type": "STRING"
+              }, 
+              {
+                "mode": "NULLABLE", 
+                "name": "classname", 
+                "type": "STRING"
+              }
+            ], 
+            "mode": "REPEATED", 
+            "name": "testcase", 
+            "type": "RECORD"
+          }, 
+          {
+            "mode": "NULLABLE", 
+            "name": "tests", 
+            "type": "INTEGER"
+          }, 
+          {
+            "mode": "NULLABLE", 
+            "name": "time", 
+            "type": "FLOAT"
+          }, 
+          {
+            "description": "bq-datetime", 
+            "mode": "NULLABLE", 
+            "name": "timestamp", 
+            "type": "TIMESTAMP"
+          }, 
+          {
+            "mode": "NULLABLE", 
+            "name": "skipped", 
+            "type": "INTEGER"
+          }, 
+          {
+            "mode": "NULLABLE", 
+            "name": "failures", 
+            "type": "INTEGER"
+          }, 
+          {
+            "mode": "NULLABLE", 
+            "name": "errors", 
+            "type": "INTEGER"
+          }, 
+          {
+            "mode": "NULLABLE", 
+            "name": "name", 
+            "type": "STRING"
+          }
+        ], 
+        "mode": "REPEATED", 
+        "name": "testsuite", 
+        "type": "RECORD"
+      }, 
+      {
+        "mode": "NULLABLE", 
+        "name": "failures", 
+        "type": "INTEGER"
+      }, 
+      {
+        "mode": "NULLABLE", 
+        "name": "time", 
+        "type": "FLOAT"
+      }, 
+      {
+        "mode": "NULLABLE", 
+        "name": "tests", 
+        "type": "INTEGER"
+      }, 
+      {
+        "mode": "NULLABLE", 
+        "name": "name", 
+        "type": "STRING"
+      }
+    ], 
+    "mode": "NULLABLE", 
+    "name": "testSuites", 
+    "type": "RECORD"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "service", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "workflowRunId", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "workflowId", 
+    "type": "STRING"
+  }
+]
