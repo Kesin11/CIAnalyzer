@@ -1,6 +1,6 @@
 import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods'
 import { sumBy, min, max } from 'lodash'
-import { Analyzer, diffSec, Status, TestReport, WorkflowParams } from './analyzer'
+import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToReportTestSuites } from './analyzer'
 import { RepositoryTagMap } from '../client/github_repository_client'
 import { TestSuites, parse } from 'junit2json'
 import AdmZip from 'adm-zip'
@@ -169,7 +169,7 @@ export class GithubAnalyzer implements Analyzer {
           createdAt: workflowReport.createdAt,
           branch: workflowReport.branch,
           service: workflowReport.service,
-          testSuites,
+          testSuites: convertToReportTestSuites(testSuites),
           status: (testSuites.failures && testSuites.failures > 0) ? 'FAILURE' : 'SUCCESS',
           successCount: (testSuites.failures && testSuites.failures > 0) ? 0 : 1,
         })

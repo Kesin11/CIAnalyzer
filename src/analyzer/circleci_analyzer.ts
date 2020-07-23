@@ -1,5 +1,5 @@
 import { sumBy, min, max, sortBy, first, last } from "lodash"
-import { Status, diffSec, Analyzer, secRound, TestReport, WorkflowParams } from "./analyzer"
+import { Status, diffSec, Analyzer, secRound, TestReport, WorkflowParams, convertToReportTestSuites } from "./analyzer"
 import { WorkflowRun, SingleBuildResponse, CircleciStatus, TestResponse } from "../client/circleci_client"
 import { RepositoryTagMap } from "../client/github_repository_client"
 import { TestSuite, TestCase } from "junit2json"
@@ -190,7 +190,7 @@ export class CircleciAnalyzer implements Analyzer {
       createdAt: workflowReport.createdAt,
       branch: workflowReport.branch,
       service: workflowReport.service,
-      testSuites,
+      testSuites: convertToReportTestSuites(testSuites),
       status: (testSuites.failures > 0) ? 'FAILURE' : 'SUCCESS',
       successCount: (testSuites.failures > 0) ? 0 : 1,
     }]

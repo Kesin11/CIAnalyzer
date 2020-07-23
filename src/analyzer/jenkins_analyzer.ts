@@ -1,4 +1,4 @@
-import { Status, Analyzer, secRound, TestReport, WorkflowParams } from "./analyzer"
+import { Status, Analyzer, secRound, TestReport, WorkflowParams, convertToReportTestSuites } from "./analyzer"
 import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, Artifact } from "../client/jenkins_client"
 import { sumBy, first } from "lodash"
 import { parse } from "junit2json"
@@ -161,7 +161,7 @@ export class JenkinsAnalyzer implements Analyzer {
           createdAt: workflowReport.createdAt,
           branch: workflowReport.branch,
           service: workflowReport.service,
-          testSuites,
+          testSuites: convertToReportTestSuites(testSuites),
           status: (testSuites.failures && testSuites.failures > 0) ? 'FAILURE' : 'SUCCESS',
           successCount: (testSuites.failures && testSuites.failures > 0) ? 0 : 1,
         })
