@@ -170,6 +170,30 @@ describe('Analyzer', () => {
 
         expect(convertToReportTestSuites(testSuites)).toStrictEqual(expected)
       })
+
+      it('successCount = 0 when testcase is error', async () => {
+        const testSuites: TestSuites = {
+          tests: 1,
+          failures: 1,
+          testsuite: [{
+            name: 'testsuite',
+            tests: 1,
+            failures: 1,
+            testcase: [{
+              name: 'testcase',
+              classname: 'test',
+              error: [{
+                inner: 'some error'
+              }]
+            }]
+          }]
+        }
+        const expected = JSON.parse(JSON.stringify(testSuites))
+        delete expected.testsuite[0].testcase[0].error
+        expected.testsuite[0].testcase[0].successCount = 0
+
+        expect(convertToReportTestSuites(testSuites)).toStrictEqual(expected)
+      })
     })
   })
 })
