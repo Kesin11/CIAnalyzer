@@ -61,6 +61,14 @@ bq mk
   --time_partitioning_field=createdAt \
   ${DATASET}.${TABLE} \
   ./bigquery_schema/workflow_report.json
+
+bq mk
+  --project_id=${YOUR_GCP_PROJECT_ID} \
+  --location=${LOCATION} \
+  --table \
+  --time_partitioning_field=createdAt \
+  ${DATASET}.${TABLE} \
+  ./bigquery_schema/test_report.json
 ```
 
 And service account need some BigQuery permissions. Please attach `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. More detail, check [BigQuery access control document](https://cloud.google.com/bigquery/docs/access-control).

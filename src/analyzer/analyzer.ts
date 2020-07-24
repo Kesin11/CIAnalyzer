@@ -1,5 +1,6 @@
 import { round } from "lodash"
-import { TestSuites } from 'junit2json'
+import { TestSuites, TestCase, TestSuite } from 'junit2json'
+import { Overwrite, Assign } from 'utility-types'
 
 export type Status = 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
 export type TestStatus = 'SUCCESS' | 'FAILURE'
@@ -61,10 +62,15 @@ export type TestReport = {
   createdAt: Date,
   branch: string,
   service: string,
-  testSuites: TestSuites
+  testSuites: ReportTestSuites
   status: TestStatus // = testSuites.failures > 0: 'FAILURE', else: 'SUCCESS'
   successCount: 0 | 1 // = testSuites.failures > 0: 1, else: 1. For create average success rate in dashboard
 }
+
+// Omit properties that may contain free and huge text data.
+export type ReportTestSuites = Overwrite<TestSuites, { testsuite: ReportTestSuite[] }>
+export type ReportTestSuite = Overwrite<Omit<TestSuite, 'system-out' | 'system-err'>, { testcase: ReportTestCase[] }>
+export type ReportTestCase = Assign<Omit<TestCase, 'error' | 'failure' | 'system-out' | 'system-err'>, { successCount: 0 | 1 }>
 
 export type WorkflowParams = {
   workflowId: string
@@ -89,4 +95,21 @@ export const diffSec = (start: string | Date, end: string | Date): number => {
 export const secRound = (sec: number) => {
   const PRECISION = 3
   return round(sec, PRECISION)
+}
+
+export const convertToReportTestSuites = (testSuites: TestSuites): ReportTestSuites => {
+  const filterd = JSON.parse(JSON.stringify(testSuites))
+  filterd.testsuite
+    .forEach((testSuite: TestSuite) => {
+      delete testSuite["system-out"]
+      delete testSuite["system-err"]
+      testSuite.testcase.forEach((testCase: TestCase) => {
+        (testCase as any).successCount = (testCase.failure || testCase.error) ? 0 : 1
+        delete testCase["system-out"]
+        delete testCase["system-err"]
+        delete testCase.failure
+        delete testCase.error
+      })
+    })
+  return filterd
 }
