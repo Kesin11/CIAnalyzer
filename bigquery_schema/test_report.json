@@ -37,16 +37,9 @@
           {
             "fields": [
               {
-                "fields": [
-                  {
-                    "mode": "NULLABLE", 
-                    "name": "inner", 
-                    "type": "STRING"
-                  }
-                ], 
-                "mode": "REPEATED", 
-                "name": "failure", 
-                "type": "RECORD"
+                "mode": "NULLABLE", 
+                "name": "successCount", 
+                "type": "INTEGER"
               }, 
               {
                 "mode": "NULLABLE", 
