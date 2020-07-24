@@ -12,4 +12,5 @@ module.exports = {
     // 'jest-junit'
   ],
   testEnvironment: 'node',
+  clearMocks: true,
 };
