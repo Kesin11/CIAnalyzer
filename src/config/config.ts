@@ -19,9 +19,23 @@ export type CommonConfig = {
 }
 
 export type ExporterConfig = {
-  [exporterName: string]: {
-    [options: string]: any
-  }
+  local: LocalExporterConfig
+  bigquery: BigqueryExporterConfig
+}
+
+export type LocalExporterConfig = {
+  outDir: string
+  format: 'json' | 'json_lines'
+}
+
+export type BigqueryExporterConfig = {
+  project?: string
+  dataset?: string
+  reports?: {
+    name: 'workflow' | 'test_report'
+    table: string
+  }[]
+  maxBadRecords?: number
 }
 
 export type LastRunStoreConfig = {

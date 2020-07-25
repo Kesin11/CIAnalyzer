@@ -1,4 +1,5 @@
 import { BigqueryExporter } from '../../src/exporter/bigquery_exporter'
+import { BigqueryExporterConfig } from '../../src/config/config'
 
 const bigqueryMock = {
   dataset: jest.fn().mockReturnThis(),
@@ -7,24 +8,46 @@ const bigqueryMock = {
 }
 
 describe('BigqueryExporter', () => {
+  const config: BigqueryExporterConfig = {
+    project: 'project',
+    dataset: 'dataset',
+    reports: [
+      { name: 'workflow', table: 'workflow' },
+      { name: 'test_report', table: 'test_report' },
+    ]
+  }
   describe('new', () => {
-    it('should not throw when project, dataset, table are not undefined', async () => {
+    it('should not throw when any params are not undefined', async () => {
       expect(() => {
-        const _exporter = new BigqueryExporter('project', 'dataset', 'table' )
+        new BigqueryExporter(config)
       })
     })
 
-    it('should throw when some of project, dataset, table is undefined', async () => {
+    it('should throw when project is undefined', async () => {
+      const _config = { ...config, project: undefined }
       expect(() => {
-        const _exporter = new BigqueryExporter(undefined, 'dataset', 'table' )
+        new BigqueryExporter(_config)
       }).toThrow()
+    })
 
+    it('should throw when dataset is undefined', async () => {
+      const _config = { ...config, dataset: undefined }
       expect(() => {
-        const _exporter = new BigqueryExporter('project', undefined, 'table' )
+        new BigqueryExporter(_config)
       }).toThrow()
+    })
 
+    it('should throw when workflow table is undefined', async () => {
+      const _config = { ...config, reports: [{ name: 'workflow', table: 'workflow'}] }
       expect(() => {
-        const _exporter = new BigqueryExporter('project', 'dataset', undefined )
+        new BigqueryExporter(_config as any)
+      }).toThrow()
+    })
+
+    it('should throw when test_report table is undefined', async () => {
+      const _config = { ...config, reports: [{ name: 'test_report', table: 'test_report'}] }
+      expect(() => {
+        new BigqueryExporter(_config as any)
       }).toThrow()
     })
   })
@@ -33,7 +56,7 @@ describe('BigqueryExporter', () => {
     const report = [{}]
     let exporter: BigqueryExporter
     beforeEach(() => {
-      exporter = new BigqueryExporter('project', 'dataset', 'table' )
+      exporter = new BigqueryExporter(config)
       exporter.bigquery = bigqueryMock as any
     })
 
