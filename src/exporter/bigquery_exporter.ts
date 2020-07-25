@@ -7,6 +7,11 @@ import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { Exporter } from "./exporter"
 import { BigqueryExporterConfig } from "../config/config"
 
+const schemaPaths = {
+  workflow: path.join(__dirname, '..', '..', 'bigquery_schema/workflow_report.json'),
+  test_report: path.join(__dirname, '..', '..', 'bigquery_schema/test_report.json'),
+}
+
 export class BigqueryExporter implements Exporter {
   bigquery: BigQuery
   dataset: string
@@ -35,7 +40,11 @@ export class BigqueryExporter implements Exporter {
     this.maxBadRecords = config.maxBadRecords ?? 0
   }
 
-  async exportWorkflowReports (reports: WorkflowReport[]) {
+  private formatJsonLines (reports: unknown[]): string {
+    return reports.map((report) => JSON.stringify(report)).join("\n")
+  }
+
+  private async export (reports: unknown[], table: string, schemaPathStr: string) {
     // Write report as tmp json file
     const randString = crypto.randomBytes(8).toString('hex')
     const tmpJsonPath = path.resolve(os.tmpdir(), `ci_analyzer_${randString}.json`)
@@ -43,25 +52,22 @@ export class BigqueryExporter implements Exporter {
     await fs.promises.writeFile(tmpJsonPath, reportJson)
 
     // Load WorkflowReport table schema
-    const schemaPath = path.resolve(__dirname, '..', '..', 'bigquery_schema/workflow_report.json')
+    const schemaPath = path.resolve(schemaPathStr)
     const schemaFile = await fs.promises.readFile(schemaPath)
     const schema = JSON.parse(schemaFile.toString())
 
     // Load to BigQuery
     const results = await this.bigquery
       .dataset(this.dataset)
-      .table(this.table.workflow)
+      .table(table)
       .load(tmpJsonPath, {
         schema: { fields: schema }, 
         maxBadRecords: this.maxBadRecords,
         schemaUpdateOptions: ['ALLOW_FIELD_ADDITION'],
         sourceFormat: 'NEWLINE_DELIMITED_JSON',
         writeDisposition: 'WRITE_APPEND',
-        timePartitioning: {
-          type: 'DAY',
-          field: 'createdAt',
-        }
       })
+    console.info(`(BigQuery) Loading ${tmpJsonPath} to ${this.dataset}.${this.table.workflow}. tmp file will be deleted if load complete with no error.`)
 
     const job = results[0]
     const errors = job.status?.errors
@@ -69,14 +75,14 @@ export class BigqueryExporter implements Exporter {
       throw errors
     }
 
-    console.info(`(BigQuery) Load ${tmpJsonPath} to ${this.dataset}.${this.table} completed. tmp file will be delete.`)
-
     await fs.promises.unlink(tmpJsonPath)
   }
 
-  formatJsonLines (reports: WorkflowReport[]): string {
-    return reports.map((report) => JSON.stringify(report)).join("\n")
+  async exportWorkflowReports (reports: WorkflowReport[]) {
+    await this.export(reports, this.table.workflow, schemaPaths['workflow'])
   }
 
-  async exportTestReports (reports: TestReport[]) { }
+  async exportTestReports (reports: TestReport[]) {
+    await this.export(reports, this.table.testReport, schemaPaths['test_report'])
+  }
 }

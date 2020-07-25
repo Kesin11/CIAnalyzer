@@ -8,12 +8,14 @@ const bigqueryMock = {
 }
 
 describe('BigqueryExporter', () => {
+  const workflowTable = 'workflow'
+  const testReportTable = 'test_report'
   const config: BigqueryExporterConfig = {
     project: 'project',
     dataset: 'dataset',
     reports: [
-      { name: 'workflow', table: 'workflow' },
-      { name: 'test_report', table: 'test_report' },
+      { name: 'workflow', table: workflowTable },
+      { name: 'test_report', table: testReportTable },
     ]
   }
   describe('new', () => {
@@ -52,7 +54,7 @@ describe('BigqueryExporter', () => {
     })
   })
 
-  describe('exportWorkflowReports', () => {
+  describe('export', () => {
     const report = [{}]
     let exporter: BigqueryExporter
     beforeEach(() => {
@@ -60,10 +62,18 @@ describe('BigqueryExporter', () => {
       exporter.bigquery = bigqueryMock as any
     })
 
-    it('should finish with no error', async () => {
+    it('exportWorkflowReports load to `workflow` table', async () => {
       await exporter.exportWorkflowReports(report as any)
 
       expect(bigqueryMock.load.mock.calls.length).toBe(1)
+      expect(bigqueryMock.table.mock.calls[0][0]).toBe(workflowTable)
+    })
+
+    it('exportTestReports load to `test_report` table', async () => {
+      await exporter.exportTestReports(report as any)
+
+      expect(bigqueryMock.load.mock.calls.length).toBe(1)
+      expect(bigqueryMock.table.mock.calls[0][0]).toBe(testReportTable)
     })
   })
 })
