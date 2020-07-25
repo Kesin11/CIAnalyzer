@@ -1,6 +1,6 @@
 import { LocalExporter } from "./local_exporter";
 import { WorkflowReport, TestReport } from "../analyzer/analyzer";
-import { ExporterConfig } from "../config/config";
+import { ExporterConfig, LocalExporterConfig, BigqueryExporterConfig } from "../config/config";
 import { BigqueryExporter } from "./bigquery_exporter";
 
 export interface Exporter {
@@ -12,16 +12,19 @@ export class CompositExporter implements Exporter {
   exporters: (Exporter | undefined)[]
   constructor(service: string, configDir: string, config?: ExporterConfig) {
     if (!config) {
-      this.exporters = [ new LocalExporter(service, configDir) ]
+      this.exporters = [ new LocalExporter(service, configDir, {}) ]
       return
     }
 
-    this.exporters = Object.entries(config).map(([exporter, options]) => {
+    this.exporters = Object.keys(config).map((exporter) => {
+      let _config: LocalExporterConfig | BigqueryExporterConfig
       switch (exporter) {
         case 'local':
-          return new LocalExporter(service, configDir, { outDir: options.outDir, format: options.format })
+          _config = config['local']
+          return new LocalExporter(service, configDir, _config)
         case 'bigquery':
-          return new BigqueryExporter(options.project, options.dataset, options.table, { maxBadRecords: options.maxBadRecords })
+          _config = config['bigquery']
+          return new BigqueryExporter(_config)
         default:
           return undefined
       }
