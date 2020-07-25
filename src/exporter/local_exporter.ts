@@ -3,8 +3,8 @@ import fs from "fs"
 import dayjs from 'dayjs'
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { Exporter } from "./exporter"
+import { LocalExporterConfig } from "../config/config"
 
-type Format = 'json' | 'json_lines'
 const defaultOutDir = 'output'
 
 export class LocalExporter implements Exporter {
@@ -14,14 +14,14 @@ export class LocalExporter implements Exporter {
   constructor(
     service: string,
     configDir: string,
-    options?: { outDir?: string, format?: Format }
+    config: LocalExporterConfig,
   ) {
     this.service = service
-    const _outDir = options?.outDir ?? defaultOutDir
+    const _outDir = config.outDir ?? defaultOutDir
     this.outDir = (path.isAbsolute(_outDir))
       ? _outDir
       : path.resolve(configDir, _outDir)
-    const format = options?.format ?? 'json'
+    const format = config?.format ?? 'json'
     this.formatter = (format === 'json') ? this.formatJson : this.formatJsonLines
   }
 

@@ -24,8 +24,8 @@ export type ExporterConfig = {
 }
 
 export type LocalExporterConfig = {
-  outDir: string
-  format: 'json' | 'json_lines'
+  outDir?: string
+  format?: 'json' | 'json_lines'
 }
 
 export type BigqueryExporterConfig = {

@@ -12,7 +12,7 @@ export class CompositExporter implements Exporter {
   exporters: (Exporter | undefined)[]
   constructor(service: string, configDir: string, config?: ExporterConfig) {
     if (!config) {
-      this.exporters = [ new LocalExporter(service, configDir) ]
+      this.exporters = [ new LocalExporter(service, configDir, {}) ]
       return
     }
 
@@ -21,7 +21,7 @@ export class CompositExporter implements Exporter {
       switch (exporter) {
         case 'local':
           _config = config['local']
-          return new LocalExporter(service, configDir, { outDir: _config.outDir, format: _config.format })
+          return new LocalExporter(service, configDir, _config)
         case 'bigquery':
           _config = config['bigquery']
           return new BigqueryExporter(_config)
