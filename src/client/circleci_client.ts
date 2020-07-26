@@ -103,7 +103,7 @@ export class CircleciClient {
   constructor(token: string, baseUrl?: string) {
     this.axios = axios.create({
       baseURL: baseUrl ?? 'https://circleci.com/api/v1.1',
-      timeout: 1000,
+      timeout: 3000,
       auth: {
         username: token,
         password: '',

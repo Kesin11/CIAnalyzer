@@ -25,7 +25,7 @@ export class GithubClient {
 
     this.axios = axios.create({
       baseURL: (baseUrl) ? baseUrl : 'https://api.github.com',
-      timeout: 1000,
+      timeout: 3000,
       auth: { username: '', password: token },
     });
 

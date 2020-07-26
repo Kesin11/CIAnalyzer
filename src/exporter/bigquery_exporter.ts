@@ -67,7 +67,7 @@ export class BigqueryExporter implements Exporter {
         sourceFormat: 'NEWLINE_DELIMITED_JSON',
         writeDisposition: 'WRITE_APPEND',
       })
-    console.info(`(BigQuery) Loading ${tmpJsonPath} to ${this.dataset}.${this.table.workflow}. tmp file will be deleted if load complete with no error.`)
+    console.info(`(BigQuery) Loading ${tmpJsonPath} to ${this.dataset}.${table}. tmp file will be deleted if load complete with no error.`)
 
     const job = results[0]
     const errors = job.status?.errors
