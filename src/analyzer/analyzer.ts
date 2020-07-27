@@ -70,7 +70,7 @@ export type TestReport = {
 // Omit properties that may contain free and huge text data.
 export type ReportTestSuites = Overwrite<TestSuites, { testsuite: ReportTestSuite[] }>
 export type ReportTestSuite = Overwrite<Omit<TestSuite, 'system-out' | 'system-err'>, { testcase: ReportTestCase[] }>
-export type ReportTestCase = Assign<Omit<TestCase, 'error' | 'failure' | 'system-out' | 'system-err'>, { successCount: 0 | 1 }>
+export type ReportTestCase = Assign<Omit<TestCase, 'error' | 'failure' | 'system-out' | 'system-err' | 'skipped'>, { successCount: 0 | 1 }>
 
 export type WorkflowParams = {
   workflowId: string
@@ -109,6 +109,7 @@ export const convertToReportTestSuites = (testSuites: TestSuites): ReportTestSui
         delete testCase["system-err"]
         delete testCase.failure
         delete testCase.error
+        delete testCase.skipped
       })
     })
   return filterd

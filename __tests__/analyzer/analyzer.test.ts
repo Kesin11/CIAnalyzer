@@ -62,6 +62,21 @@ describe('Analyzer', () => {
         ).not.toHaveProperty('system-out')
       })
 
+      it('testcase.system-out', async () => {
+        const testCase = [{
+          name: 'testcase',
+          classname: 'test',
+          skipped: [{
+            message: 'skip reason'
+          }]
+        }]
+        testSuites.testsuite[0].testcase = testCase
+
+        expect(
+          convertToReportTestSuites(testSuites).testsuite[0].testcase
+        ).not.toHaveProperty('skipped')
+      })
+
       it('testcase.system-err', async () => {
         const testCase = [{
           name: 'testcase',
