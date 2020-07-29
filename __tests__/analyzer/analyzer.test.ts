@@ -138,12 +138,13 @@ describe('Analyzer', () => {
         }
         const expected = JSON.parse(JSON.stringify(testSuites))
         expected.testsuite[0].testcase[0].successCount = expect.anything()
+        expected.testsuite[0].testcase[0].status = expect.anything()
 
         expect(convertToReportTestSuites(testSuites)).toStrictEqual(expected)
       })
     })
 
-    describe('Add some properties', () => {
+    describe('Add testcase.successCount', () => {
       it('successCount = 1 when testcase is success', async () => {
         const testSuites: TestSuites = {
           tests: 1,
@@ -156,10 +157,9 @@ describe('Analyzer', () => {
             }]
           }]
         }
-        const expected = JSON.parse(JSON.stringify(testSuites))
-        expected.testsuite[0].testcase[0].successCount = 1
 
-        expect(convertToReportTestSuites(testSuites)).toStrictEqual(expected)
+        const actual = convertToReportTestSuites(testSuites).testsuite[0].testcase[0].successCount
+        expect(actual).toEqual(1)
       })
 
       it('successCount = 0 when testcase is failed', async () => {
@@ -179,11 +179,9 @@ describe('Analyzer', () => {
             }]
           }]
         }
-        const expected = JSON.parse(JSON.stringify(testSuites))
-        delete expected.testsuite[0].testcase[0].failure
-        expected.testsuite[0].testcase[0].successCount = 0
 
-        expect(convertToReportTestSuites(testSuites)).toStrictEqual(expected)
+        const actual = convertToReportTestSuites(testSuites).testsuite[0].testcase[0].successCount
+        expect(actual).toEqual(0)
       })
 
       it('successCount = 0 when testcase is error', async () => {
@@ -203,11 +201,110 @@ describe('Analyzer', () => {
             }]
           }]
         }
-        const expected = JSON.parse(JSON.stringify(testSuites))
-        delete expected.testsuite[0].testcase[0].error
-        expected.testsuite[0].testcase[0].successCount = 0
 
-        expect(convertToReportTestSuites(testSuites)).toStrictEqual(expected)
+        const actual = convertToReportTestSuites(testSuites).testsuite[0].testcase[0].successCount
+        expect(actual).toEqual(0)
+      })
+
+      it('successCount = 0 when testcase is skipped', async () => {
+        const testSuites: TestSuites = {
+          tests: 1,
+          failures: 1,
+          testsuite: [{
+            name: 'testsuite',
+            tests: 1,
+            failures: 1,
+            testcase: [{
+              name: 'testcase',
+              classname: 'test',
+              skipped: [{
+                message: 'test skip: reason xxx'
+              }]
+            }]
+          }]
+        }
+
+        const actual = convertToReportTestSuites(testSuites).testsuite[0].testcase[0].successCount
+        expect(actual).toEqual(0)
+      })
+    })
+
+    describe('Add testcase.status', () => {
+      it('when testcase is success', async () => {
+        const testSuites: TestSuites = {
+          tests: 1,
+          testsuite: [{
+            name: 'testsuite',
+            tests: 1,
+            testcase: [{
+              name: 'testcase',
+              classname: 'test',
+            }]
+          }]
+        }
+
+        const actual = convertToReportTestSuites(testSuites).testsuite[0].testcase[0].status
+        expect(actual).toEqual('SUCCESS')
+      })
+
+      it('when testcase is failure', async () => {
+        const testSuites: TestSuites = {
+          tests: 1,
+          testsuite: [{
+            name: 'testsuite',
+            tests: 1,
+            testcase: [{
+              name: 'testcase',
+              classname: 'test',
+              failure: [{
+                inner: 'assert xxx',
+              }]
+            }]
+          }]
+        }
+
+        const actual = convertToReportTestSuites(testSuites).testsuite[0].testcase[0].status
+        expect(actual).toEqual('FAILURE')
+      })
+
+      it('when testcase is error', async () => {
+        const testSuites: TestSuites = {
+          tests: 1,
+          testsuite: [{
+            name: 'testsuite',
+            tests: 1,
+            testcase: [{
+              name: 'testcase',
+              classname: 'test',
+              error: [{
+                inner: 'assert xxx',
+              }]
+            }]
+          }]
+        }
+
+        const actual = convertToReportTestSuites(testSuites).testsuite[0].testcase[0].status
+        expect(actual).toEqual('ERROR')
+      })
+
+      it('when testcase is skipped', async () => {
+        const testSuites: TestSuites = {
+          tests: 1,
+          testsuite: [{
+            name: 'testsuite',
+            tests: 1,
+            testcase: [{
+              name: 'testcase',
+              classname: 'test',
+              skipped: [{
+                message: 'test skip: reason xxx',
+              }]
+            }]
+          }]
+        }
+
+        const actual = convertToReportTestSuites(testSuites).testsuite[0].testcase[0].status
+        expect(actual).toEqual('SKIPPED')
       })
     })
   })
