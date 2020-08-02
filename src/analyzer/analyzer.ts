@@ -70,7 +70,7 @@ export type TestReport = {
 
 // Omit properties that may contain free and huge text data.
 export type ReportTestSuites = Overwrite<TestSuites, { testsuite: ReportTestSuite[] }>
-export type ReportTestSuite = Overwrite<Omit<TestSuite, 'system-out' | 'system-err'>, { testcase: ReportTestCase[] }>
+export type ReportTestSuite = Overwrite<Omit<TestSuite, 'system-out' | 'system-err' | 'properties'>, { testcase: ReportTestCase[] }>
 export type ReportTestCase = Assign<
   Omit<TestCase, 'error' | 'failure' | 'system-out' | 'system-err' | 'skipped'>
   ,{ successCount: 0 | 1, status: TestCaseStatus }
@@ -107,6 +107,7 @@ export const convertToReportTestSuites = (testSuites: TestSuites): ReportTestSui
     .forEach((testSuite: TestSuite) => {
       delete testSuite["system-out"]
       delete testSuite["system-err"]
+      delete testSuite.properties
       testSuite.testcase.forEach((testCase: TestCase) => {
         (testCase as any).successCount = (testCase.failure || testCase.error || testCase.skipped) ? 0 : 1;
         (testCase as any).status =

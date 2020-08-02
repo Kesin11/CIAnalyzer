@@ -124,6 +124,26 @@ describe('Analyzer', () => {
         ).not.toHaveProperty('system-err')
       })
 
+      it('testsuite.properties', async () => {
+        const testSuite = [{
+          name: 'testsuite',
+          tests: 1,
+          testcase: [{
+            name: 'testcase',
+            classname: 'test',
+          }],
+          properties: [{
+            name: 'property',
+            value: 'property value'
+          }]
+        }]
+        testSuites.testsuite = testSuite
+
+        expect(
+          convertToReportTestSuites(testSuites).testsuite[0]
+        ).not.toHaveProperty('properties')
+      })
+
       it('testSuites has not failure', async () => {
         const testSuites: TestSuites = {
           tests: 1,
