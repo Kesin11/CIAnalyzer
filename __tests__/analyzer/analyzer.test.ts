@@ -30,7 +30,7 @@ describe('Analyzer', () => {
         testSuites.testsuite[0].testcase = testCase
 
         expect(
-          convertToReportTestSuites(testSuites).testsuite[0].testcase
+          convertToReportTestSuites(testSuites).testsuite[0].testcase[0]
         ).not.toHaveProperty('error')
       })
 
@@ -45,7 +45,7 @@ describe('Analyzer', () => {
         testSuites.testsuite[0].testcase = testCase
 
         expect(
-          convertToReportTestSuites(testSuites).testsuite[0].testcase
+          convertToReportTestSuites(testSuites).testsuite[0].testcase[0]
         ).not.toHaveProperty('failure')
       })
 
@@ -58,7 +58,7 @@ describe('Analyzer', () => {
         testSuites.testsuite[0].testcase = testCase
 
         expect(
-          convertToReportTestSuites(testSuites).testsuite[0].testcase
+          convertToReportTestSuites(testSuites).testsuite[0].testcase[0]
         ).not.toHaveProperty('system-out')
       })
 
@@ -73,7 +73,7 @@ describe('Analyzer', () => {
         testSuites.testsuite[0].testcase = testCase
 
         expect(
-          convertToReportTestSuites(testSuites).testsuite[0].testcase
+          convertToReportTestSuites(testSuites).testsuite[0].testcase[0]
         ).not.toHaveProperty('skipped')
       })
 
@@ -86,7 +86,7 @@ describe('Analyzer', () => {
         testSuites.testsuite[0].testcase = testCase
 
         expect(
-          convertToReportTestSuites(testSuites).testsuite[0].testcase
+          convertToReportTestSuites(testSuites).testsuite[0].testcase[0]
         ).not.toHaveProperty('system-err')
       })
 
@@ -103,7 +103,7 @@ describe('Analyzer', () => {
         testSuites.testsuite = testSuite
 
         expect(
-          convertToReportTestSuites(testSuites).testsuite
+          convertToReportTestSuites(testSuites).testsuite[0]
         ).not.toHaveProperty('system-out')
       })
 
@@ -120,7 +120,7 @@ describe('Analyzer', () => {
         testSuites.testsuite = testSuite
 
         expect(
-          convertToReportTestSuites(testSuites).testsuite
+          convertToReportTestSuites(testSuites).testsuite[0]
         ).not.toHaveProperty('system-err')
       })
 
