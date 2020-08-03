@@ -57,22 +57,21 @@ export class BigqueryExporter implements Exporter {
     const schema = JSON.parse(schemaFile.toString())
 
     // Load to BigQuery
-    const results = await this.bigquery
-      .dataset(this.dataset)
-      .table(table)
-      .load(tmpJsonPath, {
-        schema: { fields: schema }, 
-        maxBadRecords: this.maxBadRecords,
-        schemaUpdateOptions: ['ALLOW_FIELD_ADDITION'],
-        sourceFormat: 'NEWLINE_DELIMITED_JSON',
-        writeDisposition: 'WRITE_APPEND',
-      })
     console.info(`(BigQuery) Loading ${tmpJsonPath} to ${this.dataset}.${table}. tmp file will be deleted if load complete with no error.`)
-
-    const job = results[0]
-    const errors = job.status?.errors
-    if (errors && errors.length > 0) {
-      throw errors
+    try {
+      await this.bigquery
+        .dataset(this.dataset)
+        .table(table)
+        .load(tmpJsonPath, {
+          schema: { fields: schema },
+          maxBadRecords: this.maxBadRecords,
+          schemaUpdateOptions: ['ALLOW_FIELD_ADDITION'],
+          sourceFormat: 'NEWLINE_DELIMITED_JSON',
+          writeDisposition: 'WRITE_APPEND',
+        })
+    } catch (error) {
+      console.error(`(BigQuery) ERROR!! loading ${tmpJsonPath} to ${this.dataset}.${table}`)
+      throw error
     }
 
     await fs.promises.unlink(tmpJsonPath)
