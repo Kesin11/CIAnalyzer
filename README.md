@@ -16,6 +16,7 @@ CIAnalyzer collects build data using each service API, normalizes the data forma
 (Sample dashboard created by DataStudio with BigQuery)
 ![ci_analyzer_dashboard1](https://user-images.githubusercontent.com/1324862/82752752-3d5bcd00-9dfb-11ea-9cb3-a32e81c5f3b9.png)
 ![ci_analyzer_dashboard2](https://user-images.githubusercontent.com/1324862/82752755-42b91780-9dfb-11ea-91df-c3451e51772a.png)
+![cianalyzer_test_report](https://user-images.githubusercontent.com/1324862/89435621-15380500-d780-11ea-8131-5dde21beb3fa.png)
 
 # Supported services
 - CI services
@@ -93,6 +94,9 @@ CIAnalyzer is designed as a tool that runs every time, not as an agent. It's a  
 Please check [sample](./sample/README.md), then copy it and edit to your configuration.
 
 ## Sample output JSON
+
+### Workflow Report
+
 ```json
 {
   "service": "circleci",
