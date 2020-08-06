@@ -206,7 +206,7 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
 - [ ] collect any of JSON data from build artifacts
 
 # Architecture
-![CIAnalyzer Architecture](https://user-images.githubusercontent.com/1324862/82753868-34232e00-9e04-11ea-84b4-1c88821dbdaa.png)
+![CIAnalyzer Architecture](https://user-images.githubusercontent.com/1324862/89551373-d7051900-d845-11ea-9176-332c8995141f.png)
 
 # Development
 ## Install
