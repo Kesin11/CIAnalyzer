@@ -3,20 +3,29 @@
 [![Docker build](https://github.com/Kesin11/CIAnalyzer/workflows/Docker%20build/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kesin/ci_analyzer)](https://hub.docker.com/r/kesin/ci_analyzer)
 
-CIAnalyzer is a tool collecting multi CI services build data and export it for creating self-hosting build dashboard.
+CIAnalyzer is a tool collecting build data from CI services. You can create a dashboard to analyze your build from the collected data.
 
 # Motivation
-Today, many CI services provide a feature to build various things, such as applications or docker images, etc.
-Because some use cases take longer to build, we sometimes want to know the average build time, success rate, which steps are consuming the most time, etc.
+Today, many CI services provide the ability to build applications, docker images, and many other things.
+Since some of these builds can take a long time to build, you may want to analyze your build data, average build time, success rate, etc.
 
-Unfortunately, few services provide a dashboard for analyzing build data. As far as I know Azure Pipeline provides a great feature called [Pipeline reports](https://docs.microsoft.com/en-us/azure/devops/pipelines/reports/pipelinereport?view=azure-devops), but it only shows data about builds that have been run in Azure Pipeline. It does not support other CI services such as Jenkins or CircleCI.
+Unfortunately, few services provide a dashboard for analyzing build data. As far as I know Azure Pipeline provides a great feature called [Pipeline reports](https://docs.microsoft.com/en-us/azure/devops/pipelines/reports/pipelinereport?view=azure-devops), but it only shows data about builds that have been run in Azure Pipeline.
 
-CIAnalyzer collects build data using each service API, normalizes the data format, and exports it. So you can create a dashboard that allows you to analyze build data across multiple CI services using your favorite BI tools.
+CIAnalyzer collects build data using each service API, then normalizes the data format and exports it. So you can create a dashboard that allows you to analyze build data across multiple CI services using your favorite BI tools.
 
-(Sample dashboard created by DataStudio with BigQuery)
+# Sample dashboard
+It created by DataStudio with BigQuery
 ![ci_analyzer_dashboard1](https://user-images.githubusercontent.com/1324862/82752752-3d5bcd00-9dfb-11ea-9cb3-a32e81c5f3b9.png)
 ![ci_analyzer_dashboard2](https://user-images.githubusercontent.com/1324862/82752755-42b91780-9dfb-11ea-91df-c3451e51772a.png)
 ![cianalyzer_test_report](https://user-images.githubusercontent.com/1324862/89435621-15380500-d780-11ea-8131-5dde21beb3fa.png)
+
+# Architecture
+![CIAnalyzer Architecture](https://user-images.githubusercontent.com/1324862/89551373-d7051900-d845-11ea-9176-332c8995141f.png)
+
+
+# Export data
+## Workflow
+## Test report
 
 # Supported services
 - CI services
@@ -204,9 +213,6 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
 - [ ] Output queued waiting duration time
 - [ ] Support Bitrise
 - [ ] collect any of JSON data from build artifacts
-
-# Architecture
-![CIAnalyzer Architecture](https://user-images.githubusercontent.com/1324862/89551373-d7051900-d845-11ea-9176-332c8995141f.png)
 
 # Development
 ## Install
