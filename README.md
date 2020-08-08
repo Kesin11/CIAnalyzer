@@ -3,7 +3,7 @@
 [![Docker build](https://github.com/Kesin11/CIAnalyzer/workflows/Docker%20build/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kesin/ci_analyzer)](https://hub.docker.com/r/kesin/ci_analyzer)
 
-CIAnalyzer is a tool collecting build data from CI services. You can create a dashboard to analyze your build from the collected data.
+CIAnalyzer is a tool for collecting build data from CI services. You can create a dashboard to analyze your build from the collected data.
 
 # Motivation
 Today, many CI services provide the ability to build applications, docker images, and many other things.
@@ -37,7 +37,7 @@ Workflow is a data about job that executed in CI. The items included in the work
 - Tag
 
 ## Test report
-Test report is data about test. If you output test result as JUnit format XML and store to archive, CIAnalyzer can collect from it.
+Test report is a data about test. If you output test result as JUnit format XML and store to archive, CIAnalyzer can collect from it.
 
 - Executed date
 - Duration time
