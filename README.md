@@ -25,7 +25,27 @@ It created by DataStudio with BigQuery
 
 # Export data
 ## Workflow
+Workflow is a data about job that executed in CI. The items included in the workflow data are as follows.
+
+- Executed date
+- Duration time
+- Status(Success, Failed, Abort, etc.)
+- Build number
+- Trigger type
+- Repository
+- Branch
+- Tag
+
 ## Test report
+Test report is data about test. If you output test result as JUnit format XML and store to archive, CIAnalyzer can collect from it.
+
+- Executed date
+- Duration time
+- Status(Success, Failed, Skipped, etc.)
+- Test name
+- Number of test
+- Failure test num
+- Branch
 
 # Supported services
 - CI services
