@@ -80,7 +80,7 @@ docker run \
 - LastRunStore
   - GOOGLE_APPLICATION_CREDENTIALS
 
-## Setup BigQuery (Optional)
+## Setup BigQuery (Recommend)
 If you want to use `bigquery_exporter`, you have to create table that CIAnalyzer will export data to it.
 
 ```bash
@@ -101,16 +101,26 @@ bq mk
   ./bigquery_schema/test_report.json
 ```
 
-And service account need some BigQuery permissions. Please attach `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. More detail, check [BigQuery access control document](https://cloud.google.com/bigquery/docs/access-control).
+And also GCP service account used for CIAnalyzer needs some BigQuery permissions. Please attach `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. More detail, check [BigQuery access control document](https://cloud.google.com/bigquery/docs/access-control).
 
-## Setup GCS bucket (Optional)
-It you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket that CIAnalyzer will store files to it.
+## Setup GCS bucket (Recommend)
+### What is LastRunStore
+CIAnalyzer collects build data from each CI service API, but there may be duplicates of the previously collected data. To remove the duplicate, it is necessary to save the last build number of the previous run and output only the difference from the previous run.
+
+After CIAnalyzer collects build data successfully, it save each job build number and load before next time execution. This feature called LastRunStore.
+
+By default, CIAnalyzer uses a local JSON file as a backend for LastRunStore. However, the last build number needs to be shared, for example when running CIAnalyzer on Jenkins which uses multiple nodes.
+
+Resolving these problems, CIAnalyzer can use GCS as LastRunStore to read/write the last build number from any machine. It inspired by [Terraform backend](https://www.terraform.io/docs/backends/index.html).
+
+### Create GCS bucket
+If you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket before execute CIAnalyzer.
 
 ```bash
 gsutil mb -l ${LOCATION} gs://${BUCKET_NAME}
 ```
 
-And service account need to read and write permissions for target bucket. More detail, check [GCS access control document](https://cloud.google.com/storage/docs/access-control/iam-permissions).
+And also GCP service account needs to read and write permissions for the target bucket. More detail, check [GCS access control document](https://cloud.google.com/storage/docs/access-control/iam-permissions).
 
 ## Edit config yaml
 Copy [ci_analyzer.yaml](./ci_analyzer.yaml) and edit to your prefere configuration. CIAnalyzer use `ci_analyzer.yaml` as config file in default, but it can change with `-c` options.
