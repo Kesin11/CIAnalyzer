@@ -284,10 +284,11 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
 ```
 
 # Roadmap
-- [ ] Collect test data (maybe support JUnit XML)
-- [ ] Output queued waiting duration time
+- [x] Collect test data
+- [ ] Collect any of JSON format from build artifacts
+- [ ] Output executed node data
+- [ ] Implement better logger
 - [ ] Support Bitrise
-- [ ] collect any of JSON data from build artifacts
 
 # Development
 ## Install
