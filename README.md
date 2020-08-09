@@ -122,8 +122,8 @@ gsutil mb -l ${LOCATION} gs://${BUCKET_NAME}
 
 And also GCP service account needs to read and write permissions for the target bucket. More detail, check [GCS access control document](https://cloud.google.com/storage/docs/access-control/iam-permissions).
 
-## Edit config yaml
-Copy [ci_analyzer.yaml](./ci_analyzer.yaml) and edit to your prefere configuration. CIAnalyzer use `ci_analyzer.yaml` as config file in default, but it can change with `-c` options.
+## Edit config YAML
+Copy [ci_analyzer.yaml](./ci_analyzer.yaml) and edit to your preferred configuration. CIAnalyzer uses `ci_analyzer.yaml` as config file in default, but it can change with `-c` options.
 
 More detail for config file, please check [ci_analyzer.yaml](./ci_analyzer.yaml) and [sample files](./sample).
 
@@ -134,7 +134,7 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
 
 ## Sample output JSON
 
-### Workflow Report
+### Workflow report
 
 ```json
 {
@@ -150,6 +150,12 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
   "headSha": "09f1d6d398c108936ff7973139fcbf1793d74f8f",
   "branch": "master",
   "tag": "v0.2.0",
+  "startedAt": "2020-05-21T01:08:09.632Z",
+  "completedAt": "2020-05-21T01:08:53.469Z",
+  "workflowDurationSec": 40.752,
+  "sumJobsDurationSec": 39.959,
+  "successCount": 1,
+  "parameters": [],
   "jobs": [
     {
       "workflowRunId": "Kesin11/CIAnalyzer-ci-306",
@@ -228,14 +234,53 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
         }
       ]
     }
-  ],
-  "startedAt": "2020-05-21T01:08:09.632Z",
-  "completedAt": "2020-05-21T01:08:53.469Z",
-  "workflowDurationSec": 40.752,
-  "sumJobsDurationSec": 39.959,
-  "successCount": 1,
-  "parameters": []
+  ]
 }
+```
+
+### Test report
+```json
+[
+  {
+    "workflowId": "Kesin11/CIAnalyzer-CI",
+    "workflowRunId": "Kesin11/CIAnalyzer-CI-170",
+    "buildNumber": 170,
+    "workflowName": "CI",
+    "createdAt": "2020-08-09T10:20:28.000Z",
+    "branch": "feature/fix_readme_for_v2",
+    "service": "github",
+    "status": "SUCCESS",
+    "successCount": 1,
+    "testSuites": {
+      "name": "CIAnalyzer tests",
+      "tests": 56,
+      "failures": 0,
+      "time": 9.338,
+      "testsuite": [
+        {
+          "name": "__tests__/analyzer/analyzer.test.ts",
+          "errors": 0,
+          "failures": 0,
+          "skipped": 0,
+          "timestamp": "2020-08-09T10:22:18",
+          "time": 3.688,
+          "tests": 17,
+          "testcase": [
+            {
+              "classname": "Analyzer convertToReportTestSuites Omit some properties",
+              "name": "testcase.error",
+              "time": 0.003,
+              "successCount": 1,
+              "status": "SUCCESS"
+            },
+            {
+              "classname": "Analyzer convertToReportTestSuites Omit some properties",
+              "name": "testcase.failure",
+              "time": 0,
+              "successCount": 1,
+              "status": "SUCCESS"
+            },
+    ...
 ```
 
 # Roadmap
