@@ -1,49 +1,54 @@
+# This is sample CIAnalyzer config yaml.
+# Copy it and change to your config.
+
 github:
-  # baseUrl: https://api.github.com # default
+  # baseUrl: https://api.github.com # Change it if you using GitHub Enterprise Server
   repos:
-    - Kesin11/CIAnalyzer
-    - Kesin11/Firestore-simple
-  vscBaseUrl:
-    # Using for collect git tag data.
+    - name: Kesin11/CIAnalyzer
+      tests:
+        - '**/*.xml' # Test report JUnit XML path in artifact that uploaded by actions/upload-artifact
+    - Kesin11/Firestore-simple # Can use abbr format if don't collect test report
+  vscBaseUrl: # It used for collect git tag data.
     github: https://api.github.com # default
   exporter: &exporter # Can use yaml anchor
     local:
       outDir: ./output # default: output
-      format: json_lines # default: json. 'json' and 'json_lines' are supported.
+      format: json # default: json. 'json' and 'json_lines' are supported.
     bigquery:
-      project: common-dev-242504
-      dataset: ci_analyzer
+      project: { GCP_PROJECT_ID }
+      dataset: { BIGQUERY_DATASET }
       reports:
         - name: workflow
-          table: bigquery_exporter
+          table: { WORKFLOW_TABLE_NAME }
         - name: test_report
-          table: test_report
+          table: { TEST_REPORT_TABLE_NAME }
       maxBadRecords: 0 # (Optional) default: 0. If set > 0, skip bad record. This option should only be used for workaround.
   lastRunStore:
-    backend: local # default: local
-    path: .ci_analyzer/last_run/github.json # default: .ci_analyzer/last_run/${service}.json
+    backend: gcs # Recommend using 'gcs' backend
+    project: { GCP_PROJECT_ID }
+    bucket: { BUCKET_NAME }
+    path: ci_analyzer/last_run/github.json # (Optional) default: ci_analyzer/last_run/${service}.json
 
 circleci:
-  # baseUrl: https://circleci.com/api/v1.1 # default
+  # baseUrl: https://circleci.com/api/v1.1 # Change it if you using CircleCI Enterprise
   repos:
     - Kesin11/CIAnalyzer
     # - name: Kesin11/CIAnalyzer
     #   vsc_type: github # github or bitbucket. default: github
   vscBaseUrl:
-    # Using for collect git tag data. Currently only support github
-    github: https://api.github.com # default. GitHub Enterprise Server also supported.
+    # Using for collect git tag data. **Currently only support github**
+    github: https://api.github.com # Change it if you using GitHub Enterprise Server
   exporter: *exporter # Can use yaml anchor
   lastRunStore:
-    backend: gcs
-    project: common-dev-242504
-    bucket: kesin11-ci-analyzer
-    path: ci_analyzer/last_run/circleci.json # (Optional) default: ci_analyzer/last_run/${service}.json
+    backend: local # 'local' backend is not recommended but it useful for debug
+    path: .ci_analyzer/last_run/circleci.json # default: .ci_analyzer/last_run/${service}.json
 
 jenkins:
   baseUrl: http://localhost:8080 # Your jenkins url
-  jobs:
-    - ci_analyzer
-    - ci_analyzer_push
-    - build-pipeline
-    - build-pipeline-nested
+  jobs: # Job names in your Jenkins
+    - name: ci_analyzer
+      tests:
+        - 'junit/junit.xml' # Test report JUnit XML path in artifact
+    - ci_analyzer_pull_request
   exporter: *exporter
+  # If 'lastRunStore' is omitted, local backend is used

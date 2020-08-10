@@ -3,19 +3,49 @@
 [![Docker build](https://github.com/Kesin11/CIAnalyzer/workflows/Docker%20build/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kesin/ci_analyzer)](https://hub.docker.com/r/kesin/ci_analyzer)
 
-CIAnalyzer is a tool collecting multi CI services build data and export it for creating self-hosting build dashboard.
+CIAnalyzer is a tool for collecting build data from CI services. You can create a dashboard to analyze your build from the collected data.
 
 # Motivation
-Today, many CI services provide a feature to build various things, such as applications or docker images, etc.
-Because some use cases take longer to build, we sometimes want to know the average build time, success rate, which steps are consuming the most time, etc.
+Today, many CI services provide the ability to build applications, docker images, and many other things.
+Since some of these builds can take a long time to build, you may want to analyze your build data, average build time, success rate, etc.
 
-Unfortunately, few services provide a dashboard for analyzing build data. As far as I know Azure Pipeline provides a great feature called [Pipeline reports](https://docs.microsoft.com/en-us/azure/devops/pipelines/reports/pipelinereport?view=azure-devops), but it only shows data about builds that have been run in Azure Pipeline. It does not support other CI services such as Jenkins or CircleCI.
+Unfortunately, few services provide a dashboard for analyzing build data. As far as I know Azure Pipeline provides a great feature called [Pipeline reports](https://docs.microsoft.com/en-us/azure/devops/pipelines/reports/pipelinereport?view=azure-devops), but it only shows data about builds that have been run in Azure Pipeline.
 
-CIAnalyzer collects build data using each service API, normalizes the data format, and exports it. So you can create a dashboard that allows you to analyze build data across multiple CI services using your favorite BI tools.
+CIAnalyzer collects build data using each service API, then normalizes the data format and exports it. So you can create a dashboard that allows you to analyze build data across multiple CI services using your favorite BI tools.
 
-(Sample dashboard created by DataStudio with BigQuery)
+# Sample dashboard
+It created by DataStudio with BigQuery
 ![ci_analyzer_dashboard1](https://user-images.githubusercontent.com/1324862/82752752-3d5bcd00-9dfb-11ea-9cb3-a32e81c5f3b9.png)
 ![ci_analyzer_dashboard2](https://user-images.githubusercontent.com/1324862/82752755-42b91780-9dfb-11ea-91df-c3451e51772a.png)
+![cianalyzer_test_report](https://user-images.githubusercontent.com/1324862/89435621-15380500-d780-11ea-8131-5dde21beb3fa.png)
+
+# Architecture
+![CIAnalyzer Architecture](https://user-images.githubusercontent.com/1324862/89551373-d7051900-d845-11ea-9176-332c8995141f.png)
+
+
+# Export data
+## Workflow
+Workflow is a data about job that executed in CI. The items included in the workflow data are as follows.
+
+- Executed date
+- Duration time
+- Status(Success, Failed, Abort, etc.)
+- Build number
+- Trigger type
+- Repository
+- Branch
+- Tag
+
+## Test report
+Test report is a data about test. If you output test result as JUnit format XML and store to archive, CIAnalyzer can collect from it.
+
+- Executed date
+- Duration time
+- Status(Success, Failed, Skipped, etc.)
+- Test name
+- Number of test
+- Failure test num
+- Branch
 
 # Supported services
 - CI services
@@ -50,7 +80,7 @@ docker run \
 - LastRunStore
   - GOOGLE_APPLICATION_CREDENTIALS
 
-## Setup BigQuery (Optional)
+## Setup BigQuery (Recommend)
 If you want to use `bigquery_exporter`, you have to create table that CIAnalyzer will export data to it.
 
 ```bash
@@ -71,19 +101,29 @@ bq mk
   ./bigquery_schema/test_report.json
 ```
 
-And service account need some BigQuery permissions. Please attach `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. More detail, check [BigQuery access control document](https://cloud.google.com/bigquery/docs/access-control).
+And also GCP service account used for CIAnalyzer needs some BigQuery permissions. Please attach `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. More detail, check [BigQuery access control document](https://cloud.google.com/bigquery/docs/access-control).
 
-## Setup GCS bucket (Optional)
-It you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket that CIAnalyzer will store files to it.
+## Setup GCS bucket (Recommend)
+### What is LastRunStore
+CIAnalyzer collects build data from each CI service API, but there may be duplicates of the previously collected data. To remove the duplicate, it is necessary to save the last build number of the previous run and output only the difference from the previous run.
+
+After CIAnalyzer collects build data successfully, it save each job build number and load before next time execution. This feature called LastRunStore.
+
+By default, CIAnalyzer uses a local JSON file as a backend for LastRunStore. However, the last build number needs to be shared, for example when running CIAnalyzer on Jenkins which uses multiple nodes.
+
+Resolving these problems, CIAnalyzer can use GCS as LastRunStore to read/write the last build number from any machine. It inspired by [Terraform backend](https://www.terraform.io/docs/backends/index.html).
+
+### Create GCS bucket
+If you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket before execute CIAnalyzer.
 
 ```bash
 gsutil mb -l ${LOCATION} gs://${BUCKET_NAME}
 ```
 
-And service account need to read and write permissions for target bucket. More detail, check [GCS access control document](https://cloud.google.com/storage/docs/access-control/iam-permissions).
+And also GCP service account needs to read and write permissions for the target bucket. More detail, check [GCS access control document](https://cloud.google.com/storage/docs/access-control/iam-permissions).
 
-## Edit config yaml
-Copy [ci_analyzer.yaml](./ci_analyzer.yaml) and edit to your prefere configuration. CIAnalyzer use `ci_analyzer.yaml` as config file in default, but it can change with `-c` options.
+## Edit config YAML
+Copy [ci_analyzer.yaml](./ci_analyzer.yaml) and edit to your preferred configuration. CIAnalyzer uses `ci_analyzer.yaml` as config file in default, but it can change with `-c` options.
 
 More detail for config file, please check [ci_analyzer.yaml](./ci_analyzer.yaml) and [sample files](./sample).
 
@@ -93,6 +133,9 @@ CIAnalyzer is designed as a tool that runs every time, not as an agent. It's a  
 Please check [sample](./sample/README.md), then copy it and edit to your configuration.
 
 ## Sample output JSON
+
+### Workflow report
+
 ```json
 {
   "service": "circleci",
@@ -107,6 +150,12 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
   "headSha": "09f1d6d398c108936ff7973139fcbf1793d74f8f",
   "branch": "master",
   "tag": "v0.2.0",
+  "startedAt": "2020-05-21T01:08:09.632Z",
+  "completedAt": "2020-05-21T01:08:53.469Z",
+  "workflowDurationSec": 40.752,
+  "sumJobsDurationSec": 39.959,
+  "successCount": 1,
+  "parameters": [],
   "jobs": [
     {
       "workflowRunId": "Kesin11/CIAnalyzer-ci-306",
@@ -185,24 +234,61 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
         }
       ]
     }
-  ],
-  "startedAt": "2020-05-21T01:08:09.632Z",
-  "completedAt": "2020-05-21T01:08:53.469Z",
-  "workflowDurationSec": 40.752,
-  "sumJobsDurationSec": 39.959,
-  "successCount": 1,
-  "parameters": []
+  ]
 }
 ```
 
-# Roadmap
-- [ ] Collect test data (maybe support JUnit XML)
-- [ ] Output queued waiting duration time
-- [ ] Support Bitrise
-- [ ] collect any of JSON data from build artifacts
+### Test report
+```json
+[
+  {
+    "workflowId": "Kesin11/CIAnalyzer-CI",
+    "workflowRunId": "Kesin11/CIAnalyzer-CI-170",
+    "buildNumber": 170,
+    "workflowName": "CI",
+    "createdAt": "2020-08-09T10:20:28.000Z",
+    "branch": "feature/fix_readme_for_v2",
+    "service": "github",
+    "status": "SUCCESS",
+    "successCount": 1,
+    "testSuites": {
+      "name": "CIAnalyzer tests",
+      "tests": 56,
+      "failures": 0,
+      "time": 9.338,
+      "testsuite": [
+        {
+          "name": "__tests__/analyzer/analyzer.test.ts",
+          "errors": 0,
+          "failures": 0,
+          "skipped": 0,
+          "timestamp": "2020-08-09T10:22:18",
+          "time": 3.688,
+          "tests": 17,
+          "testcase": [
+            {
+              "classname": "Analyzer convertToReportTestSuites Omit some properties",
+              "name": "testcase.error",
+              "time": 0.003,
+              "successCount": 1,
+              "status": "SUCCESS"
+            },
+            {
+              "classname": "Analyzer convertToReportTestSuites Omit some properties",
+              "name": "testcase.failure",
+              "time": 0,
+              "successCount": 1,
+              "status": "SUCCESS"
+            },
+    ...
+```
 
-# Architecture
-![CIAnalyzer Architecture](https://user-images.githubusercontent.com/1324862/82753868-34232e00-9e04-11ea-84b4-1c88821dbdaa.png)
+# Roadmap
+- [x] Collect test data
+- [ ] Collect any of JSON format from build artifacts
+- [ ] Output executed node data
+- [ ] Implement better logger
+- [ ] Support Bitrise
 
 # Development
 ## Install
