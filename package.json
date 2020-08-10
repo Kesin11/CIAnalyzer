@@ -38,7 +38,7 @@
     "@octokit/rest": "17.9.0",
     "adm-zip": "0.4.16",
     "axios": "0.19.2",
-    "dayjs": "1.8.27",
+    "dayjs": "1.8.33",
     "js-yaml": "3.14.0",
     "junit2json": "2.0.0",
     "lodash": "4.17.19",
