@@ -59,6 +59,6 @@
     "rimraf": "3.0.2",
     "shipjs": "0.20.1",
     "ts-jest": "26.0.0",
-    "typescript": "3.9.2"
+    "typescript": "3.9.7"
   }
 }
