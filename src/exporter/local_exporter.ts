@@ -11,6 +11,7 @@ export class LocalExporter implements Exporter {
   service: string
   outDir: string
   formatter: (report: unknown[]) => string
+  fsPromises = fs.promises
   constructor(
     service: string,
     configDir: string,
@@ -25,24 +26,24 @@ export class LocalExporter implements Exporter {
     this.formatter = (format === 'json') ? this.formatJson : this.formatJsonLines
   }
 
-  private exportReports(type: string, reports: unknown[]) {
-    fs.mkdirSync(this.outDir, { recursive: true })
+  private async exportReports(type: string, reports: unknown[]) {
+    await this.fsPromises.mkdir(this.outDir, { recursive: true })
 
     const now = dayjs()
     const outputPath = path.join(this.outDir, `${now.format('YYYYMMDD-HHmm')}-${type}-${this.service}.json`)
 
     const formated = this.formatter(reports)
-    fs.writeFileSync(outputPath, formated, { encoding: 'utf8' })
+    await this.fsPromises.writeFile(outputPath, formated, { encoding: 'utf8' })
 
     console.info(`(Local) Export ${type} reports to ${outputPath}`)
   }
 
   async exportWorkflowReports (reports: WorkflowReport[]) {
-    this.exportReports('workflow', reports)
+    await this.exportReports('workflow', reports)
   }
 
   async exportTestReports (reports: TestReport[]) {
-    this.exportReports('test', reports)
+    await this.exportReports('test', reports)
   }
 
   formatJson (reports: unknown[]): string {
