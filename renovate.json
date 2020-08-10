@@ -1,0 +1,34 @@
+{
+  "extends": [
+    "config:base",
+    ":label(renovate)",
+    ":masterIssue",
+    ":prConcurrentLimit10",
+    ":timezone(Asia/Tokyo)",
+    ":unpublishSafe",
+    ":enableVulnerabilityAlerts",
+    ":semanticCommitType(deps)",
+    ":automergeMinor"
+  ],
+  "packageRules": [
+    {
+      "depTypeList": ["devDependencies"],
+      "separateMajorMinor": false,
+      "extends": [
+        ":automergeMajor",
+        "schedule:weekends"
+      ]
+    },
+    {
+      "depTypeList": ["devDependencies"],
+      "extends": [
+        "group:definitelyTyped"
+      ]
+    },
+    {
+      "groupName": "jest packages",
+      "packagePatterns": ["jest"],
+      "depTypeList": ["devDependencies"]
+    }
+  ]
+}
