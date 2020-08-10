@@ -1,28 +1,27 @@
 name: Ship js trigger
 on:
-  push:
-    branches:
-      - master
+  pull_request:
+    types:
+      - closed
 jobs:
-  release:
+  build:
     name: Release
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/v')
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           ref: master
       - uses: actions/setup-node@v1
         with:
           registry-url: "https://registry.npmjs.org"
-      - run: npm ci
-      # - run: |
-      #     if [ -f "yarn.lock" ]; then
-      #       yarn install
-      #     else
-      #       npm install
-      #     fi
-      
-      # Make git tag and Github Releases
+      - run: |
+          if [ -f "yarn.lock" ]; then
+            yarn install
+          else
+            npm install
+          fi
       - run: npm run release:trigger
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
