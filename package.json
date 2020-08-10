@@ -49,9 +49,9 @@
   "devDependencies": {
     "@types/adm-zip": "0.4.33",
     "@types/jest": "25.2.2",
-    "@types/js-yaml": "3.12.4",
-    "@types/lodash": "4.14.151",
-    "@types/node": "14.0.1",
+    "@types/js-yaml": "3.12.5",
+    "@types/lodash": "4.14.159",
+    "@types/node": "14.0.27",
     "@types/yargs": "15.0.5",
     "codecov": "3.7.2",
     "jest": "26.0.1",

@@ -54,12 +54,15 @@ export const loadConfig = (configPath?: string): YamlConfig => {
   configPath = configPath ?? defaultPath
 
   const config = yaml.safeLoad(fs.readFileSync(configPath, 'utf8'))
-  config.configDir = path.dirname(path.resolve(configPath))
+  if (!config || typeof config !== "object") throw `Failed to load ${configPath} or config is not object`
 
   if (process.env['CI_ANALYZER_DEBUG']) {
     console.debug('Parsed config file:')
     console.debug(JSON.stringify(config, null, 2))
   }
 
-  return config as YamlConfig
+  return {
+    ...config,
+    ...{ configDir: path.dirname(path.resolve(configPath)) }
+  } as YamlConfig
 }
