@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@google-cloud/bigquery": "4.7.0",
-    "@google-cloud/storage": "5.0.0",
+    "@google-cloud/storage": "5.1.2",
     "@octokit/rest": "17.9.0",
     "adm-zip": "0.4.14",
     "axios": "0.19.2",
