@@ -19,8 +19,8 @@ export type CommonConfig = {
 }
 
 export type ExporterConfig = {
-  local: LocalExporterConfig
-  bigquery: BigqueryExporterConfig
+  local: LocalExporterConfig | null
+  bigquery: BigqueryExporterConfig | null
 }
 
 export type LocalExporterConfig = {

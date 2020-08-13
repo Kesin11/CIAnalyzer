@@ -20,10 +20,10 @@ export class CompositExporter implements Exporter {
       let _config: LocalExporterConfig | BigqueryExporterConfig
       switch (exporter) {
         case 'local':
-          _config = config['local']
+          _config = config['local'] ?? {}
           return new LocalExporter(service, configDir, _config)
         case 'bigquery':
-          _config = config['bigquery']
+          _config = config['bigquery'] ?? {}
           return new BigqueryExporter(_config)
         default:
           return undefined
