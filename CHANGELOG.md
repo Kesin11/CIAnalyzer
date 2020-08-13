@@ -1,3 +1,20 @@
+## [2.0.1](https://github.com/Kesin11/CIAnalyzer/compare/v2.0.0...v2.0.1) (2020-08-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @google-cloud/storage to v5.2.0 ([e20d2d1](https://github.com/Kesin11/CIAnalyzer/commit/e20d2d1b70e3ebcee1d99f63b7227345dfb44176))
+* **deps:** update dependency dayjs to v1.8.33 ([8302081](https://github.com/Kesin11/CIAnalyzer/commit/8302081d5993f1622041ae15b47528243c7eb3fb))
+* Add more type guard at loadConfig ([1c41aae](https://github.com/Kesin11/CIAnalyzer/commit/1c41aae18876b431caa32d00a100d4afe5a0710a))
+* **deps:** update dependency @google-cloud/bigquery to v5 ([3696eaa](https://github.com/Kesin11/CIAnalyzer/commit/3696eaa86c0d3c94a0dfae6de838294aac55e7cb))
+* **deps:** update dependency @google-cloud/storage to v5.1.2 ([2eaff1b](https://github.com/Kesin11/CIAnalyzer/commit/2eaff1b40888d85f23e8b69fb3439211006a51f8))
+* **deps:** update dependency adm-zip to v0.4.16 ([112e0de](https://github.com/Kesin11/CIAnalyzer/commit/112e0de92ec8438d123463cfd3e6471d9e86b567))
+* **deps:** update dependency js-yaml to v3.14.0 ([07c9a93](https://github.com/Kesin11/CIAnalyzer/commit/07c9a937c08745ecc74a8dd47e923d1053ddde83))
+* **deps:** update dependency yargs to v15.4.1 ([3a25543](https://github.com/Kesin11/CIAnalyzer/commit/3a25543163209e3d4fd8bb5c274a134305486c70))
+* Using async fs function instead of sync ([62a916d](https://github.com/Kesin11/CIAnalyzer/commit/62a916ddcba70b7a538309c7ac1ebc80cb22a4c6))
+
+
+
 # [2.0.0](https://github.com/Kesin11/CIAnalyzer/compare/v1.0.0...v2.0.0) (2020-08-10)
 
 Now CIAnalyzer can collect and export test report! It collected from CircleCI test API and JUnit XML inside artifacts.
