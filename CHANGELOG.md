@@ -3,15 +3,11 @@
 
 ### Bug Fixes
 
+* Set default param when exporter.local is null ([da5ed69](https://github.com/Kesin11/CIAnalyzer/commit/da5ed691edae5c78841e36c1b2fde1a940a8207d))
 * Bump @octokit/rest to v18 ([9ad8e86](https://github.com/Kesin11/CIAnalyzer/commit/9ad8e869c063e56999c482f651c0598661bc5e68))
 * **deps:** update dependency @google-cloud/bigquery to v5.2.0 ([8b0f592](https://github.com/Kesin11/CIAnalyzer/commit/8b0f59234d247aeeacd606e332975ea453e6e09b))
 * **deps:** update dependency lodash to v4.17.20 ([d87b8e6](https://github.com/Kesin11/CIAnalyzer/commit/d87b8e6426cea172617e96d6d0e736418f6eb467))
-* Set default param when exporter.local is null ([da5ed69](https://github.com/Kesin11/CIAnalyzer/commit/da5ed691edae5c78841e36c1b2fde1a940a8207d))
 
-
-### Reverts
-
-* Revert "ci: Fix Jenkinsfile to run parallel" ([d49b6de](https://github.com/Kesin11/CIAnalyzer/commit/d49b6de0759dd70e323ea2ec90a3076040e8a266))
 
 
 
