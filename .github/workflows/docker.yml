@@ -1,5 +1,11 @@
 name: "Docker build"
-on: push
+on:
+  push:
+    paths-ignore:
+    - 'sample/**'
+    - '**.md'
+    - 'renovate.json'
+    - 'Jenkinsfile'
 
 jobs:
   docker-build:
