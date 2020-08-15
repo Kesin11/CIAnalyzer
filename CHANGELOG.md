@@ -1,3 +1,16 @@
+## [2.0.2](https://github.com/Kesin11/CIAnalyzer/compare/v2.0.1...v2.0.2) (2020-08-15)
+
+
+### Bug Fixes
+
+* Set default param when exporter.local is null ([da5ed69](https://github.com/Kesin11/CIAnalyzer/commit/da5ed691edae5c78841e36c1b2fde1a940a8207d))
+* Bump @octokit/rest to v18 ([9ad8e86](https://github.com/Kesin11/CIAnalyzer/commit/9ad8e869c063e56999c482f651c0598661bc5e68))
+* **deps:** update dependency @google-cloud/bigquery to v5.2.0 ([8b0f592](https://github.com/Kesin11/CIAnalyzer/commit/8b0f59234d247aeeacd606e332975ea453e6e09b))
+* **deps:** update dependency lodash to v4.17.20 ([d87b8e6](https://github.com/Kesin11/CIAnalyzer/commit/d87b8e6426cea172617e96d6d0e736418f6eb467))
+
+
+
+
 ## [2.0.1](https://github.com/Kesin11/CIAnalyzer/compare/v2.0.0...v2.0.1) (2020-08-12)
 
 
