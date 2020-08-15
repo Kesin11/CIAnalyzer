@@ -2,12 +2,12 @@
   "extends": [
     "config:base",
     ":label(renovate)",
-    ":masterIssue",
+    ":dependencyDashboard",
     ":prConcurrentLimit10",
     ":timezone(Asia/Tokyo)",
     ":unpublishSafe",
     ":enableVulnerabilityAlerts",
-    ":semanticCommitType(deps)",
+    ":semanticCommitTypeAll(chore)",
     ":automergeMinor"
   ],
   "packageRules": [
