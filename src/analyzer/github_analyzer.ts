@@ -5,7 +5,7 @@ import { RepositoryTagMap } from '../client/github_repository_client'
 import { TestSuites, parse } from 'junit2json'
 import AdmZip from 'adm-zip'
 import { Artifact } from '../client/jenkins_client'
-export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listRepoWorkflowRuns']['response']['data']['workflow_runs'][0]
+export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listWorkflowRunsForRepo']['response']['data']['workflow_runs'][0]
 export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']['jobs']
 
 type WorkflowReport = {

@@ -5,11 +5,11 @@ import { minBy } from "lodash";
 import { ZipExtractor } from "../zip_extractor";
 import { Artifact } from "./jenkins_client";
 
-// Oktokit document: https://octokit.github.io/rest.js/v17#actions
+// Oktokit document: https://octokit.github.io/rest.js/v18#actions
 
 const DEBUG_PER_PAGE = 10
 
-type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listRepoWorkflowRuns']['response']['data']['workflow_runs'][0]
+type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listWorkflowRunsForRepo']['response']['data']['workflow_runs'][0]
 // see: https://developer.github.com/v3/checks/runs/#create-a-check-run
 type RunStatus = 'queued' | 'in_progress' | 'completed'
 
@@ -41,7 +41,7 @@ export class GithubClient {
       workflows.map((workflow) => [String(workflow.id), workflow.name])
     ))
 
-    const runs = await this.octokit.actions.listRepoWorkflowRuns({
+    const runs = await this.octokit.actions.listWorkflowRunsForRepo({
       owner,
       repo,
       per_page: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : 100, // API default is 100
