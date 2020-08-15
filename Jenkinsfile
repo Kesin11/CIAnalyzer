@@ -6,39 +6,35 @@ pipeline {
     timeout(time: 20, unit: 'MINUTES') 
   }
   stages {
-    stage('Parallel Stage') {
-      parallel {
-        stage('lint') {
-          agent {
-            docker {
-              image 'node:lts'
-              args '-u root:sudo'
-            }
-          }
-          steps {
-            checkout scm
-            sh "npm ci"
-            sh "npm run lint"
-          }
+    // stage('lint') {
+    //   agent {
+    //     docker {
+    //       image 'node:lts'
+    //       args '-u root:sudo'
+    //     }
+    //   }
+    //   steps {
+    //     checkout scm
+    //     sh "npm ci"
+    //     sh "npm run lint"
+    //   }
+    // }
+    stage('build and test') {
+      agent {
+        docker {
+          image 'node:lts'
+          args '-u root:sudo'
         }
-        stage('build and test') {
-          agent {
-            docker {
-              image 'node:lts'
-              args '-u root:sudo'
-            }
-          }
-          steps {
-            checkout scm
-            sh "npm ci"
-            sh "npm run build"
-            sh "npm run test:ci"
-          }
-          post {
-            always {
-              archiveArtifacts artifacts: 'junit/*.xml'
-            }
-          }
+      }
+      steps {
+        checkout scm
+        sh "npm ci"
+        sh "npm run build"
+        sh "npm run test:ci"
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'junit/*.xml'
         }
       }
     }
