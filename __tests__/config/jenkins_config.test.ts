@@ -14,24 +14,55 @@ describe('parseConfig', () => {
     expect(actual).toEqual(config.jenkins)
   })
 
-  it('when repos are object', () => {
-    const config = {
-      configDir: __dirname,
-      jenkins: {
+  describe('when repos are object', () => {
+    it('that has tests', () => {
+      const config = {
+        configDir: __dirname,
+        jenkins: {
+          baseUrl: 'http://localhost:8080',
+          jobs: [{
+            name: 'sample-job',
+            tests: ['**/*.xml']
+          }]
+        }
+      }
+
+      const actual = parseConfig(config)
+      expect(actual).toEqual({
         baseUrl: 'http://localhost:8080',
         jobs: [{
           name: 'sample-job',
-          tests: ['**/*.xml']
+          testGlob: ['**/*.xml'],
+          customReports: []
         }]
-      }
-    }
+      })
+    })
 
-    const actual = parseConfig(config)
-    expect(actual).toEqual({
-      baseUrl: 'http://localhost:8080',
-      jobs: [{
-        name: 'sample-job', testGlob: ['**/*.xml']
-      }]
+    it('that has custom_reports', () => {
+      const config = {
+        configDir: __dirname,
+        jenkins: {
+          baseUrl: 'http://localhost:8080',
+          jobs: [{
+            name: 'sample-job',
+            custom_reports: [
+              { name: 'custom', paths: '**/custom.xml'}
+            ]
+          }]
+        }
+      }
+
+      const actual = parseConfig(config)
+      expect(actual).toEqual({
+        baseUrl: 'http://localhost:8080',
+        jobs: [{
+          name: 'sample-job',
+          testGlob: [],
+          customReports: [
+            { name: 'custom', paths: '**/custom.xml'}
+          ]
+        }]
+      })
     })
   })
 })

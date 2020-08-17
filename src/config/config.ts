@@ -48,6 +48,11 @@ export type LastRunStoreConfig = {
   path?: string
 }
 
+export type CustomReportConfig = {
+  name: string
+  paths: string[]
+}
+
 const defaultPath = './ci_analyzer.yaml'
 
 export const loadConfig = (configPath?: string): YamlConfig => {
