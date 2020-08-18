@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios'
 import { axiosRequestLogger } from './client'
 import { minBy } from 'lodash'
 import minimatch from 'minimatch'
+import { CustomReportConfig } from '../config/config'
 
 // ref: https://github.com/jenkinsci/pipeline-stage-view-plugin/blob/master/rest-api/src/main/java/com/cloudbees/workflow/rest/external/StatusExt.java
 export type JenkinsStatus = 'SUCCESS' | 'FAILED' | 'ABORTED' | 'NOT_EXECUTED' | 'IN_PROGRESS' | 'PAUSED_PENDING_INPUT' | 'UNSTABLE'
@@ -151,6 +152,11 @@ export type Artifact = {
   data: ArrayBuffer
 }
 
+export type CustomReportArtifact = {
+  name: string,
+  artifacts: Artifact[]
+}
+
 export class JenkinsClient {
   private axios: AxiosInstance
   constructor(baseUrl: string, user?: string, token?: string) {
@@ -245,5 +251,30 @@ export class JenkinsClient {
 
     const jobName = build.fullDisplayName.split(' ')[0]
     return this.fetchArtifacts(jobName, build.number, testPaths)
+  }
+
+  async fetchCustomReports(build: BuildResponse, customReportsConfigs: CustomReportConfig[]): Promise<CustomReportArtifact[]> {
+    // Skip if custom report config are not provided
+    if (customReportsConfigs.length < 1) return []
+
+    const artifactPaths = build.artifacts.map((artifact) => artifact.relativePath )
+    const jobName = build.fullDisplayName.split(' ')[0]
+
+    // TODO: Fetch with parallel using Promise.all
+    const customReports = []
+    for (const customReportConfig of customReportsConfigs) {
+      // Convert glob path to real artifact paths
+      const reportArtifactsPaths = artifactPaths.filter((path) => {
+        return customReportConfig.paths.some((glob) => minimatch(path, glob))
+      })
+
+      const artifacts = await this.fetchArtifacts(jobName, build.number, reportArtifactsPaths)
+      customReports.push({
+        name: customReportConfig.name,
+        artifacts: artifacts
+      })
+    }
+
+    return customReports
   }
 }
