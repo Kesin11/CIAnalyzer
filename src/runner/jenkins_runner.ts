@@ -7,6 +7,7 @@ import { JenkinsClient } from "../client/jenkins_client"
 import { JenkinsAnalyzer } from "../analyzer/jenkins_analyzer"
 import { JenkinsConfig, parseConfig } from "../config/jenkins_config"
 import { LastRunStore } from "../last_run_store"
+import { CustomReportCollection } from "../custom_report_collector"
 
 export class JenkinsRunner implements Runner {
   service: string = 'jenkins'
@@ -44,6 +45,7 @@ export class JenkinsRunner implements Runner {
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
+    const customReportCollection = new CustomReportCollection()
     for (const configJob of configJobs) {
       console.info(`Fetching ${this.service} - ${configJob.name} ...`)
       const jobReports: WorkflowReport[] = []
@@ -54,13 +56,20 @@ export class JenkinsRunner implements Runner {
         const runs = await this.client.fetchJobRuns(configJob.name, lastRunId)
 
         for (const run of runs) {
+          // Fetch data
           const build = await this.client.fetchBuild(configJob.name, Number(run.id))
           const tests = await this.client.fetchTests(build, configJob.testGlob)
+          const customReportArtifacts = await this.client.fetchCustomReports(build, configJob.customReports)
+
+          // Create report
           const report = this.analyzer.createWorkflowReport(configJob.name, run, build)
           const testReports = await this.analyzer.createTestReports(report, tests)
+          const runCustomReportCollection = await this.analyzer.createCustomReportCollection(report, customReportArtifacts)
 
+          // Aggregate
           jobReports.push(report)
           jobTestReports = jobTestReports.concat(testReports)
+          customReportCollection.aggregate(runCustomReportCollection)
         }
 
         this.setRepoLastRun(configJob.name, jobReports)
@@ -78,6 +87,7 @@ export class JenkinsRunner implements Runner {
     const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
     await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
+    // TODO: await exporter.exportCustomReports(customReports)
 
     this.store.save()
     console.info(`Success: done execute '${this.service}'`)

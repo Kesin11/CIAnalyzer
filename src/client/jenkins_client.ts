@@ -152,10 +152,8 @@ export type Artifact = {
   data: ArrayBuffer
 }
 
-export type CustomReportArtifact = {
-  name: string,
-  artifacts: Artifact[]
-}
+
+export type CustomReportArtifact = Map<string, Artifact[]>
 
 export class JenkinsClient {
   private axios: AxiosInstance
@@ -253,15 +251,15 @@ export class JenkinsClient {
     return this.fetchArtifacts(jobName, build.number, testPaths)
   }
 
-  async fetchCustomReports(build: BuildResponse, customReportsConfigs: CustomReportConfig[]): Promise<CustomReportArtifact[]> {
+  async fetchCustomReports(build: BuildResponse, customReportsConfigs: CustomReportConfig[]): Promise<CustomReportArtifact> {
     // Skip if custom report config are not provided
-    if (customReportsConfigs.length < 1) return []
+    if (customReportsConfigs.length < 1) return new Map()
 
     const artifactPaths = build.artifacts.map((artifact) => artifact.relativePath )
     const jobName = build.fullDisplayName.split(' ')[0]
 
     // TODO: Fetch with parallel using Promise.all
-    const customReports = []
+    const customReports: CustomReportArtifact = new Map<string, Artifact[]>()
     for (const customReportConfig of customReportsConfigs) {
       // Convert glob path to real artifact paths
       const reportArtifactsPaths = artifactPaths.filter((path) => {
@@ -269,10 +267,7 @@ export class JenkinsClient {
       })
 
       const artifacts = await this.fetchArtifacts(jobName, build.number, reportArtifactsPaths)
-      customReports.push({
-        name: customReportConfig.name,
-        artifacts: artifacts
-      })
+      customReports.set(customReportConfig.name, artifacts)
     }
 
     return customReports
