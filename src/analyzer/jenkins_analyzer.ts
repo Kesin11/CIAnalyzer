@@ -2,7 +2,7 @@ import { Status, Analyzer, secRound, TestReport, WorkflowParams, convertToReport
 import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, Artifact, CustomReportArtifact } from "../client/jenkins_client"
 import { sumBy, first } from "lodash"
 import { parse } from "junit2json"
-import { CustomReportCollection, CustomReport } from "../custom_report_collector"
+import { CustomReportCollection, CustomReport } from "../custom_report_collection"
 
 type WorkflowReport = {
   // workflow

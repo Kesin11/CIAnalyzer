@@ -7,7 +7,7 @@ import { JenkinsClient } from "../client/jenkins_client"
 import { JenkinsAnalyzer } from "../analyzer/jenkins_analyzer"
 import { JenkinsConfig, parseConfig } from "../config/jenkins_config"
 import { LastRunStore } from "../last_run_store"
-import { CustomReportCollection } from "../custom_report_collector"
+import { CustomReportCollection } from "../custom_report_collection"
 
 export class JenkinsRunner implements Runner {
   service: string = 'jenkins'
