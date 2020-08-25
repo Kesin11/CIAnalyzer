@@ -87,7 +87,7 @@ export class JenkinsRunner implements Runner {
     const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
     await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
-    // TODO: await exporter.exportCustomReports(customReports)
+    await exporter.exportCustomReports(customReportCollection)
 
     this.store.save()
     console.info(`Success: done execute '${this.service}'`)

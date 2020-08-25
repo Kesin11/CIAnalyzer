@@ -2,10 +2,12 @@ import { LocalExporter } from "./local_exporter";
 import { WorkflowReport, TestReport } from "../analyzer/analyzer";
 import { ExporterConfig, LocalExporterConfig, BigqueryExporterConfig } from "../config/config";
 import { BigqueryExporter } from "./bigquery_exporter";
+import { CustomReportCollection } from "../custom_report_collection";
 
 export interface Exporter {
   exportWorkflowReports(reports: WorkflowReport[]): Promise<void>
   exportTestReports(reports: TestReport[]): Promise<void>
+  exportCustomReports(customReportCollection: CustomReportCollection): Promise<void>
 }
 
 export class CompositExporter implements Exporter {
@@ -40,6 +42,12 @@ export class CompositExporter implements Exporter {
   async exportTestReports(reports: TestReport[]) {
     await Promise.all(
       this.exporters.map((exporter) => exporter?.exportTestReports(reports))
+    )
+  }
+
+  async exportCustomReports(customReportCollection: CustomReportCollection) {
+    await Promise.all(
+      this.exporters.map((exporter) => exporter?.exportCustomReports(customReportCollection))
     )
   }
 }

@@ -6,6 +6,7 @@ import { BigQuery } from '@google-cloud/bigquery'
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { Exporter } from "./exporter"
 import { BigqueryExporterConfig } from "../config/config"
+import { CustomReportCollection } from "../custom_report_collection"
 
 const schemaPaths = {
   workflow: path.join(__dirname, '..', '..', 'bigquery_schema/workflow_report.json'),
@@ -83,5 +84,8 @@ export class BigqueryExporter implements Exporter {
 
   async exportTestReports (reports: TestReport[]) {
     await this.export(reports, this.table.testReport, schemaPaths['test_report'])
+  }
+
+  async exportCustomReports (customReportCollection: CustomReportCollection) {
   }
 }
