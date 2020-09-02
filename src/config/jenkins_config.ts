@@ -1,16 +1,18 @@
-import { YamlConfig, CommonConfig } from './config'
+import { YamlConfig, CommonConfig, CustomReportConfig } from './config'
 
 export type JenkinsConfig = CommonConfig & {
   baseUrl: string
   jobs: {
     name: string
     testGlob: string[]
+    customReports: CustomReportConfig[]
   }[]
 }
 
 type JobYaml = string | {
   name: string
   tests: string[]
+  custom_reports: CustomReportConfig[]
 }
 
 export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {
@@ -20,12 +22,13 @@ export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {
   // overwrite jobs
   jenkinsConfig.jobs = jenkinsConfig.jobs.map((jobYaml: JobYaml) => {
     if (typeof jobYaml === 'string') {
-      return { name: jobYaml, testGlob: [] }
+      return { name: jobYaml, testGlob: [], customReports: [] }
     }
 
     return {
       name: jobYaml.name,
-      testGlob: jobYaml.tests
+      testGlob: jobYaml.tests ?? [],
+      customReports: jobYaml.custom_reports ?? []
     }
   })
 

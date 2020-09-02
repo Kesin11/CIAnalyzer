@@ -35,6 +35,19 @@ pipeline {
       post {
         always {
           archiveArtifacts artifacts: 'junit/*.xml'
+
+          // Output custom JSON
+          script {
+            def uname = sh(script: 'uname', returnStdout: true).trim()
+            def props = [
+              job: STAGE_NAME,
+              node: NODE_NAME,
+              os: uname,
+              container: ""
+            ]
+            writeJSON file: 'custom.json', json: props, pretty: 4
+          }
+          archiveArtifacts artifacts: 'custom.json'
         }
       }
     }

@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { Exporter } from "./exporter"
 import { LocalExporterConfig } from "../config/config"
+import { CustomReportCollection } from "../custom_report_collection"
 
 const defaultOutDir = 'output'
 
@@ -44,6 +45,12 @@ export class LocalExporter implements Exporter {
 
   async exportTestReports (reports: TestReport[]) {
     await this.exportReports('test', reports)
+  }
+
+  async exportCustomReports (customReportCollection: CustomReportCollection) {
+    for (const [name, reports] of customReportCollection.customReports) {
+      await this.exportReports(name, reports)
+    }
   }
 
   formatJson (reports: unknown[]): string {
