@@ -2,7 +2,7 @@ export type CustomReport = {
   workflowId: string
   workflowRunId: string
   createdAt: Date,
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export class CustomReportCollection {

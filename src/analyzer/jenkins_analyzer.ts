@@ -177,7 +177,7 @@ export class JenkinsAnalyzer implements Analyzer {
     const reportCollection = new CustomReportCollection()
     for (const [reportName, artifacts] of customReportArtifacts) {
       const reports = artifacts.map((artifact) => {
-        let data: { [key: string]: any }
+        let data: { [key: string]: unknown }
         try {
           const jsonString = Buffer.from(artifact.data).toString('utf8')
           data = JSON.parse(jsonString)
