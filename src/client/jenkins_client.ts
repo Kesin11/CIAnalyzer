@@ -224,15 +224,19 @@ export class JenkinsClient {
   }
 
   async fetchArtifacts(jobName: string, runId: number, paths: string[]): Promise<Artifact[]> {
-    const artifacts = []
-    for (const path of paths) {
-      const res = await this.axios.get(
+    const pathResponses = paths.map((path) => {
+      const response = this.axios.get(
         `job/${jobName}/${runId}/artifact/${path}`,
         { responseType: 'arraybuffer'}
       )
+      return { path, response }
+    })
+
+    const artifacts = []
+    for (const { path, response } of pathResponses) {
       artifacts.push({
         path,
-        data: res.data as ArrayBuffer
+        data: (await response).data as ArrayBuffer
       })
     }
     return artifacts
