@@ -258,16 +258,19 @@ export class JenkinsClient {
     const artifactPaths = build.artifacts.map((artifact) => artifact.relativePath )
     const jobName = build.fullDisplayName.split(' ')[0]
 
-    // TODO: Fetch with parallel using Promise.all
+    // Fetch artifacts in parallel
     const customReports: CustomReportArtifact = new Map<string, Artifact[]>()
-    for (const customReportConfig of customReportsConfigs) {
-      // Convert glob path to real artifact paths
+    const nameArtifacts = customReportsConfigs.map((customReportConfig) => {
       const reportArtifactsPaths = artifactPaths.filter((path) => {
         return customReportConfig.paths.some((glob) => minimatch(path, glob))
       })
-
-      const artifacts = await this.fetchArtifacts(jobName, build.number, reportArtifactsPaths)
-      customReports.set(customReportConfig.name, artifacts)
+      return {
+        name: customReportConfig.name,
+        artifacts: this.fetchArtifacts(jobName, build.number, reportArtifactsPaths)
+      }
+    })
+    for (const { name, artifacts } of nameArtifacts) {
+      customReports.set(name, await artifacts)
     }
 
     return customReports
