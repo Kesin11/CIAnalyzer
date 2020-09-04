@@ -103,14 +103,18 @@ export class GithubClient {
       run_id: runId
     })
 
-    // Unarchive zip artifacts
-    const zipExtractor = new ZipExtractor()
-    for (const artifact of res.data.artifacts) {
-      const res = await this.axios.get(
+    const nameResponse = res.data.artifacts.map((artifact) => {
+      const response = this.axios.get(
         artifact.archive_download_url,
         { responseType: 'arraybuffer'}
       )
-      await zipExtractor.put(artifact.name, res.data)
+      return { name: artifact.name, response }
+    })
+
+    // Unarchive zip artifacts
+    const zipExtractor = new ZipExtractor()
+    for (const { name, response } of nameResponse) {
+      await zipExtractor.put(name, (await response).data)
     }
     const zipEntries = await zipExtractor.extract(globs)
     await zipExtractor.rmTmpZip()

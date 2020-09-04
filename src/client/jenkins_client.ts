@@ -224,15 +224,19 @@ export class JenkinsClient {
   }
 
   async fetchArtifacts(jobName: string, runId: number, paths: string[]): Promise<Artifact[]> {
-    const artifacts = []
-    for (const path of paths) {
-      const res = await this.axios.get(
+    const pathResponses = paths.map((path) => {
+      const response = this.axios.get(
         `job/${jobName}/${runId}/artifact/${path}`,
         { responseType: 'arraybuffer'}
       )
+      return { path, response }
+    })
+
+    const artifacts = []
+    for (const { path, response } of pathResponses) {
       artifacts.push({
         path,
-        data: res.data as ArrayBuffer
+        data: (await response).data as ArrayBuffer
       })
     }
     return artifacts
@@ -258,16 +262,19 @@ export class JenkinsClient {
     const artifactPaths = build.artifacts.map((artifact) => artifact.relativePath )
     const jobName = build.fullDisplayName.split(' ')[0]
 
-    // TODO: Fetch with parallel using Promise.all
+    // Fetch artifacts in parallel
     const customReports: CustomReportArtifact = new Map<string, Artifact[]>()
-    for (const customReportConfig of customReportsConfigs) {
-      // Convert glob path to real artifact paths
+    const nameArtifacts = customReportsConfigs.map((customReportConfig) => {
       const reportArtifactsPaths = artifactPaths.filter((path) => {
         return customReportConfig.paths.some((glob) => minimatch(path, glob))
       })
-
-      const artifacts = await this.fetchArtifacts(jobName, build.number, reportArtifactsPaths)
-      customReports.set(customReportConfig.name, artifacts)
+      return {
+        name: customReportConfig.name,
+        artifacts: this.fetchArtifacts(jobName, build.number, reportArtifactsPaths)
+      }
+    })
+    for (const { name, artifacts } of nameArtifacts) {
+      customReports.set(name, await artifacts)
     }
 
     return customReports
