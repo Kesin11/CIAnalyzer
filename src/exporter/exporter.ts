@@ -26,7 +26,7 @@ export class CompositExporter implements Exporter {
           return new LocalExporter(service, configDir, _config)
         case 'bigquery':
           _config = config['bigquery'] ?? {}
-          return new BigqueryExporter(_config)
+          return new BigqueryExporter(_config, configDir)
         default:
           return undefined
       }

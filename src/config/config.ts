@@ -35,6 +35,11 @@ export type BigqueryExporterConfig = {
     name: 'workflow' | 'test_report'
     table: string
   }[]
+  custom_reports?: {
+    name: string
+    table: string
+    schema: string
+  }[]
   maxBadRecords?: number
 }
 

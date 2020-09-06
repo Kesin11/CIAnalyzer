@@ -20,8 +20,9 @@ export class BigqueryExporter implements Exporter {
     workflow: string
     testReport: string
   }
+  customReportTableInfo: Map<string, { table: string, schemaPath: string }>
   maxBadRecords: number
-  constructor( config: BigqueryExporterConfig ) {
+  constructor( config: BigqueryExporterConfig, configDir: string ) {
     if (!config.project || !config.dataset) {
       throw "Must need 'project', 'dataset' parameter in exporter.bigquery config."
     }
@@ -37,6 +38,18 @@ export class BigqueryExporter implements Exporter {
       workflow: workflowTable,
       testReport: testReportTable,
     }
+
+    this.customReportTableInfo = new Map(
+      config.custom_reports?.map((customReport) => {
+        const schemaPath = (path.isAbsolute(customReport.schema))
+          ? customReport.schema
+          : path.resolve(configDir, customReport.schema)
+        return [
+          customReport.name,
+          { table: customReport.table, schemaPath }
+        ]
+      })
+    )
 
     this.maxBadRecords = config.maxBadRecords ?? 0
   }
@@ -87,5 +100,11 @@ export class BigqueryExporter implements Exporter {
   }
 
   async exportCustomReports (customReportCollection: CustomReportCollection) {
+    for (const [reportName, customReports] of customReportCollection.customReports) {
+      const table = this.customReportTableInfo.get(reportName)
+      if (table === undefined) throw new Error(`name: '${reportName}' does not exists in exporter.bigquery.custom_reports config!!`)
+
+      await this.export(customReports, table.table, table.schemaPath)
+    }
   }
 }
