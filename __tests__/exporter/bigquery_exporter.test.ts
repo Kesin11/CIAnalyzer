@@ -106,13 +106,46 @@ describe('BigqueryExporter', () => {
       expect(bigqueryMock.table.mock.calls[0][0]).toBe('custom_table')
     })
 
-    it('load multi report to `custom_reports[].table` table', async () => {
-    })
-
     it('should error when define repo.custom_reports but does not exists correspond config in `bigquery.custom_reports`', async () => {
+      reportCollection.set('custom2', [])
+
+        await expect(
+          exporter.exportCustomReports(reportCollection)
+        ).rejects.toThrow()
     })
 
-    it('should error when does found custom_reports table schema json', async () => {
+    it('load multi report to `custom_reports[].table` table', async () => {
+      const config = {
+        ...baseConfig,
+        custom_reports: [
+          { name: 'custom', table: 'custom_table', schema: fixtureSchemaPath.custom },
+          { name: 'custom2', table: 'custom_table2', schema: fixtureSchemaPath.custom }
+        ]
+      }
+      const exporter = new BigqueryExporter(config, configDir)
+      exporter.bigquery = bigqueryMock as any
+      reportCollection.set('custom2', [])
+
+      await exporter.exportCustomReports(reportCollection)
+
+      expect(bigqueryMock.load.mock.calls.length).toBe(2)
+      expect(bigqueryMock.table.mock.calls[0][0]).toBe('custom_table')
+      expect(bigqueryMock.table.mock.calls[1][0]).toBe('custom_table2')
+    })
+
+    it('should error when custom_reports table schema json is not found', async () => {
+      const config = {
+        ...baseConfig,
+        custom_reports: [
+          { name: 'custom', table: 'custom_table', schema: './imaginary.json' },
+        ]
+      }
+      const exporter = new BigqueryExporter(config, configDir)
+      exporter.bigquery = bigqueryMock as any
+
+      await expect(
+        exporter.exportCustomReports(reportCollection)
+      ).rejects.toThrow()
     })
   })
 })
