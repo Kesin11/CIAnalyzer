@@ -22,6 +22,10 @@ github:
           table: { WORKFLOW_TABLE_NAME }
         - name: test_report
           table: { TEST_REPORT_TABLE_NAME }
+      custom_reports:
+        - name: { CUSTOM_REPORT_NAME }
+          table: { CUSTOM_REPORT_TABLE }
+          schema: ../bigquery_schema/custom_sample.json # This is sample schema path. It relative path from this config yaml.
       maxBadRecords: 0 # (Optional) default: 0. If set > 0, skip bad record. This option should only be used for workaround.
   lastRunStore:
     backend: gcs # Recommend using 'gcs' backend
@@ -49,6 +53,10 @@ jenkins:
     - name: ci_analyzer
       tests:
         - 'junit/junit.xml' # Test report JUnit XML path in artifact
+      custom_reports:
+        - name: { CUSTOM_REPORT_NAME }
+          paths:
+            - 'custom.json'
     - ci_analyzer_pull_request
   exporter: *exporter
   # If 'lastRunStore' is omitted, local backend is used
