@@ -3,7 +3,6 @@ pipeline {
   options {
     timestamps()
     ansiColor('xterm')
-    timeout(time: 20, unit: 'MINUTES') 
   }
   stages {
     // stage('lint') {
@@ -27,10 +26,12 @@ pipeline {
         }
       }
       steps {
-        checkout scm
-        sh "npm ci"
-        sh "npm run build"
-        sh "npm run test:ci"
+        timeout(time: 20, unit: 'MINUTES') {
+          checkout scm
+          sh "npm ci"
+          sh "npm run build"
+          sh "npm run test:ci"
+        }
       }
       post {
         always {
@@ -57,8 +58,10 @@ pipeline {
         DOCKER_BUILDKIT = '1'
       }
       steps {
-        checkout scm
-        sh "docker build -t ci_analyzer ."
+        timeout(time: 20, unit: 'MINUTES') {
+          checkout scm
+          sh "docker build -t ci_analyzer ."
+        }
       }
     }
   }
