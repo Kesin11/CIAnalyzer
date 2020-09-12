@@ -30,6 +30,7 @@ jobs:
     container:
       image: "node:lts"
     steps:
+      # Setup
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
@@ -38,15 +39,27 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
+
+      # Test
       - name: Build
         run: npm run build
       - name: Test
         run: npm run test:ci
+
+      # Post actions
+      - name: Create custom json
+        env:
+          JOB: ${{ github.job }}
+          OS: ${{ runner.os }}
+        run: |
+          echo "{ \"job\": \"${JOB}\", \"node\": \"ubuntu-latest\", \"os\": \"${OS}\", \"container\": \"node:lts\" }" > custom_report.json
       - uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
           name: test_results
-          path: junit/*.xml
+          path: |
+            junit/*.xml
+            custom_report.json
       - uses: codecov/codecov-action@v1
         name: Upload coverage
         with:
