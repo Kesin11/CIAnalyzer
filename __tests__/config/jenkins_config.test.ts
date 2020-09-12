@@ -46,7 +46,7 @@ describe('parseConfig', () => {
           jobs: [{
             name: 'sample-job',
             custom_reports: [
-              { name: 'custom', paths: '**/custom.xml'}
+              { name: 'custom', paths: ['**/custom.xml']}
             ]
           }]
         }
@@ -59,7 +59,7 @@ describe('parseConfig', () => {
           name: 'sample-job',
           testGlob: [],
           customReports: [
-            { name: 'custom', paths: '**/custom.xml'}
+            { name: 'custom', paths: ['**/custom.xml']}
           ]
         }]
       })
