@@ -19,24 +19,45 @@ describe('parseConfig', () => {
     })
   })
 
-  it('when repos are object', () => {
-    const config = {
-      configDir: __dirname,
-      github: {
-        repos: [{
-          name: 'owner/repo',
-          tests: [
-            '**/*.xml'
-          ]
-        }]
+  describe('when repos are object', () => {
+    it('that has tests', () => {
+      const config = {
+        configDir: __dirname,
+        github: {
+          repos: [{
+            name: 'owner/repo',
+            tests: [ '**/*.xml' ]
+          }]
+        }
       }
-    }
-    const actual = parseConfig(config)
+      const actual = parseConfig(config)
 
-    expect(actual).toEqual({
-      repos: [
-        { owner: 'owner', repo: 'repo', fullname: 'owner/repo', testGlob: ['**/*.xml'] }
-      ]
+      expect(actual).toEqual({
+        repos: [
+          { owner: 'owner', repo: 'repo', fullname: 'owner/repo', testGlob: ['**/*.xml'] }
+        ]
+      })
+    })
+
+    it('that has custom_reports', () => {
+      const customReport = { name: 'custom', paths: ['custom.json'] }
+      const config = {
+        configDir: __dirname,
+        github: {
+          repos: [{
+            name: 'owner/repo',
+            custom_reports: [ customReport ]
+          }]
+        }
+      }
+      const actual = parseConfig(config)
+
+      expect(actual).toEqual({
+        repos: [{
+          owner: 'owner', repo: 'repo', fullname: 'owner/repo',
+          customReports: [ customReport ]
+        }]
+      })
     })
   })
 })

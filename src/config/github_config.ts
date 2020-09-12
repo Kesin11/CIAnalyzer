@@ -1,4 +1,4 @@
-import { YamlConfig, CommonConfig } from './config'
+import { YamlConfig, CommonConfig, CustomReportConfig } from './config'
 
 export type GithubConfig = CommonConfig & {
   repos: {
@@ -6,12 +6,14 @@ export type GithubConfig = CommonConfig & {
     repo: string
     fullname: string
     testGlob: string[]
+    customReports: CustomReportConfig[]
   }[]
 }
 
 type RepoYaml = string | {
   name: string
   tests: string[]
+  custom_reports: CustomReportConfig[]
 }
 
 export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
@@ -31,7 +33,8 @@ export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
       owner,
       repo,
       fullname: repoYaml.name,
-      testGlob: repoYaml.tests
+      testGlob: repoYaml.tests,
+      customReports: repoYaml.custom_reports,
     }
   })
 

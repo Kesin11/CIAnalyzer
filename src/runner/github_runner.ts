@@ -8,6 +8,7 @@ import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
 import { GithubRepositoryClient } from "../client/github_repository_client"
+import { CustomReportCollection } from "../custom_report_collection"
 
 export class GithubRunner implements Runner {
   service: string = 'github'
@@ -39,6 +40,7 @@ export class GithubRunner implements Runner {
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
+    const customReportCollection = new CustomReportCollection()
     for (const repo of this.config.repos) {
       console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
       const repoWorkflowReports: WorkflowReport[] = []
@@ -50,13 +52,20 @@ export class GithubRunner implements Runner {
         const tagMap = await this.repoClient.fetchRepositoryTagMap(repo.owner, repo.repo)
 
         for (const workflowRun of workflowRuns) {
+          // Fetch data
           const jobs = await this.client.fetchJobs(repo.owner, repo.repo, workflowRun.run.id)
           const tests = await this.client.fetchTests(repo.owner, repo.repo, workflowRun.run.id, repo.testGlob)
+          const customReportArtifacts = await this.client.fetchCustomReports(repo.owner, repo.repo, workflowRun.run.id, repo.customReports)
+
+          // Create report
           const workflowReport = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs, tagMap)
           const testReports = await this.analyzer.createTestReports(workflowReport, tests)
+          const runCustomReportCollection = await this.analyzer.createCustomReportCollection(workflowReport, customReportArtifacts)
 
+          // Aggregate
           repoWorkflowReports.push(workflowReport)
           repoTestReports = repoTestReports.concat(testReports)
+          customReportCollection.aggregate(runCustomReportCollection)
         }
       }
       catch (error) {
@@ -73,6 +82,7 @@ export class GithubRunner implements Runner {
     const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
     await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
+    await exporter.exportCustomReports(customReportCollection)
 
     this.store.save()
     console.info(`Success: done execute '${this.service}'`)

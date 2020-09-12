@@ -2,9 +2,9 @@ import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods'
 import { sumBy, min, max } from 'lodash'
 import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToReportTestSuites } from './analyzer'
 import { RepositoryTagMap } from '../client/github_repository_client'
-import { TestSuites, parse } from 'junit2json'
-import AdmZip from 'adm-zip'
-import { Artifact } from '../client/jenkins_client'
+import { parse } from 'junit2json'
+import { CustomReportArtifact, Artifact } from '../client/client'
+import { CustomReportCollection, CustomReport } from '../custom_report_collection'
 export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listWorkflowRunsForRepo']['response']['data']['workflow_runs'][0]
 export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']['jobs']
 
@@ -178,5 +178,31 @@ export class GithubAnalyzer implements Analyzer {
       }
     }
     return testReports
+  }
+
+  async createCustomReportCollection(workflowReport: WorkflowReport, customReportArtifacts: CustomReportArtifact): Promise<CustomReportCollection> {
+    const reportCollection = new CustomReportCollection()
+    for (const [reportName, artifacts] of customReportArtifacts) {
+      const reports = artifacts.map((artifact) => {
+        let data: { [key: string]: unknown }
+        try {
+          const jsonString = Buffer.from(artifact.data).toString('utf8')
+          data = JSON.parse(jsonString)
+        } catch (error) {
+          console.error(`Error: Could not parse as JSON. ${artifact.path}`)
+          return
+        }
+
+        return {
+          workflowId: workflowReport.workflowId,
+          workflowRunId: workflowReport.workflowRunId,
+          createdAt: workflowReport.createdAt,
+          ...data
+        } as CustomReport
+      }).filter((report) => report !== undefined) as CustomReport[]
+
+      reportCollection.set(reportName, reports)
+    }
+    return reportCollection
   }
 }
