@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
-import { axiosRequestLogger } from './client'
+import { axiosRequestLogger, Artifact, CustomReportArtifact } from './client'
 import { minBy } from 'lodash'
 import minimatch from 'minimatch'
 import { CustomReportConfig } from '../config/config'
@@ -146,14 +146,6 @@ export type ParametersAction = {
       value?: string | number | boolean // "10"
     }[]
 }
-
-export type Artifact = {
-  path: string
-  data: ArrayBuffer
-}
-
-
-export type CustomReportArtifact = Map<string, Artifact[]>
 
 export class JenkinsClient {
   private axios: AxiosInstance

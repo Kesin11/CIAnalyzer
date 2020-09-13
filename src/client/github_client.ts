@@ -1,9 +1,9 @@
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import axios, { AxiosInstance } from 'axios'
-import { axiosRequestLogger } from './client'
+import { axiosRequestLogger, CustomReportArtifact, Artifact } from './client'
 import { minBy } from "lodash";
 import { ZipExtractor } from "../zip_extractor";
-import { Artifact } from "./jenkins_client";
+import { CustomReportConfig } from "../config/config";
 
 // Oktokit document: https://octokit.github.io/rest.js/v18#actions
 
@@ -132,5 +132,24 @@ export class GithubClient {
     if (globs.length < 1) return []
 
     return this.fetchArtifacts(owner, repo, runId, globs)
+  }
+
+  async fetchCustomReports(owner: string, repo: string, runId: number, customReportsConfigs: CustomReportConfig[]): Promise<CustomReportArtifact> {
+    // Skip if custom report config are not provided
+    if (customReportsConfigs.length < 1) return new Map()
+
+    // Fetch artifacts in parallel
+    const customReports: CustomReportArtifact = new Map<string, Artifact[]>()
+    const nameArtifacts = customReportsConfigs.map((customReportConfig) => {
+      return {
+        name: customReportConfig.name,
+        artifacts: this.fetchArtifacts(owner, repo, runId, customReportConfig.paths)
+      }
+    })
+    for (const { name, artifacts } of nameArtifacts) {
+      customReports.set(name, await artifacts)
+    }
+
+    return customReports
   }
 }
