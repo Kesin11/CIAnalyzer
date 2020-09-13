@@ -12,7 +12,7 @@ export type JenkinsConfig = CommonConfig & {
 type JobYaml = string | {
   name: string
   tests: string[]
-  custom_reports: CustomReportConfig[]
+  customReports: CustomReportConfig[]
 }
 
 export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {
@@ -28,7 +28,7 @@ export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {
     return {
       name: jobYaml.name,
       testGlob: jobYaml.tests ?? [],
-      customReports: jobYaml.custom_reports ?? []
+      customReports: jobYaml.customReports ?? []
     }
   })
 

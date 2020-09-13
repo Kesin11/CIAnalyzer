@@ -13,7 +13,7 @@ export type GithubConfig = CommonConfig & {
 type RepoYaml = string | {
   name: string
   tests: string[]
-  custom_reports: CustomReportConfig[]
+  customReports: CustomReportConfig[]
 }
 
 export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
@@ -34,7 +34,7 @@ export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
       repo,
       fullname: repoYaml.name,
       testGlob: repoYaml.tests,
-      customReports: repoYaml.custom_reports,
+      customReports: repoYaml.customReports,
     }
   })
 

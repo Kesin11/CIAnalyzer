@@ -86,7 +86,7 @@ describe('BigqueryExporter', () => {
   describe('exportCustomReports', () => {
     const config = {
       ...baseConfig,
-      custom_reports: [
+      customReports: [
         { name: 'custom', table: 'custom_table', schema: fixtureSchemaPath.custom }
       ]
     }
@@ -99,14 +99,14 @@ describe('BigqueryExporter', () => {
       reportCollection.set('custom', [])
     })
 
-    it('load to `custom_reports[].table` table', async () => {
+    it('load to `customReports[].table` table', async () => {
       await exporter.exportCustomReports(reportCollection)
 
       expect(bigqueryMock.load.mock.calls.length).toBe(1)
       expect(bigqueryMock.table.mock.calls[0][0]).toBe('custom_table')
     })
 
-    it('should error when define repo.custom_reports but does not exists correspond config in `bigquery.custom_reports`', async () => {
+    it('should error when define repo.customReports but does not exists correspond config in `bigquery.customReports`', async () => {
       reportCollection.set('custom2', [])
 
         await expect(
@@ -114,10 +114,10 @@ describe('BigqueryExporter', () => {
         ).rejects.toThrow()
     })
 
-    it('load multi report to `custom_reports[].table` table', async () => {
+    it('load multi report to `customReports[].table` table', async () => {
       const config = {
         ...baseConfig,
-        custom_reports: [
+        customReports: [
           { name: 'custom', table: 'custom_table', schema: fixtureSchemaPath.custom },
           { name: 'custom2', table: 'custom_table2', schema: fixtureSchemaPath.custom }
         ]
@@ -133,10 +133,10 @@ describe('BigqueryExporter', () => {
       expect(bigqueryMock.table.mock.calls[1][0]).toBe('custom_table2')
     })
 
-    it('should error when custom_reports table schema json is not found', async () => {
+    it('should error when customReports table schema json is not found', async () => {
       const config = {
         ...baseConfig,
-        custom_reports: [
+        customReports: [
           { name: 'custom', table: 'custom_table', schema: './imaginary.json' },
         ]
       }

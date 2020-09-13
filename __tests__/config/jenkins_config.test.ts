@@ -38,14 +38,14 @@ describe('parseConfig', () => {
       })
     })
 
-    it('that has custom_reports', () => {
+    it('that has customReports', () => {
       const config = {
         configDir: __dirname,
         jenkins: {
           baseUrl: 'http://localhost:8080',
           jobs: [{
             name: 'sample-job',
-            custom_reports: [
+            customReports: [
               { name: 'custom', paths: ['**/custom.xml']}
             ]
           }]
