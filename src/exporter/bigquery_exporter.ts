@@ -40,7 +40,7 @@ export class BigqueryExporter implements Exporter {
     }
 
     this.customReportTableInfo = new Map(
-      config.custom_reports?.map((customReport) => {
+      config.customReports?.map((customReport) => {
         const schemaPath = (path.isAbsolute(customReport.schema))
           ? customReport.schema
           : path.resolve(configDir, customReport.schema)
@@ -102,7 +102,7 @@ export class BigqueryExporter implements Exporter {
   async exportCustomReports (customReportCollection: CustomReportCollection) {
     for (const [reportName, customReports] of customReportCollection.customReports) {
       const table = this.customReportTableInfo.get(reportName)
-      if (table === undefined) throw new Error(`name: '${reportName}' does not exists in exporter.bigquery.custom_reports config!!`)
+      if (table === undefined) throw new Error(`name: '${reportName}' does not exists in exporter.bigquery.customReports config!!`)
 
       await this.export(customReports, table.table, table.schemaPath)
     }

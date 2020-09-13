@@ -39,14 +39,14 @@ describe('parseConfig', () => {
       })
     })
 
-    it('that has custom_reports', () => {
+    it('that has customReports', () => {
       const customReport = { name: 'custom', paths: ['custom.json'] }
       const config = {
         configDir: __dirname,
         github: {
           repos: [{
             name: 'owner/repo',
-            custom_reports: [ customReport ]
+            customReports: [ customReport ]
           }]
         }
       }

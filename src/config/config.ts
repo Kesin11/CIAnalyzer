@@ -35,7 +35,7 @@ export type BigqueryExporterConfig = {
     name: 'workflow' | 'test_report'
     table: string
   }[]
-  custom_reports?: {
+  customReports?: {
     name: string
     table: string
     schema: string
