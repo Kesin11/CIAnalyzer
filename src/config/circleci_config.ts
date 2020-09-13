@@ -6,12 +6,14 @@ export type CircleciConfig = CommonConfig & {
     owner: string
     repo: string
     fullname: string
+    customReports: CustomReportConfig[]
   }[]
 }
 
 type RepoYaml = string | {
   name: string
   vsc_type: string
+  customReports: CustomReportConfig[]
 }
 
 export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
@@ -36,6 +38,7 @@ export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
       owner,
       repo,
       fullname: `${vscType}/${owner}/${repo}`,
+      customReports: repoYaml.customReports,
     }
   })
 
