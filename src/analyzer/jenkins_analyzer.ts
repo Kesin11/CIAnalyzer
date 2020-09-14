@@ -2,8 +2,7 @@ import { Status, Analyzer, secRound, TestReport, WorkflowParams, convertToReport
 import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction } from "../client/jenkins_client"
 import { sumBy, first } from "lodash"
 import { parse } from "junit2json"
-import { CustomReportCollection, CustomReport } from "../custom_report_collection"
-import { Artifact, CustomReportArtifact } from "../client/client"
+import { Artifact } from "../client/client"
 
 type WorkflowReport = {
   // workflow
@@ -172,32 +171,6 @@ export class JenkinsAnalyzer implements Analyzer {
       }
     }
     return testReports
-  }
-
-  async createCustomReportCollection(workflowReport: WorkflowReport, customReportArtifacts: CustomReportArtifact): Promise<CustomReportCollection> {
-    const reportCollection = new CustomReportCollection()
-    for (const [reportName, artifacts] of customReportArtifacts) {
-      const reports = artifacts.map((artifact) => {
-        let data: { [key: string]: unknown }
-        try {
-          const jsonString = Buffer.from(artifact.data).toString('utf8')
-          data = JSON.parse(jsonString)
-        } catch (error) {
-          console.error(`Error: Could not parse as JSON. ${artifact.path}`)
-          return
-        }
-
-        return {
-          workflowId: workflowReport.workflowId,
-          workflowRunId: workflowReport.workflowRunId,
-          createdAt: workflowReport.createdAt,
-          ...data
-        } as CustomReport
-      }).filter((report) => report !== undefined) as CustomReport[]
-
-      reportCollection.set(reportName, reports)
-    }
-    return reportCollection
   }
 
   detectTrigger(build: BuildResponse): string {

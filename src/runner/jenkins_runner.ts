@@ -7,7 +7,7 @@ import { JenkinsClient } from "../client/jenkins_client"
 import { JenkinsAnalyzer } from "../analyzer/jenkins_analyzer"
 import { JenkinsConfig, parseConfig } from "../config/jenkins_config"
 import { LastRunStore } from "../last_run_store"
-import { CustomReportCollection } from "../custom_report_collection"
+import { CustomReportCollection, createCustomReportCollection } from "../custom_report_collection"
 
 export class JenkinsRunner implements Runner {
   service: string = 'jenkins'
@@ -64,7 +64,7 @@ export class JenkinsRunner implements Runner {
           // Create report
           const report = this.analyzer.createWorkflowReport(configJob.name, run, build)
           const testReports = await this.analyzer.createTestReports(report, tests)
-          const runCustomReportCollection = await this.analyzer.createCustomReportCollection(report, customReportArtifacts)
+          const runCustomReportCollection = await createCustomReportCollection(report, customReportArtifacts)
 
           // Aggregate
           jobReports.push(report)

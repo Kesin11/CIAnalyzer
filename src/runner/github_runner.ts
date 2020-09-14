@@ -8,7 +8,7 @@ import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
 import { GithubRepositoryClient } from "../client/github_repository_client"
-import { CustomReportCollection } from "../custom_report_collection"
+import { CustomReportCollection, createCustomReportCollection } from "../custom_report_collection"
 
 export class GithubRunner implements Runner {
   service: string = 'github'
@@ -60,7 +60,7 @@ export class GithubRunner implements Runner {
           // Create report
           const workflowReport = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs, tagMap)
           const testReports = await this.analyzer.createTestReports(workflowReport, tests)
-          const runCustomReportCollection = await this.analyzer.createCustomReportCollection(workflowReport, customReportArtifacts)
+          const runCustomReportCollection = await createCustomReportCollection(workflowReport, customReportArtifacts)
 
           // Aggregate
           repoWorkflowReports.push(workflowReport)
