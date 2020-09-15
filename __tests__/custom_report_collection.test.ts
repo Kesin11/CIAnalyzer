@@ -1,4 +1,5 @@
-import { CustomReportCollection } from '../src/custom_report_collection'
+import { CustomReportCollection, aggregateCustomReportArtifacts } from '../src/custom_report_collection'
+import { CustomReportArtifact } from '../src/client/client'
 
 describe('CustomReportCollection', () => {
   let customReportCollection: CustomReportCollection
@@ -49,5 +50,25 @@ describe('CustomReportCollection', () => {
       customReportCollection.aggregate(anotherCollection)
       expect(customReportCollection.customReports).toStrictEqual(expected)
     })
+  })
+})
+
+describe('aggregateCustomReportArtifacts', () => {
+  it('aggregate CustomReportArtifact[]', () => {
+    const artifact1 = { path: 'custom1.json', data: new ArrayBuffer(1) }
+    const artifact2 = { path: 'custom2.json', data: new ArrayBuffer(1) }
+    const customReportArtifact1: CustomReportArtifact =  new Map([
+      [ 'custom1', [artifact1] ],
+      [ 'custom2', [artifact2] ],
+    ])
+    const customReportArtifact2: CustomReportArtifact =  new Map([
+      [ 'custom2', [artifact2] ]
+    ])
+
+    const actual = aggregateCustomReportArtifacts([customReportArtifact1, customReportArtifact2])
+    expect(actual).toStrictEqual(new Map([
+      [ 'custom1', [artifact1] ],
+      [ 'custom2', [artifact2, artifact2] ],
+    ]))
   })
 })

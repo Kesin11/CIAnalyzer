@@ -1,6 +1,8 @@
+import minimatch from 'minimatch'
 import axios, { AxiosInstance } from 'axios'
 import { groupBy, max, minBy } from 'lodash'
-import { axiosRequestLogger } from './client'
+import { axiosRequestLogger, Artifact, CustomReportArtifact } from './client'
+import { CustomReportConfig } from '../config/config'
 
 const DEBUG_PER_PAGE = 10
 
@@ -97,6 +99,13 @@ export type TestResponse = {
   run_id: number // Add for join workflow
 }
 
+type ArtifactsResponse = {
+  path: string,
+  prettry_path: string,
+  node_index: number,
+  url: string,
+}[]
+
 
 export class CircleciClient {
   private axios: AxiosInstance
@@ -116,8 +125,8 @@ export class CircleciClient {
     }
   }
 
+  // https://circleci.com/api/v1.1/project/:vcs-type/:username/:project?circle-token=:token&limit=20&offset=5&filter=completed
   async fetchWorkflowRuns(owner: string, repo: string, vcsType: string, lastRunId?: number) {
-    // https://circleci.com/api/v1.1/project/:vcs-type/:username/:project?circle-token=:token&limit=20&offset=5&filter=completed
     const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}`, {
       params: {
         // API default is 30 and max is 100
@@ -185,6 +194,7 @@ export class CircleciClient {
     return runs
   }
 
+  // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021
   async fetchJobs(owner: string, repo: string, vcsType: string, runId: number) {
     const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}/${runId}`, {})
     const build = res.data
@@ -207,11 +217,63 @@ export class CircleciClient {
     }
   }
 
+  // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021/tests
   async fetchTests(owner: string, repo: string, vcsType: string, runId: number) {
     const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}/${runId}/tests`)
     return {
       ...res.data,
       run_id: runId
     } as TestResponse
+  }
+
+  // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021/artifacts
+  async fetchArtifactsList(owner: string, repo: string, vcsType: string, runId: number): Promise<ArtifactsResponse> {
+    const res = await this.axios.get(
+      `project/${vcsType}/${owner}/${repo}/${runId}/artifacts`
+    )
+    return res.data
+  }
+
+  async fetchArtifacts(artifactsResponse: ArtifactsResponse): Promise<Artifact[]> {
+    const pathResponses = artifactsResponse.map((artifact) => {
+      const response = this.axios.get(
+        artifact.url,
+        { responseType: 'arraybuffer'}
+      )
+      return { path: artifact.path, response }
+    })
+
+    const artifacts = []
+    for (const { path, response } of pathResponses) {
+      artifacts.push({
+        path,
+        data: (await response).data as ArrayBuffer
+      })
+    }
+    return artifacts
+  }
+
+  async fetchCustomReports(owner: string, repo: string, vcsType: string, runId: number, customReportsConfigs: CustomReportConfig[]): Promise<CustomReportArtifact> {
+    // Skip if custom report config are not provided
+    if (customReportsConfigs?.length < 1) return new Map()
+
+    const artifactsResponse = await this.fetchArtifactsList(owner, repo, vcsType, runId)
+
+    // Fetch artifacts in parallel
+    const customReports: CustomReportArtifact = new Map<string, Artifact[]>()
+    const nameArtifacts = customReportsConfigs.map((customReportConfig) => {
+      const reportArtifacts = artifactsResponse.filter((artifact) => {
+        return customReportConfig.paths.some((glob) => minimatch(artifact.path, glob))
+      })
+      return {
+        name: customReportConfig.name,
+        artifacts: this.fetchArtifacts(reportArtifacts)
+      }
+    })
+    for (const { name, artifacts } of nameArtifacts) {
+      customReports.set(name, await artifacts)
+    }
+
+    return customReports
   }
 }

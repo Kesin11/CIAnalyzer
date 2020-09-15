@@ -8,6 +8,21 @@ export type CustomReport = {
   [key: string]: unknown
 }
 
+export const aggregateCustomReportArtifacts = (customReportArtifactsList: CustomReportArtifact[]) => {
+  const aggregated: CustomReportArtifact = new Map()
+  for (const customReportArtifacts of customReportArtifactsList) {
+    for (const [name, artifacts] of customReportArtifacts) {
+      const aggregatedArtifacts = aggregated.get(name)
+      if (aggregatedArtifacts) {
+        aggregated.set(name, aggregatedArtifacts.concat(artifacts))
+      } else {
+        aggregated.set(name, artifacts)
+      }
+    }
+  }
+  return aggregated
+}
+
 export const createCustomReportCollection = async (workflowReport: WorkflowReport, customReportArtifacts: CustomReportArtifact): Promise<CustomReportCollection> => {
   const reportCollection = new CustomReportCollection()
   for (const [reportName, artifacts] of customReportArtifacts) {
