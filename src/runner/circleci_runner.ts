@@ -8,6 +8,7 @@ import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
 import { GithubRepositoryClient } from "../client/github_repository_client"
+import { CustomReportCollection, createCustomReportCollection, aggregateCustomReportArtifacts } from "../custom_report_collection"
 
 export class CircleciRunner implements Runner {
   service: string = 'circleci'
@@ -41,6 +42,7 @@ export class CircleciRunner implements Runner {
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
+    const customReportCollection = new CustomReportCollection()
     for (const repo of this.config.repos) {
       console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
       const repoWorkflowReports: WorkflowReport[] = []
@@ -52,6 +54,7 @@ export class CircleciRunner implements Runner {
         const tagMap = await this.repoClient.fetchRepositoryTagMap(repo.owner, repo.repo)
 
         for (const workflowRun of workflowRuns) {
+          // Fetch data
           const jobs = await Promise.all(workflowRun.build_nums.map((buildNum) => {
             return this.client.fetchJobs(
               workflowRun.username,
@@ -68,11 +71,26 @@ export class CircleciRunner implements Runner {
               buildNum
             )
           }))
+          const customReportArtifactsList = await Promise.all(workflowRun.build_nums.map((buildNum) => {
+            return this.client.fetchCustomReports(
+              workflowRun.username,
+              workflowRun.reponame,
+              workflowRun.vcs_type,
+              buildNum,
+              repo.customReports,
+            )
+          }))
+          const customReportArtifacts = aggregateCustomReportArtifacts(customReportArtifactsList)
+
+          // Create report
           const workflowReport = this.analyzer.createWorkflowReport(workflowRun, jobs, tagMap)
           const testReports = await this.analyzer.createTestReports(workflowReport, jobs, tests)
+          const runCustomReportCollection = await createCustomReportCollection(workflowReport, customReportArtifacts)
 
+          // Aggregate
           repoWorkflowReports.push(workflowReport)
           repoTestReports = repoTestReports.concat(testReports)
+          customReportCollection.aggregate(runCustomReportCollection)
         }
 
         this.setRepoLastRun(repo.fullname, repoWorkflowReports)
@@ -90,6 +108,7 @@ export class CircleciRunner implements Runner {
     const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
     await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
+    await exporter.exportCustomReports(customReportCollection)
 
     this.store.save()
     console.info(`Success: done execute '${this.service}'`)

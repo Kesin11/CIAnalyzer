@@ -1,8 +1,8 @@
 import { parseConfig } from '../../src/config/circleci_config'
 
 describe('parseConfig', () => {
-  describe('repos', () => {
-    it('vscType should github when value is repo string', () => {
+  describe('vscType', () => {
+    it('should github when value is repo string', () => {
       const config = {
         configDir: __dirname,
         circleci: {
@@ -21,7 +21,7 @@ describe('parseConfig', () => {
       })
     })
 
-    it('vscType should same as provides when value is object', () => {
+    it('should same as provides when value is object', () => {
       const config = {
         configDir: __dirname,
         circleci: {
@@ -40,7 +40,7 @@ describe('parseConfig', () => {
       })
     })
 
-    it('vscType should github when object vsc_type is null', () => {
+    it('should github when object vsc_type is null', () => {
       const config = {
         configDir: __dirname,
         circleci: {
@@ -55,6 +55,30 @@ describe('parseConfig', () => {
           repo: 'repo',
           vscType: 'github',
           fullname: 'github/owner/repo'
+        }]
+      })
+    })
+  })
+
+  describe('customReports', () => {
+    const customReport = { name: 'custom', paths: ['custom.json'] }
+
+    it('that has customReports', () => {
+      const config = {
+        configDir: __dirname,
+        circleci: {
+          repos: [{
+            name: 'owner/repo',
+            customReports: [ customReport ]
+          }]
+        }
+      }
+
+      const actual = parseConfig(config)
+      expect(actual).toEqual({
+        repos: [{
+          owner: 'owner', repo: 'repo', vscType: 'github', fullname: 'github/owner/repo',
+          customReports: [ customReport ]
         }]
       })
     })
