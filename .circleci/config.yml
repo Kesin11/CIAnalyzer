@@ -14,21 +14,33 @@ jobs:
     docker:
       - image: circleci/node:lts
     steps:
+      # Setup
       - checkout
       - restore_cache:
           keys:
             - npm-cache-{{ checksum "package-lock.json" }}
       - run: npm ci
+
+      # Test
       - run:
           name: Build
           command: npm run build
       - run:
           name: Test
           command: npm run test:ci -- -w=2
+      - run:
+          name: Create custom json
+          command: |
+            OS=$(uname)
+            echo "{ \"job\": \"${CIRCLE_JOB}\", \"node\": \"\", \"os\": \"${OS}\", \"container\": \"circleci/node:lts\" }" > custom_report.json
+
+      # Post actions
       - store_test_results:
           path: junit
       - store_artifacts:
           path: junit
+      - store_artifacts:
+          path: custom_report.json
       - save_cache:
           key: npm-cache-{{ checksum "package-lock.json" }}
           name: Save npm cache
