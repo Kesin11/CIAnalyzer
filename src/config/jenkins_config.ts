@@ -11,8 +11,8 @@ export type JenkinsConfig = CommonConfig & {
 
 type JobYaml = string | {
   name: string
-  tests: string[]
-  customReports: CustomReportConfig[]
+  tests?: string[]
+  customReports?: CustomReportConfig[]
 }
 
 export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {
@@ -20,7 +20,7 @@ export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {
 
   const jenkinsConfig = config.jenkins
   // overwrite jobs
-  jenkinsConfig.jobs = jenkinsConfig.jobs.map((jobYaml: JobYaml) => {
+  jenkinsConfig.jobs = jenkinsConfig.jobs.map((jobYaml: JobYaml): JenkinsConfig['jobs'][0] => {
     if (typeof jobYaml === 'string') {
       return { name: jobYaml, testGlob: [], customReports: [] }
     }
