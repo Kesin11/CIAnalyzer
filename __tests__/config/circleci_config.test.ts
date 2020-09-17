@@ -16,7 +16,8 @@ describe('parseConfig', () => {
           owner: 'owner',
           repo: 'repo',
           vscType: 'github',
-          fullname: 'github/owner/repo'
+          fullname: 'github/owner/repo',
+          customReports: [],
         }]
       })
     })
@@ -35,7 +36,8 @@ describe('parseConfig', () => {
           owner: 'owner',
           repo: 'repo',
           vscType: 'bitbucket',
-          fullname: 'bitbucket/owner/repo'
+          fullname: 'bitbucket/owner/repo',
+          customReports: [],
         }]
       })
     })
@@ -54,7 +56,8 @@ describe('parseConfig', () => {
           owner: 'owner',
           repo: 'repo',
           vscType: 'github',
-          fullname: 'github/owner/repo'
+          fullname: 'github/owner/repo',
+          customReports: [],
         }]
       })
     })
@@ -62,6 +65,25 @@ describe('parseConfig', () => {
 
   describe('customReports', () => {
     const customReport = { name: 'custom', paths: ['custom.json'] }
+
+    it('that has not customReports', () => {
+      const config = {
+        configDir: __dirname,
+        circleci: {
+          repos: [{
+            name: 'owner/repo',
+          }]
+        }
+      }
+
+      const actual = parseConfig(config)
+      expect(actual).toEqual({
+        repos: [{
+          owner: 'owner', repo: 'repo', vscType: 'github', fullname: 'github/owner/repo',
+          customReports: [],
+        }]
+      })
+    })
 
     it('that has customReports', () => {
       const config = {

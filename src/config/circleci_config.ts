@@ -12,8 +12,8 @@ export type CircleciConfig = CommonConfig & {
 
 type RepoYaml = string | {
   name: string
-  vsc_type: string
-  customReports: CustomReportConfig[]
+  vsc_type?: string
+  customReports?: CustomReportConfig[]
 }
 
 export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
@@ -22,13 +22,13 @@ export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
   const circleciConfig = config.circleci
 
   // overwrite repos
-  circleciConfig.repos = circleciConfig.repos.map((repoYaml: RepoYaml) => {
+  circleciConfig.repos = circleciConfig.repos.map((repoYaml: RepoYaml): CircleciConfig['repos'][0] => {
     let owner, repo
     if (typeof repoYaml === 'string') {
       [owner, repo] = repoYaml.split('/')
       const vscType = 'github'
       const fullname = `${vscType}/${owner}/${repo}`
-      return { vscType, owner, repo, fullname }
+      return { vscType, owner, repo, fullname, customReports: [] }
     }
 
     [owner, repo] = repoYaml.name.split('/')
@@ -38,7 +38,7 @@ export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
       owner,
       repo,
       fullname: `${vscType}/${owner}/${repo}`,
-      customReports: repoYaml.customReports,
+      customReports: repoYaml.customReports ?? [],
     }
   })
 

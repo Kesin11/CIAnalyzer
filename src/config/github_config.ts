@@ -12,8 +12,8 @@ export type GithubConfig = CommonConfig & {
 
 type RepoYaml = string | {
   name: string
-  tests: string[]
-  customReports: CustomReportConfig[]
+  tests?: string[]
+  customReports?: CustomReportConfig[]
 }
 
 export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
@@ -21,11 +21,11 @@ export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
 
   const githubConfig = config.github
   // overwrite repos
-  githubConfig.repos = githubConfig.repos.map((repoYaml: RepoYaml) => {
+  githubConfig.repos = githubConfig.repos.map((repoYaml: RepoYaml): GithubConfig['repos'][0] => {
     let owner, repo
     if (typeof repoYaml === 'string') {
       [owner, repo] = repoYaml.split('/')
-      return { owner, repo, fullname: repoYaml, testGlob: [] }
+      return { owner, repo, fullname: repoYaml, testGlob: [], customReports: [] }
     }
 
     [owner, repo] = repoYaml.name.split('/')
@@ -33,8 +33,8 @@ export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
       owner,
       repo,
       fullname: repoYaml.name,
-      testGlob: repoYaml.tests,
-      customReports: repoYaml.customReports,
+      testGlob: repoYaml.tests ?? [],
+      customReports: repoYaml.customReports ?? [],
     }
   })
 

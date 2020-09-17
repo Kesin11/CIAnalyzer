@@ -13,13 +13,35 @@ describe('parseConfig', () => {
     const actual = parseConfig(config)
 
     expect(actual).toEqual({
-      repos: [
-        { owner: 'owner', repo: 'repo', fullname: 'owner/repo', testGlob: [] }
-      ]
+      repos: [{
+        owner: 'owner', repo: 'repo', fullname: 'owner/repo',
+        testGlob: [],
+        customReports: [],
+      }]
     })
   })
 
   describe('when repos are object', () => {
+    it('that has only name', () => {
+      const config = {
+        configDir: __dirname,
+        github: {
+          repos: [{
+            name: 'owner/repo',
+          }]
+        }
+      }
+      const actual = parseConfig(config)
+
+      expect(actual).toEqual({
+        repos: [{
+          owner: 'owner', repo: 'repo', fullname: 'owner/repo',
+          testGlob: [],
+          customReports: [],
+        }]
+      })
+    })
+
     it('that has tests', () => {
       const config = {
         configDir: __dirname,
@@ -33,9 +55,11 @@ describe('parseConfig', () => {
       const actual = parseConfig(config)
 
       expect(actual).toEqual({
-        repos: [
-          { owner: 'owner', repo: 'repo', fullname: 'owner/repo', testGlob: ['**/*.xml'] }
-        ]
+        repos: [{
+          owner: 'owner', repo: 'repo', fullname: 'owner/repo',
+          testGlob: ['**/*.xml'],
+          customReports: [],
+        }]
       })
     })
 
@@ -55,6 +79,7 @@ describe('parseConfig', () => {
       expect(actual).toEqual({
         repos: [{
           owner: 'owner', repo: 'repo', fullname: 'owner/repo',
+          testGlob: [],
           customReports: [ customReport ]
         }]
       })
