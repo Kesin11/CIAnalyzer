@@ -7,6 +7,10 @@ github:
     - name: Kesin11/CIAnalyzer
       tests:
         - '**/*.xml' # Test report JUnit XML path in artifact that uploaded by actions/upload-artifact
+      customReports:
+        - name: { CUSTOM_REPORT_NAME } # It must be same bigquery.customReports[].name
+          paths:
+            - 'custom_report.json' # Path at inside of artifact.
     - Kesin11/Firestore-simple # Can use abbr format if don't collect test report
   vscBaseUrl: # It used for collect git tag data.
     github: https://api.github.com # default
@@ -22,10 +26,10 @@ github:
           table: { WORKFLOW_TABLE_NAME }
         - name: test_report
           table: { TEST_REPORT_TABLE_NAME }
-      custom_reports:
-        - name: { CUSTOM_REPORT_NAME }
+      customReports:
+        - name: { CUSTOM_REPORT_NAME } # It must be same repos[].customReports[].name
           table: { CUSTOM_REPORT_TABLE }
-          schema: ../bigquery_schema/custom_sample.json # This is sample schema path. It relative path from this config yaml.
+          schema: ../bigquery_schema/custom_sample.json # This is sample schema path. It accepts absolute path or relative path from this config yaml.
       maxBadRecords: 0 # (Optional) default: 0. If set > 0, skip bad record. This option should only be used for workaround.
   lastRunStore:
     backend: gcs # Recommend using 'gcs' backend
@@ -37,8 +41,12 @@ circleci:
   # baseUrl: https://circleci.com/api/v1.1 # Change it if you using CircleCI Enterprise
   repos:
     - Kesin11/CIAnalyzer
-    # - name: Kesin11/CIAnalyzer
-    #   vsc_type: github # github or bitbucket. default: github
+    - name: Kesin11/CIAnalyzer
+      vsc_type: github # github or bitbucket. default: github
+      customReports:
+        - name: { CUSTOM_REPORT_NAME }
+          paths:
+            - 'custom_report.json'
   vscBaseUrl:
     # Using for collect git tag data. **Currently only support github**
     github: https://api.github.com # Change it if you using GitHub Enterprise Server

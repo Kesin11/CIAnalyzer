@@ -283,10 +283,43 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
     ...
 ```
 
+# Collect and export any JSON from build artifacts
+You can export any data related to build with `CustomReport`. CIAanalyzer can collect JSON file that has any structure from CI build artifacts. If you want to collect some data and export it to BigQuery(or others), just create JSON that includes your preferred data and store it to CI build artifacts.
+
+## 1. Create schema file for your CustomReport table(Optional)
+Create BigQuery schema JSON like this [sample schema json](./bigquery_schema/custom_sample.json) and save it to any path you want.
+
+These columns are must need in your schema:
+
+|name|type|
+|----|----|
+|workflowId|STRING|
+|workflowRunId|STRING|
+|createdAt|TIMESTAMP|
+
+## 2. Create BigQuery table(Optional)
+As introduced before in "Setup BigQuery", create BigQuery table using `bq mk` command like this.
+
+```
+bq mk
+  --project_id=${YOUR_GCP_PROJECT_ID} \
+  --location=${LOCATION} \
+  --table \
+  --time_partitioning_field=createdAt \
+  ${DATASET}.${TABLE} \
+  /path/to/your/custom_report_schema.json
+```
+
+## 3. Add CustomReport config
+Add your CustomReport JSON path at each repo(job)'s artifacts and BigQuery table info to your config YAML.
+
+See sample [ci_analyzer.yaml](./ci_analyzer.yaml).
+
+`bigquery.customReports[].schema` accepts absolute path or relative path from your config YAML path.
+
 # Roadmap
 - [x] Collect test data
-- [ ] Collect any of JSON format from build artifacts
-- [ ] Output executed node data
+- [x] Collect any of JSON format from build artifacts
 - [ ] Implement better logger
 - [ ] Support Bitrise
 
