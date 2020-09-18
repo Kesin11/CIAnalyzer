@@ -173,7 +173,7 @@ export class GithubAnalyzer implements Analyzer {
           successCount: (testSuites.failures && testSuites.failures > 0) ? 0 : 1,
         })
       } catch (error) {
-        console.error(`Error: Could not parse as JUnit XML. ${artifact.path}`)
+        console.error(`Error: Could not parse as JUnit XML. workflowRunId: ${workflowReport.workflowRunId}, path: ${artifact.path}`)
       }
     }
     return testReports
