@@ -32,7 +32,7 @@ export const createCustomReportCollection = async (workflowReport: WorkflowRepor
         const jsonString = Buffer.from(artifact.data).toString('utf8')
         data = JSON.parse(jsonString)
       } catch (error) {
-        console.error(`Error: Could not parse as JSON. ${artifact.path}`)
+        console.error(`Error: Could not parse as JSON. workflowRunId: ${workflowReport.workflowRunId}, path: ${artifact.path}`)
         return
       }
 
