@@ -1,5 +1,8 @@
 # [2.1.0](https://github.com/Kesin11/CIAnalyzer/compare/v2.0.2...v2.1.0) (2020-09-20)
 
+Now CIAanalyzer can export any data related to build with `CustomReport`. CIAanalyzer can collect JSON file that has any structure from CI build artifacts. If you want to collect some data and export it to BigQuery(or others), just create JSON that includes your preferred data and store it to CI build artifacts.
+
+If you want to collect CustomReport, please see [sample config YAML](https://github.com/Kesin11/CIAnalyzer/blob/master/ci_analyzer.yaml)
 
 ### Bug Fixes
 
