@@ -1,3 +1,22 @@
+# [2.1.0](https://github.com/Kesin11/CIAnalyzer/compare/v2.0.2...v2.1.0) (2020-09-20)
+
+
+### Bug Fixes
+
+* Bugfix error when test or customReports are undefined in config yaml ([1edb2c4](https://github.com/Kesin11/CIAnalyzer/commit/1edb2c47147ba77a8c2f42a5fbf0b9a8a340ac84))
+* Fetch artifacts in parallel ([0214b48](https://github.com/Kesin11/CIAnalyzer/commit/0214b4878bc537bfddc18328c06766751664cbdc))
+* Fetch custom report artifacts in parallel ([95311bc](https://github.com/Kesin11/CIAnalyzer/commit/95311bc03343ae75ad4e788b7463581473ce5baa))
+* Show more detail in error log ([5eb638e](https://github.com/Kesin11/CIAnalyzer/commit/5eb638e17e64404ed8c4fa09e693181bc268341b))
+
+
+### Features
+
+* Export CustomReport (CircleCI) ([adc97f0](https://github.com/Kesin11/CIAnalyzer/commit/adc97f00f8e7648f8d066df3f845fac1472715b1))
+* Implement BigqueryExporter.exportCustomReports ([0974f3a](https://github.com/Kesin11/CIAnalyzer/commit/0974f3a4a29cabea5fa6c32637047e216d1cf269))
+* Support custom reporter in Github Actions ([1f2d44d](https://github.com/Kesin11/CIAnalyzer/commit/1f2d44d5f356c814d30e75cba03d928aee568258))
+
+
+
 ## [2.0.2](https://github.com/Kesin11/CIAnalyzer/compare/v2.0.1...v2.0.2) (2020-08-15)
 
 
