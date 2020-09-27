@@ -44,9 +44,7 @@ export class GcsStore implements Store {
 
     // Write store file
     await this.file.save(JSON.stringify(store, null, 2))
-    if (process.env['CI_ANALYZER_DEBUG']) {
-      console.debug(`(GcsStore) ${this.gcsPath} was successfully saved.`)
-    }
+    console.info(`(GcsStore) ${this.gcsPath} was successfully saved.`)
 
     return store
   }
