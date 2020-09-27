@@ -9,6 +9,7 @@ pipeline {
         CIRCLECI_TOKEN = credentials('ci_analyzer_circleci_token') // secret text
         SERVICE_ACCOUNT = credentials('ci_analyzer_service_account') // secret file
         CONFIG_FILE_PATH = credentials('ci_analyzer_cron_config') // secret text
+        CUSTOM_SCHEMA_DIR_PATH = credentials('ci_analyzer_custom_schema_dir') // secret text
       }
       steps {
         sh """
@@ -17,6 +18,7 @@ pipeline {
             --mount type=bind,src=${WORKSPACE},dst=/app/ \
             --mount type=bind,src=${SERVICE_ACCOUNT},dst=/service_account.json \
             --mount type=bind,src=${CONFIG_FILE_PATH},dst=/app/ci_analyzer.yaml \
+            --mount type=bind,src=${CUSTOM_SCHEMA_DIR_PATH},dst=/app/custom_schema \
             -e GITHUB_TOKEN=${GITHUB_TOKEN} \
             -e CIRCLECI_TOKEN=${CIRCLECI_TOKEN} \
             -e JENKINS_USER=${JENKINS_USR} \
