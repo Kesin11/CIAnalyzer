@@ -36,6 +36,8 @@ export class LocalStore implements Store {
     await fs.promises.mkdir(outDir, { recursive: true })
     await fs.promises.writeFile(this.filePath, JSON.stringify(store, null, 2))
 
+    console.info(`(LocalStore) ${this.filePath} was successfully saved.`)
+
     return store
   }
 }

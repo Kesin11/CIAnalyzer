@@ -286,7 +286,7 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
 # Collect and export any JSON from build artifacts
 You can export any data related to build with `CustomReport`. CIAanalyzer can collect JSON file that has any structure from CI build artifacts. If you want to collect some data and export it to BigQuery(or others), just create JSON that includes your preferred data and store it to CI build artifacts.
 
-## 1. Create schema file for your CustomReport table(Optional)
+## 1. Create schema file for your CustomReport table
 Create BigQuery schema JSON like this [sample schema json](./bigquery_schema/custom_sample.json) and save it to any path you want.
 
 These columns are must need in your schema:
@@ -297,7 +297,7 @@ These columns are must need in your schema:
 |workflowRunId|STRING|
 |createdAt|TIMESTAMP|
 
-## 2. Create BigQuery table(Optional)
+## 2. Create BigQuery table
 As introduced before in "Setup BigQuery", create BigQuery table using `bq mk` command like this.
 
 ```
@@ -311,11 +311,23 @@ bq mk
 ```
 
 ## 3. Add CustomReport config
-Add your CustomReport JSON path at each repo(job)'s artifacts and BigQuery table info to your config YAML.
+Add your CustomReport JSON path (import target) at each repo(job)'s artifacts and BigQuery table info (export target) to your config YAML.
 
 See sample [ci_analyzer.yaml](./ci_analyzer.yaml).
 
-`bigquery.customReports[].schema` accepts absolute path or relative path from your config YAML path.
+
+`bigquery.customReports[].schema` is BigQuery schema JSON created at step1. It accepts absolute path or relative path from your config YAML.
+
+**NOTICE**: When you run CIAnalyzer using docker, `bigquery.customReports[].schema` is a path that **inside of CIAnalyzer docker container**. So it's very confusing and recommends it to mount custom schema JSON at the same path as your ci_analyzer.yaml in the next step.
+
+## 4. Mount custom schema JSON at `docker run` (Only using docker)
+To load your custom schema JSON from CIAnalyzer that runs inside of container, you have to also mount your JSON with additional `docker run --mount` options if you need.
+
+```
+--mount type=bind,src=${CUSTOM_SCHEMA_DIR_PATH},dst=/app/custom_schema
+```
+
+See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 
 # Roadmap
 - [x] Collect test data
