@@ -26,7 +26,7 @@
     "build:watch": "tsc -b -w",
     "lint": "echo \"We have not lint yet\"",
     "test": "jest",
-    "test:ci": "jest --coverage",
+    "test:ci": "jest --coverage --ci --runInBand",
     "test:watch": "jest --watch",
     "coverage": "codecov",
     "release:prepare": "shipjs prepare",
