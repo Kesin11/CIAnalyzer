@@ -159,7 +159,7 @@ export class JenkinsClient {
 
     this.axios = axios.create({
       baseURL: baseUrl,
-      timeout: 3000,
+      timeout: 5000,
       auth,
     });
 
