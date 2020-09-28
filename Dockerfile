@@ -1,5 +1,9 @@
+
 # TypeScript build stage
 FROM node:12-alpine AS ts-builder
+LABEL org.opencontainers.image.source https://github.com/Kesin11/CIAnalyzer
+LABEL org.opencontainers.image.authors kesin1202000@gmail.com
+
 WORKDIR /build
 
 COPY package*.json ./
