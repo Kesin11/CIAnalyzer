@@ -1,9 +1,13 @@
+
 # TypeScript build stage
 FROM node:12-alpine AS ts-builder
+LABEL org.opencontainers.image.source https://github.com/Kesin11/CIAnalyzer
+LABEL org.opencontainers.image.authors kesin1202000@gmail.com
+
 WORKDIR /build
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 RUN npm run clean && npm run build
@@ -13,7 +17,7 @@ FROM node:12-alpine
 WORKDIR /ci_analyzer
 
 COPY package*.json ./
-RUN npm install --production
+RUN npm ci --production
 
 COPY . .
 COPY --from=ts-builder /build/dist ./dist
