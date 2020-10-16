@@ -44,7 +44,7 @@
     "lodash": "4.17.20",
     "minimatch": "3.0.4",
     "utility-types": "3.10.0",
-    "yargs": "16.0.3"
+    "yargs": "16.1.0"
   },
   "devDependencies": {
     "@types/adm-zip": "0.4.33",
