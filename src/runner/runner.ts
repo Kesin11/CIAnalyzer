@@ -8,7 +8,7 @@ export interface Runner {
 }
 
 export class CompositRunner implements Runner {
-  runners: (Runner | undefined)[]
+  runners: Runner[]
   constructor(public config: YamlConfig) {
     this.runners = Object.keys(config).map((service) => {
       switch (service) {
@@ -21,12 +21,12 @@ export class CompositRunner implements Runner {
         default:
           return undefined
       }
-    })
+    }).filter((runner): runner is NonNullable<typeof runner> => runner !== undefined)
   }
 
   async run () {
     await Promise.all(
-      this.runners.map((runner) => runner?.run())
+      this.runners.map((runner) => runner.run())
     )
   }
 }
