@@ -9,6 +9,7 @@ import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
 import { GithubRepositoryClient } from "../client/github_repository_client"
 import { CustomReportCollection, createCustomReportCollection } from "../custom_report_collection"
+import { failure, Result, success } from "../result"
 
 export class GithubRunner implements Runner {
   service: string = 'github'
@@ -34,8 +35,9 @@ export class GithubRunner implements Runner {
     }
   }
 
-  async run () {
-    if (!this.config) return
+  async run (): Promise<Result<void, Error>> {
+    let result: Result<void, Error> = success()
+    if (!this.config) return failure(new Error('this.config must not be undefined'))
     this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
 
     let workflowReports: WorkflowReport[] = []
@@ -69,8 +71,10 @@ export class GithubRunner implements Runner {
         }
       }
       catch (error) {
-        console.error(`Some error raised in '${repo.fullname}', so it skipped.`)
+        const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`
+        console.error(errorMessage)
         console.error(error)
+        result = failure(new Error(errorMessage))
         continue
       }
       this.setRepoLastRun(repo.fullname, repoWorkflowReports)
@@ -85,6 +89,8 @@ export class GithubRunner implements Runner {
     await exporter.exportCustomReports(customReportCollection)
 
     this.store.save()
-    console.info(`Success: done execute '${this.service}'`)
+    console.info(`Done execute '${this.service}'. status: ${result.type}`)
+
+    return result
   }
 }
