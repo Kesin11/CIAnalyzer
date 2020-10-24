@@ -26,14 +26,16 @@ export class CompositRunner implements Runner {
   }
 
   async run(): Promise<Result<void, Error>> {
-    const results = await Promise.all(
+    const results = await Promise.allSettled(
       this.runners.map((runner) => runner.run())
     )
 
-    const errorResults = results.filter(result => result.isFailure())
+    const errorResults = results.filter((result) => {
+      return result.status === 'rejected' ||
+        (result.status === 'fulfilled' && result.value.isFailure())
+    })
     if (errorResults.length > 0) {
-      console.log('End with failure')
-      return failure(new Error('Some runner throws error'))
+      return failure(new Error('Some runner throws error!!'))
     }
 
     return success()

@@ -19,7 +19,7 @@ const main = async () => {
   const result = await runner.run()
 
   if (result.isFailure()) {
-    console.info('Some runners return error!')
+    console.error(result.value)
     process.exitCode = 1
   }
 }
