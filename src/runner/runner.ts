@@ -2,13 +2,14 @@ import { YamlConfig } from "../config/config";
 import { GithubRunner } from "./github_runner";
 import { CircleciRunner } from "./circleci_runner";
 import { JenkinsRunner } from "./jenkins_runner";
+import { failure, Result, success } from "../result";
 
 export interface Runner {
-  run (): Promise<void>
+  run (): Promise<Result<void, Error>>
 }
 
 export class CompositRunner implements Runner {
-  runners: (Runner | undefined)[]
+  runners: Runner[]
   constructor(public config: YamlConfig) {
     this.runners = Object.keys(config).map((service) => {
       switch (service) {
@@ -21,12 +22,22 @@ export class CompositRunner implements Runner {
         default:
           return undefined
       }
-    })
+    }).filter((runner): runner is NonNullable<typeof runner> => runner !== undefined)
   }
 
-  async run () {
-    await Promise.all(
-      this.runners.map((runner) => runner?.run())
+  async run(): Promise<Result<void, Error>> {
+    const results = await Promise.allSettled(
+      this.runners.map((runner) => runner.run())
     )
+
+    const errorResults = results.filter((result) => {
+      return result.status === 'rejected' ||
+        (result.status === 'fulfilled' && result.value.isFailure())
+    })
+    if (errorResults.length > 0) {
+      return failure(new Error('Some runner throws error!!'))
+    }
+
+    return success()
   }
 }

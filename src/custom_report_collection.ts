@@ -42,7 +42,7 @@ export const createCustomReportCollection = async (workflowReport: WorkflowRepor
         createdAt: workflowReport.createdAt,
         ...data
       } as CustomReport
-    }).filter((report) => report !== undefined) as CustomReport[]
+    }).filter((report): report is CustomReport => report !== undefined)
 
     reportCollection.set(reportName, reports)
   }

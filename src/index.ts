@@ -16,6 +16,11 @@ const main = async () => {
   const yamlConfig = loadConfig(argv.c)
 
   const runner = new CompositRunner(yamlConfig)
-  await runner.run()
+  const result = await runner.run()
+
+  if (result.isFailure()) {
+    console.error(result.value)
+    process.exitCode = 1
+  }
 }
 main()
