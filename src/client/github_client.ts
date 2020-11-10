@@ -13,6 +13,8 @@ type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listWorkflowRunsForR
 // see: https://developer.github.com/v3/checks/runs/#create-a-check-run
 type RunStatus = 'queued' | 'in_progress' | 'completed'
 
+export type RepositoryTagMap = Map<string, string>
+
 export class GithubClient {
   private octokit: Octokit
   private axios: AxiosInstance
@@ -151,5 +153,19 @@ export class GithubClient {
     }
 
     return customReports
+  }
+
+  async fetchRepositoryTagMap (owner: string, repo: string): Promise<RepositoryTagMap> {
+    try {
+      const res = await this.octokit.repos.listTags({ owner, repo, per_page: 100 })
+      const tags = res.data
+      return new Map( tags.map((tag) => [tag.commit.sha, tag.name]) )
+    }
+    catch (error) {
+      console.warn(`Failed to fetch ${owner}/${repo} tags.`)
+      console.warn(`${owner}/${repo} can not include tag data into report.`)
+      console.warn(error)
+      return new Map()
+    }
   }
 }

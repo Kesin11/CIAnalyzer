@@ -7,7 +7,7 @@ import { CircleciConfig, parseConfig } from "../config/circleci_config"
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
-import { GithubRepositoryClient } from "../client/github_repository_client"
+import { GithubClient } from "../client/github_client"
 import { CustomReportCollection, createCustomReportCollection, aggregateCustomReportArtifacts } from "../custom_report_collection"
 import { failure, Result, success } from "../result"
 
@@ -18,7 +18,7 @@ export class CircleciRunner implements Runner {
   configDir: string
   config: CircleciConfig | undefined
   store?: LastRunStore
-  repoClient: GithubRepositoryClient
+  githubClient: GithubClient
   constructor(public yamlConfig: YamlConfig) {
     const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
     this.configDir = yamlConfig.configDir
@@ -27,7 +27,7 @@ export class CircleciRunner implements Runner {
     this.analyzer = new CircleciAnalyzer()
 
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
-    this.repoClient = new GithubRepositoryClient(GITHUB_TOKEN, this.config?.vscBaseUrl?.github)
+    this.githubClient = new GithubClient(GITHUB_TOKEN, this.config?.vscBaseUrl?.github)
   }
 
   private setRepoLastRun(reponame: string, reports: WorkflowReport[]) {
@@ -53,7 +53,7 @@ export class CircleciRunner implements Runner {
       try {
         const lastRunId = this.store.getLastRun(repo.fullname)
         const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, repo.vscType, lastRunId)
-        const tagMap = await this.repoClient.fetchRepositoryTagMap(repo.owner, repo.repo)
+        const tagMap = await this.githubClient.fetchRepositoryTagMap(repo.owner, repo.repo)
 
         for (const workflowRun of workflowRuns) {
           // Fetch data
