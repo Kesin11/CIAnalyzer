@@ -1,8 +1,7 @@
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { throttling } from '@octokit/plugin-throttling'
 import { retry } from '@octokit/plugin-retry'
-import axios, { AxiosInstance } from 'axios'
-import { axiosRequestLogger, CustomReportArtifact, Artifact } from './client'
+import { CustomReportArtifact, Artifact } from './client'
 import { minBy } from "lodash";
 import { ZipExtractor } from "../zip_extractor";
 import { CustomReportConfig } from "../config/config";
@@ -19,7 +18,6 @@ export type RepositoryTagMap = Map<string, string>
 
 export class GithubClient {
   private octokit: Octokit
-  private axios: AxiosInstance
   constructor(token: string, baseUrl?: string) {
     const MyOctokit = Octokit.plugin(throttling, retry)
     this.octokit = new MyOctokit({
@@ -45,16 +43,6 @@ export class GithubClient {
         },
       }
     })
-
-    this.axios = axios.create({
-      baseURL: (baseUrl) ? baseUrl : 'https://api.github.com',
-      timeout: 5000,
-      auth: { username: '', password: token },
-    });
-
-    if (process.env['CI_ANALYZER_DEBUG']) {
-      this.axios.interceptors.request.use(axiosRequestLogger)
-    }
   }
 
   // see: https://developer.github.com/v3/actions/workflow-runs/#list-repository-workflow-runs
@@ -127,10 +115,12 @@ export class GithubClient {
     })
 
     const nameResponse = res.data.artifacts.map((artifact) => {
-      const response = this.axios.get(
-        artifact.archive_download_url,
-        { responseType: 'arraybuffer'}
-      )
+      const response = this.octokit.actions.downloadArtifact({
+        owner,
+        repo,
+        artifact_id: artifact.id,
+        archive_format: 'zip'
+      })
       return { name: artifact.name, response }
     })
 
