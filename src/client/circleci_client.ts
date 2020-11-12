@@ -1,7 +1,7 @@
 import minimatch from 'minimatch'
-import axios, { AxiosInstance } from 'axios'
+import { AxiosInstance } from 'axios'
 import { groupBy, max, minBy } from 'lodash'
-import { axiosRequestLogger, Artifact, CustomReportArtifact } from './client'
+import { Artifact, CustomReportArtifact, createAxios } from './client'
 import { CustomReportConfig } from '../config/config'
 
 const DEBUG_PER_PAGE = 10
@@ -110,19 +110,13 @@ type ArtifactsResponse = {
 export class CircleciClient {
   private axios: AxiosInstance
   constructor(token: string, baseUrl?: string) {
-    this.axios = axios.create({
+    this.axios = createAxios({
       baseURL: baseUrl ?? 'https://circleci.com/api/v1.1',
-      timeout: 5000,
       auth: {
         username: token,
         password: '',
       },
-      // headers: {'X-Custom-Header': 'foobar'}
-    });
-
-    if (process.env['CI_ANALYZER_DEBUG']) {
-      this.axios.interceptors.request.use(axiosRequestLogger)
-    }
+    })
   }
 
   // https://circleci.com/api/v1.1/project/:vcs-type/:username/:project?circle-token=:token&limit=20&offset=5&filter=completed
