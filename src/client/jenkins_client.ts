@@ -1,5 +1,5 @@
-import axios, { AxiosInstance } from 'axios'
-import { axiosRequestLogger, Artifact, CustomReportArtifact } from './client'
+import { AxiosInstance } from 'axios'
+import { Artifact, CustomReportArtifact, createAxios } from './client'
 import { minBy } from 'lodash'
 import minimatch from 'minimatch'
 import { CustomReportConfig } from '../config/config'
@@ -157,15 +157,10 @@ export class JenkinsClient {
       password: token,
     } : undefined
 
-    this.axios = axios.create({
+    this.axios = createAxios({
       baseURL: baseUrl,
-      timeout: 5000,
       auth,
-    });
-
-    if (process.env['CI_ANALYZER_DEBUG']) {
-      this.axios.interceptors.request.use(axiosRequestLogger)
-    }
+    })
   }
 
   async fetchJobs() {

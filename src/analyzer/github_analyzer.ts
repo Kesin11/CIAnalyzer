@@ -1,7 +1,7 @@
 import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods'
 import { sumBy, min, max } from 'lodash'
 import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToReportTestSuites } from './analyzer'
-import { RepositoryTagMap } from '../client/github_repository_client'
+import { RepositoryTagMap } from '../client/github_client'
 import { parse } from 'junit2json'
 import { Artifact } from '../client/client'
 export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listWorkflowRunsForRepo']['response']['data']['workflow_runs'][0]

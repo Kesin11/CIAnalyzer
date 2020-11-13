@@ -7,7 +7,6 @@ import { GithubConfig, parseConfig } from "../config/github_config"
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
-import { GithubRepositoryClient } from "../client/github_repository_client"
 import { CustomReportCollection, createCustomReportCollection } from "../custom_report_collection"
 import { failure, Result, success } from "../result"
 
@@ -18,14 +17,12 @@ export class GithubRunner implements Runner {
   configDir: string
   config: GithubConfig | undefined
   store?: LastRunStore
-  repoClient: GithubRepositoryClient
   constructor(public yamlConfig: YamlConfig) {
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
     this.configDir = yamlConfig.configDir
     this.config = parseConfig(yamlConfig)
-    this.client = new GithubClient(GITHUB_TOKEN)
+    this.client = new GithubClient(GITHUB_TOKEN, this.config?.vscBaseUrl?.github)
     this.analyzer = new GithubAnalyzer()
-    this.repoClient = new GithubRepositoryClient(GITHUB_TOKEN, this.config?.vscBaseUrl?.github)
   }
 
   private setRepoLastRun(reponame: string, reports: WorkflowReport[]) {
@@ -51,7 +48,7 @@ export class GithubRunner implements Runner {
       try {
         const lastRunId = this.store.getLastRun(repo.fullname)
         const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, lastRunId)
-        const tagMap = await this.repoClient.fetchRepositoryTagMap(repo.owner, repo.repo)
+        const tagMap = await this.client.fetchRepositoryTagMap(repo.owner, repo.repo)
 
         for (const workflowRun of workflowRuns) {
           // Fetch data
