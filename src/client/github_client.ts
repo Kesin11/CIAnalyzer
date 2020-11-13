@@ -1,4 +1,6 @@
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
+import { throttling } from '@octokit/plugin-throttling'
+import { retry } from '@octokit/plugin-retry'
 import axios, { AxiosInstance } from 'axios'
 import { axiosRequestLogger, CustomReportArtifact, Artifact } from './client'
 import { minBy } from "lodash";
@@ -19,10 +21,29 @@ export class GithubClient {
   private octokit: Octokit
   private axios: AxiosInstance
   constructor(token: string, baseUrl?: string) {
-    this.octokit = new Octokit({
+    const MyOctokit = Octokit.plugin(throttling, retry)
+    this.octokit = new MyOctokit({
       auth: token,
       baseUrl: (baseUrl) ? baseUrl : 'https://api.github.com',
       log: (process.env['CI_ANALYZER_DEBUG']) ? console : undefined,
+      throttle: {
+        onRateLimit: (retryAfter: number, options: any) => {
+          this.octokit.log.warn(
+            `Request quota exhausted for request ${options.method} ${options.url}`
+          )
+          // Retry twice after hitting a rate limit error, then give up
+          if (options.request.retryCount <= 2) {
+            console.log(`Retrying after ${retryAfter} seconds!`);
+            return true;
+          }
+        },
+        onAbuseLimit: (retryAfter: number, options: any) => {
+          // does not retry, only logs a warning
+          this.octokit.log.warn(
+            `Abuse detected for request ${options.method} ${options.url}`
+          )
+        },
+      }
     })
 
     this.axios = axios.create({
