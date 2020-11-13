@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios'
+import axiosRetry from 'axios-retry'
 
 export type Artifact = {
   path: string
@@ -15,6 +16,10 @@ export const createAxios = (config: AxiosRequestConfig) => {
     // Overwrite parameters
     ...config
   });
+  axiosRetry(axiosInstance, {
+    retries: 3,
+    retryDelay: axiosRetry.exponentialDelay
+  })
 
   if (process.env['CI_ANALYZER_DEBUG']) {
     axiosInstance.interceptors.request.use(axiosRequestLogger)
