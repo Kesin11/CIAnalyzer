@@ -57,6 +57,8 @@ circleci:
 
 jenkins:
   baseUrl: http://localhost:8080 # Your jenkins url
+  correctAllJobs: # Enable correct all pipeline jobs
+    filterLastBuildDay: 30 # Filter by last build day. default: 30
   jobs: # Job names in your Jenkins
     - name: ci_analyzer
       tests:
