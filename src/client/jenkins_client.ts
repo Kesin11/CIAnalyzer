@@ -80,6 +80,7 @@ export type BuildResponse = {
   id: string // '80'
   number: number // 80
   fullDisplayName: string // "ci_analyzer #90",
+  timestamp: number // 1605412528346 (milisec timestamp)
   actions: (CauseAction | BuildData | GhprbParametersAction | ParametersAction)[]
   artifacts: {
     displayPath: string // "junit.xml",
@@ -150,7 +151,7 @@ export type ParametersAction = {
 export class JenkinsClient {
   private axios: AxiosInstance
   constructor(baseUrl: string, user?: string, token?: string) {
-    if ((user && !token) || (!user && token)) throw 'Only $JENKSIN_USER or $JENKINS_TOKEN is undefined.'
+    if ((user && !token) || (!user && token)) throw 'Either $JENKSIN_USER or $JENKINS_TOKEN is undefined.'
 
     const auth = (user && token) ? {
       username: user,
@@ -206,6 +207,12 @@ export class JenkinsClient {
 
   async fetchBuild(jobName: string, runId: number) {
     const res = await this.axios.get(`job/${jobName}/${runId}/api/json`)
+
+    return res.data as BuildResponse
+  }
+
+  async fetchLastBuild(jobName: string) {
+    const res = await this.axios.get(`/job/${jobName}/lastBuild/api/json`)
 
     return res.data as BuildResponse
   }

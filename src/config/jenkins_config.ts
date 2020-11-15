@@ -2,11 +2,16 @@ import { YamlConfig, CommonConfig, CustomReportConfig } from './config'
 
 export type JenkinsConfig = CommonConfig & {
   baseUrl: string
-  jobs: {
-    name: string
-    testGlob: string[]
-    customReports: CustomReportConfig[]
-  }[]
+  jobs: JenkinsConfigJob[]
+  correctAllJobs?: {
+    filterLastBuildDay?: number
+  }
+}
+
+export type JenkinsConfigJob = {
+  name: string
+  testGlob: string[]
+  customReports: CustomReportConfig[]
 }
 
 type JobYaml = string | {

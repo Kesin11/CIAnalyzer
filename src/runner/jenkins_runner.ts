@@ -5,17 +5,17 @@ import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { JenkinsClient } from "../client/jenkins_client"
 import { JenkinsAnalyzer } from "../analyzer/jenkins_analyzer"
-import { JenkinsConfig, parseConfig } from "../config/jenkins_config"
+import { JenkinsConfig, JenkinsConfigJob, parseConfig } from "../config/jenkins_config"
 import { LastRunStore } from "../last_run_store"
 import { CustomReportCollection, createCustomReportCollection } from "../custom_report_collection"
 import { failure, Result, success } from "../result"
 
 export class JenkinsRunner implements Runner {
   service: string = 'jenkins'
-  client: JenkinsClient | undefined
+  client?: JenkinsClient
   analyzer: JenkinsAnalyzer 
   configDir: string
-  config: JenkinsConfig | undefined
+  config?: JenkinsConfig
   store?: LastRunStore
   constructor(public yamlConfig: YamlConfig) {
     this.configDir = yamlConfig.configDir
@@ -41,30 +41,28 @@ export class JenkinsRunner implements Runner {
     if (!this.client) return failure(new Error('this.client must not be undefined'))
     this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
 
-    const allJobs = await this.client.fetchJobs()
-    const allJobMap = new Map(allJobs.map((job) => [job.name, job]))
-    const configJobs = this.config.jobs.filter((job) => allJobMap.get(job.name))
+    const jobs = await this.getJobs()
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
     const customReportCollection = new CustomReportCollection()
-    for (const configJob of configJobs) {
-      console.info(`Fetching ${this.service} - ${configJob.name} ...`)
+    for (const job of jobs) {
+      console.info(`Fetching ${this.service} - ${job.name} ...`)
       const jobReports: WorkflowReport[] = []
       let jobTestReports: TestReport[] = []
 
       try {
-        const lastRunId = this.store.getLastRun(configJob.name)
-        const runs = await this.client.fetchJobRuns(configJob.name, lastRunId)
+        const lastRunId = this.store.getLastRun(job.name)
+        const runs = await this.client.fetchJobRuns(job.name, lastRunId)
 
         for (const run of runs) {
           // Fetch data
-          const build = await this.client.fetchBuild(configJob.name, Number(run.id))
-          const tests = await this.client.fetchTests(build, configJob.testGlob)
-          const customReportArtifacts = await this.client.fetchCustomReports(build, configJob.customReports)
+          const build = await this.client.fetchBuild(job.name, Number(run.id))
+          const tests = await this.client.fetchTests(build, job.testGlob)
+          const customReportArtifacts = await this.client.fetchCustomReports(build, job.customReports)
 
           // Create report
-          const report = this.analyzer.createWorkflowReport(configJob.name, run, build)
+          const report = this.analyzer.createWorkflowReport(job.name, run, build)
           const testReports = await this.analyzer.createTestReports(report, tests)
           const runCustomReportCollection = await createCustomReportCollection(report, customReportArtifacts)
 
@@ -74,12 +72,12 @@ export class JenkinsRunner implements Runner {
           customReportCollection.aggregate(runCustomReportCollection)
         }
 
-        this.setRepoLastRun(configJob.name, jobReports)
+        this.setRepoLastRun(job.name, jobReports)
         workflowReports = workflowReports.concat(jobReports)
         testReports = testReports.concat(jobTestReports)
       }
       catch (error) {
-        const errorMessage = `Some error raised in '${configJob.name}', so it skipped.`
+        const errorMessage = `Some error raised in '${job.name}', so it skipped.`
         console.error(errorMessage)
         console.error(error)
         result = failure(new Error(errorMessage))
@@ -97,5 +95,45 @@ export class JenkinsRunner implements Runner {
     console.info(`Done execute '${this.service}'. status: ${result.type}`)
 
     return result
+  }
+
+  private async getJobs(): Promise<JenkinsConfigJob[]> {
+    if (!this.config) return []
+    if (!this.client) return []
+
+    const allJobs = await this.client.fetchJobs()
+    const allJobMap = new Map(allJobs.map((job) => [job.name, job]))
+    const configJobs = this.config.jobs.filter((job) => allJobMap.get(job.name))
+
+    const otherJobs: JenkinsConfigJob[] = []
+    if (this.config.correctAllJobs) {
+      const notConfigJobs = allJobs.filter((job) => {
+        return configJobs.find((configJob) => configJob.name === job.name) === undefined
+      })
+      const buildRespones = notConfigJobs.map((job) => {
+        return {
+          jobName: job.name,
+          resPromise: this.client?.fetchLastBuild(job.name)
+        }
+      })
+
+      const stallDays = this.config.correctAllJobs.filterLastBuildDay ?? 30
+      const now = Date.now()
+      const thresholdTimestamp = now - stallDays * 24 * 60 * 60 * 1000
+
+      for (const { jobName, resPromise } of buildRespones) {
+        const res = await resPromise
+
+        if (res && res.timestamp >= thresholdTimestamp) {
+          otherJobs.push({
+            name: jobName,
+            testGlob: [],
+            customReports: []
+          })
+        }
+      }
+    }
+
+    return [...configJobs, ...otherJobs]
   }
 }
