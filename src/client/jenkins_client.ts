@@ -81,7 +81,13 @@ export type BuildResponse = {
   number: number // 80
   fullDisplayName: string // "ci_analyzer #90",
   timestamp: number // 1605412528346 (milisec timestamp)
-  actions: (CauseAction | BuildData | GhprbParametersAction | ParametersAction)[]
+  actions: (
+    CauseAction |
+    BuildData |
+    GhprbParametersAction | // from GitHub Pull Request Builder plugin
+    ParametersAction |
+    TimeInQueueAction // from Metrics plugin
+  )[]
   artifacts: {
     displayPath: string // "junit.xml",
     fileName: string // "junit.xml",
@@ -146,6 +152,20 @@ export type ParametersAction = {
       name: string // "TIMEOUT",
       value?: string | number | boolean // "10"
     }[]
+}
+
+export type TimeInQueueAction = {
+  _class : "jenkins.metrics.impl.TimeInQueueAction",
+  blockedDurationMillis : number,
+  blockedTimeMillis : number,
+  buildableDurationMillis : number, // Freestyle job queued time
+  buildableTimeMillis : number, // Pipeline job queued time
+  buildingDurationMillis : number,
+  executingTimeMillis : number,
+  executorUtilization : number,
+  subTaskCount : number,
+  waitingDurationMillis : number,
+  waitingTimeMillis : number
 }
 
 export class JenkinsClient {

@@ -25,6 +25,7 @@ type WorkflowReport = {
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
   parameters: [] // CircleciAnalyzer does not support output build parameters yet
+  queuedDurationSec: number // createdAt - min(jobs start_time)
 }
 
 type JobReport = {
@@ -107,6 +108,7 @@ export class CircleciAnalyzer implements Analyzer {
     const startedAt = min(jobReports.map((job) => job.startedAt ))!
     const completedAt = max(jobReports.map((job) => job.completedAt ))!
     const status = this.normalizeStatus(lastJob.status)
+    const createdAt = min(jobs.map((job) => new Date(job.queued_at)))!
     // workflow
     return {
       service: 'circleci',
@@ -114,7 +116,7 @@ export class CircleciAnalyzer implements Analyzer {
       buildNumber,
       workflowRunId,
       workflowName,
-      createdAt: min(jobs.map((job) => new Date(job.queued_at)))!,
+      createdAt,
       trigger: firstJob.why,
       status,
       repository,
@@ -128,6 +130,7 @@ export class CircleciAnalyzer implements Analyzer {
       sumJobsDurationSec: secRound(sumBy(jobReports, 'sumStepsDurationSec')),
       successCount: (status === 'SUCCESS') ? 1 : 0,
       parameters: [],
+      queuedDurationSec: diffSec(createdAt, min(jobs.map((job) => new Date(job.start_time)))!),
     }
   }
 

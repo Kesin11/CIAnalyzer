@@ -1,5 +1,5 @@
 import { Status, Analyzer, secRound, TestReport, WorkflowParams, convertToReportTestSuites } from "./analyzer"
-import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction } from "../client/jenkins_client"
+import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, TimeInQueueAction } from "../client/jenkins_client"
 import { sumBy, first } from "lodash"
 import { parse } from "junit2json"
 import { Artifact } from "../client/client"
@@ -25,6 +25,7 @@ type WorkflowReport = {
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
   parameters: JobParameter[]
+  queuedDurationSec: number
 }
 
 type JobReport = {
@@ -120,6 +121,7 @@ export class JenkinsAnalyzer implements Analyzer {
       sumJobsDurationSec: secRound(sumBy(jobReports, 'sumStepsDurationSec')),
       successCount: (status === 'SUCCESS') ? 1 : 0,
       parameters: this.detectParameters(build),
+      queuedDurationSec: secRound(this.estimateQueuedDuration(build) / 1000),
     }
   }
 
@@ -245,5 +247,16 @@ export class JenkinsAnalyzer implements Analyzer {
     return action.parameters.map((param) => {
       return { name: param.name, value: String(param.value ?? '') }
     })
+  }
+
+  estimateQueuedDuration(build: BuildResponse): number {
+    const action = build.actions.find((action) => {
+      return action._class === "jenkins.metrics.impl.TimeInQueueAction"
+    }) as TimeInQueueAction | undefined
+    if (!action) return 0
+
+    // buildableDurationMillis: Freestyle job queued time
+    // buildableTimeMillis: Pipeline job queued time
+    return action.buildableDurationMillis + action.buildableTimeMillis
   }
 }

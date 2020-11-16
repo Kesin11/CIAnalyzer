@@ -196,5 +196,10 @@
     "mode": "REPEATED", 
     "name": "parameters", 
     "type": "RECORD"
-  }
+  },
+  {
+    "mode": "NULLABLE", 
+    "name": "queuedDurationSec", 
+    "type": "FLOAT"
+  } 
 ]

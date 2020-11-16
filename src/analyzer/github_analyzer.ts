@@ -28,6 +28,7 @@ type WorkflowReport = {
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
   parameters: [] // GithubAnalyzer does not support build parameters yet
+  queuedDurationSec: number // createdAt - startedAt
 }
 
 type JobReport = {
@@ -102,8 +103,9 @@ export class GithubAnalyzer implements Analyzer {
       }
     })
 
-    const startedAt = min(jobReports.map((job) => job.startedAt )) || new Date(workflow.created_at)
-    const completedAt = max(jobReports.map((job) => job.completedAt )) || new Date(workflow.created_at)
+    const createdAt = new Date(workflow.created_at)
+    const startedAt = min(jobReports.map((job) => job.startedAt )) || createdAt
+    const completedAt = max(jobReports.map((job) => job.completedAt )) || createdAt
     const status = this.normalizeStatus(workflow.conclusion as unknown as string)
     // workflow
     return {
@@ -112,7 +114,7 @@ export class GithubAnalyzer implements Analyzer {
       buildNumber,
       workflowRunId,
       workflowName,
-      createdAt: new Date(workflow.created_at),
+      createdAt,
       trigger: workflow.event,
       status,
       repository: workflow.repository.full_name,
@@ -125,7 +127,8 @@ export class GithubAnalyzer implements Analyzer {
       workflowDurationSec: diffSec(startedAt, completedAt),
       sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec'),
       successCount: (status === 'SUCCESS') ? 1 : 0,
-      parameters: []
+      parameters: [],
+      queuedDurationSec: diffSec(createdAt, startedAt),
     }
   }
 
