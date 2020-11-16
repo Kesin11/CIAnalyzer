@@ -25,6 +25,7 @@ type WorkflowReport = {
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
   parameters: [] // CircleciAnalyzer does not support output build parameters yet
+  queuedDurationSec: number // Not implemented yet
 }
 
 type JobReport = {
@@ -128,6 +129,7 @@ export class CircleciAnalyzer implements Analyzer {
       sumJobsDurationSec: secRound(sumBy(jobReports, 'sumStepsDurationSec')),
       successCount: (status === 'SUCCESS') ? 1 : 0,
       parameters: [],
+      queuedDurationSec: 0,
     }
   }
 

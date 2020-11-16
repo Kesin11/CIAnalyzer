@@ -26,6 +26,7 @@ export type WorkflowReport = {
   sumJobsDurationSec: number
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0. For create average success rate in dashboard
   parameters: JobParameter[]
+  queuedDurationSec: number
 }
 
 export type JobReport = {

@@ -28,6 +28,7 @@ type WorkflowReport = {
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
   parameters: [] // GithubAnalyzer does not support build parameters yet
+  queuedDurationSec: number // Not implemented yet
 }
 
 type JobReport = {
@@ -125,7 +126,8 @@ export class GithubAnalyzer implements Analyzer {
       workflowDurationSec: diffSec(startedAt, completedAt),
       sumJobsDurationSec: sumBy(jobReports, 'sumStepsDurationSec'),
       successCount: (status === 'SUCCESS') ? 1 : 0,
-      parameters: []
+      parameters: [],
+      queuedDurationSec: 0,
     }
   }
 
