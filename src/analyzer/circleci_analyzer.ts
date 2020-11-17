@@ -71,22 +71,28 @@ export class CircleciAnalyzer implements Analyzer {
       = this.createWorkflowParams(workflowRun.workflow_name, repository, lastJob.build_num)
 
     const jobReports: JobReport[] = sortedJobs.map((job) => {
-      const stepReports: StepReport[] = job.steps.map((step) => {
-        const action = first(step.actions)!
-        const startedAt = new Date(action.start_time)
-        // NOTE: Sometimes action.end_time will be broken, so it should be replaced when it's value is invalid.
-        const validatedEndTime = action.end_time ?? action.start_time
-        const completedAt = new Date(validatedEndTime)
-        // step
-        return {
-          name: action.name,
-          status: this.normalizeStatus(action.status),
-          number: action.step,
-          startedAt,
-          completedAt,
-          stepDurationSec: diffSec(startedAt, completedAt)
-        }
-      })
+      const stepReports: StepReport[] = job.steps
+        .filter((step) => {
+          const action = first(step.actions)!
+          // NOTE: Ignore background step (ex. Setup service container image step)
+          return action.background === false
+        })
+        .map((step) => {
+          const action = first(step.actions)!
+          const startedAt = new Date(action.start_time)
+          // NOTE: Sometimes action.end_time will be broken, so it should be replaced when it's value is invalid.
+          const validatedEndTime = action.end_time ?? action.start_time
+          const completedAt = new Date(validatedEndTime)
+          // step
+          return {
+            name: action.name,
+            status: this.normalizeStatus(action.status),
+            number: action.step,
+            startedAt,
+            completedAt,
+            stepDurationSec: diffSec(startedAt, completedAt)
+          }
+        })
 
       const startedAt = new Date(job.start_time)
       const completedAt = new Date(job.stop_time)
