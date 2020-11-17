@@ -67,6 +67,7 @@ type Steps = {
     start_time: string,
     step: number,
     run_time_millis: number | null, // Sometimes step log will be broken and return null
+    background: boolean,
   }[]
 }
 export type SingleBuildResponse = RecentBuildResponse & {
