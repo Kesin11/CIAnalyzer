@@ -194,7 +194,8 @@ export class JenkinsClient {
   }
 
   async fetchJobRuns(jobName: string, lastRunId?: number) {
-    const res = await this.axios.get(`job/${jobName}/wfapi/runs`, {
+    const url = encodeURI(`job/${jobName}/wfapi/runs`)
+    const res = await this.axios.get(url, {
       params: {
         fullStages: "true"
       }
@@ -220,29 +221,30 @@ export class JenkinsClient {
   }
 
   async fetchJobRun(jobName: string, runId: number) {
-    const res = await this.axios.get(`job/${jobName}/${runId}/wfapi/describe`)
+    const url = encodeURI(`job/${jobName}/${runId}/wfapi/describe`)
+    const res = await this.axios.get(url)
 
     return res.data as WfapiRunResponse
   }
 
   async fetchBuild(jobName: string, runId: number) {
-    const res = await this.axios.get(`job/${jobName}/${runId}/api/json`)
+    const url = encodeURI(`job/${jobName}/${runId}/api/json`)
+    const res = await this.axios.get(url)
 
     return res.data as BuildResponse
   }
 
   async fetchLastBuild(jobName: string) {
-    const res = await this.axios.get(`/job/${jobName}/lastBuild/api/json`)
+    const url = encodeURI(`/job/${jobName}/lastBuild/api/json`)
+    const res = await this.axios.get(url)
 
     return res.data as BuildResponse
   }
 
   async fetchArtifacts(jobName: string, runId: number, paths: string[]): Promise<Artifact[]> {
     const pathResponses = paths.map((path) => {
-      const response = this.axios.get(
-        `job/${jobName}/${runId}/artifact/${path}`,
-        { responseType: 'arraybuffer'}
-      )
+      const url = encodeURI(`job/${jobName}/${runId}/artifact/${path}`)
+      const response = this.axios.get(url, { responseType: 'arraybuffer'})
       return { path, response }
     })
 
