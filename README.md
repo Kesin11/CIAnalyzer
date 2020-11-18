@@ -35,6 +35,7 @@ Workflow is a data about job that executed in CI. The items included in the work
 - Repository
 - Branch
 - Tag
+- Queued time
 
 ## Test report
 Test report is a data about test. If you output test result as JUnit format XML and store to archive, CIAnalyzer can collect from it.
@@ -52,6 +53,9 @@ Test report is a data about test. If you output test result as JUnit format XML 
   - GitHub Actions
   - CircleCI (also support enterprise version)
   - Jenkins (only Pipeline job)
+    - Collecting some metrics need to install these plugins
+    - [GitHub Pull Request Builder](https://plugins.jenkins.io/ghprb/)
+    - [Metrics](https://plugins.jenkins.io/metrics/)
 - Export
   - BigQuery
   - Local file (output JSON or JSON Lines)
