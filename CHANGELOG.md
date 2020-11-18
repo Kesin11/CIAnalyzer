@@ -1,5 +1,10 @@
 # [3.0.0](https://github.com/Kesin11/CIAnalyzer/compare/v2.1.0...v3.0.0) (2020-11-18)
 
+### BREAKING CHANGES
+* Return error exitCode when catch some errors ([26d28b5](https://github.com/Kesin11/CIAnalyzer//commit/26d28b5a24c3d4c3414a8dea784a52c5855309ee))
+
+Formerly, CIAnalyzer returns 0 despite of some runner throws error.  
+In this case, CIAnalyzer returns error code 1 now.
 
 ### Bug Fixes
 
@@ -18,7 +23,7 @@
 * Add queuedDurationSec to BigQuery schema ([78e1aff](https://github.com/Kesin11/CIAnalyzer/commit/78e1affdd720e0d5ad1f18162ae035904a365627))
 * **CircleCI:** add queuedDurationSec ([13e5e8c](https://github.com/Kesin11/CIAnalyzer/commit/13e5e8cf4b73268426c951e33c8ad0f0924b0212))
 * **Github:** add queuedDurationSec ([c51f075](https://github.com/Kesin11/CIAnalyzer/commit/c51f07504dacff32d7bf5d3efd031b96a313224e))
-* **jenkins:** Add correctAllJobs config ([696dd78](https://github.com/Kesin11/CIAnalyzer/commit/696dd78fb5e6efb6de599af3030d258a96d305c3))
+* **Jenkins:** Add correctAllJobs config ([696dd78](https://github.com/Kesin11/CIAnalyzer/commit/696dd78fb5e6efb6de599af3030d258a96d305c3))
 * **Jenkins:** add queuedDurationSec ([c75f400](https://github.com/Kesin11/CIAnalyzer/commit/c75f400df492429690d632a7e4309932c73e50fa))
 
 
