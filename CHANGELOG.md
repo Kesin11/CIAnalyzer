@@ -1,3 +1,33 @@
+# [3.0.0](https://github.com/Kesin11/CIAnalyzer/compare/v2.1.0...v3.0.0) (2020-11-18)
+
+### BREAKING CHANGES
+* Return error exitCode when catch some errors ([26d28b5](https://github.com/Kesin11/CIAnalyzer//commit/26d28b5a24c3d4c3414a8dea784a52c5855309ee))
+
+Formerly, CIAnalyzer returns 0 despite of some runner throws error.  
+In this case, CIAnalyzer returns error code 1 now.
+
+### Bug Fixes
+
+* npm audit fix ([8210b27](https://github.com/Kesin11/CIAnalyzer/commit/8210b27014deaa0c7ab720ba6640cdfc0340db8a))
+* **CircleCI:** Ignore background step ([540496f](https://github.com/Kesin11/CIAnalyzer/commit/540496f2a41c44f564f0f11797eacc2aa9738de1))
+* **Jenkins:** Bugfix to allow multibyte Jenkins job name ([f6b09e9](https://github.com/Kesin11/CIAnalyzer/commit/f6b09e93244a48c82308b433bd49049eaed43de1))
+* Add axios-retry to retry request automatically ([c6c6d86](https://github.com/Kesin11/CIAnalyzer/commit/c6c6d86a9e17cf9042c6aef1abb7aee4a051e4f0))
+* Add retry and throttle request (github actions) ([69b7274](https://github.com/Kesin11/CIAnalyzer/commit/69b72749b4474238f93a2e4ba8091d480ee96af9))
+* Bugfix parallel execution aborted when some runner throws error ([eb52da9](https://github.com/Kesin11/CIAnalyzer/commit/eb52da980dff248317a7632ec62e60cb13c53490))
+* Extend axios timeout 3s to 5s ([69a984d](https://github.com/Kesin11/CIAnalyzer/commit/69a984d383fefe6a378bbe15a9c0eb0617a822f0))
+* Output LocalStore write log ([b0ba8c8](https://github.com/Kesin11/CIAnalyzer/commit/b0ba8c8e859093e5f58c52dee4151f6fd66d04a1))
+
+
+### Features
+
+* Add queuedDurationSec to BigQuery schema ([78e1aff](https://github.com/Kesin11/CIAnalyzer/commit/78e1affdd720e0d5ad1f18162ae035904a365627))
+* **CircleCI:** add queuedDurationSec ([13e5e8c](https://github.com/Kesin11/CIAnalyzer/commit/13e5e8cf4b73268426c951e33c8ad0f0924b0212))
+* **Github:** add queuedDurationSec ([c51f075](https://github.com/Kesin11/CIAnalyzer/commit/c51f07504dacff32d7bf5d3efd031b96a313224e))
+* **Jenkins:** Add correctAllJobs config ([696dd78](https://github.com/Kesin11/CIAnalyzer/commit/696dd78fb5e6efb6de599af3030d258a96d305c3))
+* **Jenkins:** add queuedDurationSec ([c75f400](https://github.com/Kesin11/CIAnalyzer/commit/c75f400df492429690d632a7e4309932c73e50fa))
+
+
+
 # [2.1.0](https://github.com/Kesin11/CIAnalyzer/compare/v2.0.2...v2.1.0) (2020-09-20)
 
 Now CIAanalyzer can export any data related to build with `CustomReport`. CIAanalyzer can collect JSON file that has any structure from CI build artifacts. If you want to collect some data and export it to BigQuery(or others), just create JSON that includes your preferred data and store it to CI build artifacts.
