@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - 'v*'
 
 jobs:
   docker-push:
@@ -11,6 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: docker/setup-buildx-action@v1
+      - name: Docker meta
+        id: docker_meta
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: ghcr.io/kesin11/ci_analyzer
+          tag-semver: |
+            {{version}}
+            {{major}}.{{minor}}
 
       - name: Login to ghcr
         if: github.event_name != 'pull_request'
@@ -26,5 +36,5 @@ jobs:
           context: .
           file: ./Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ghcr.io/kesin11/ci_analyzer:latest
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
