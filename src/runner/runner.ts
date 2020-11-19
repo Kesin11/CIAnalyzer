@@ -35,6 +35,7 @@ export class CompositRunner implements Runner {
         (result.status === 'fulfilled' && result.value.isFailure())
     })
     if (errorResults.length > 0) {
+      errorResults.forEach((error) => console.error(error))
       return failure(new Error('Some runner throws error!!'))
     }
 
