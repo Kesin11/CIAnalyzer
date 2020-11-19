@@ -3,7 +3,7 @@ import { Runner } from "./runner"
 import { YamlConfig } from "../config/config"
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
-import { JenkinsClient } from "../client/jenkins_client"
+import { BuildResponse, JenkinsClient } from "../client/jenkins_client"
 import { JenkinsAnalyzer } from "../analyzer/jenkins_analyzer"
 import { JenkinsConfig, JenkinsConfigJob, parseConfig } from "../config/jenkins_config"
 import { LastRunStore } from "../last_run_store"
@@ -113,7 +113,9 @@ export class JenkinsRunner implements Runner {
       const buildRespones = notConfigJobs.map((job) => {
         return {
           jobName: job.name,
-          resPromise: this.client?.fetchLastBuild(job.name)
+          resultPromise: this.client!.fetchLastBuild(job.name)
+            .then((res) => success(res))
+            .catch((error) => failure(error))
         }
       })
 
@@ -121,10 +123,14 @@ export class JenkinsRunner implements Runner {
       const now = Date.now()
       const thresholdTimestamp = now - stallDays * 24 * 60 * 60 * 1000
 
-      for (const { jobName, resPromise } of buildRespones) {
-        const res = await resPromise
+      for (const { jobName, resultPromise } of buildRespones) {
+        const result = await resultPromise
+        if (result.isFailure()) {
+          console.debug(`(JenkinsRunner) Skip ${jobName}: can not fetch lastBuild.`)
+          continue
+        }
 
-        if (res && res.timestamp >= thresholdTimestamp) {
+        if (result.isSuccess() && result.value && result.value.timestamp >= thresholdTimestamp) {
           otherJobs.push({
             name: jobName,
             testGlob: [],
