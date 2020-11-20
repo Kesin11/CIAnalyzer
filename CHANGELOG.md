@@ -1,3 +1,13 @@
+## [3.0.1](https://github.com/Kesin11/CIAnalyzer/compare/v3.0.0...v3.0.1) (2020-11-20)
+
+
+### Bug Fixes
+
+* **Jenkins:** Skip fetch job that has not any build histories ([4e47425](https://github.com/Kesin11/CIAnalyzer/commit/4e474251eb70fc691154847ef8158e63590be424))
+* Output error log throws in runner ([16e80d3](https://github.com/Kesin11/CIAnalyzer/commit/16e80d30244af8fd26fbb71b3aa4c92e77b2486c))
+
+
+
 # [3.0.0](https://github.com/Kesin11/CIAnalyzer/compare/v2.1.0...v3.0.0) (2020-11-18)
 
 ### BREAKING CHANGES
