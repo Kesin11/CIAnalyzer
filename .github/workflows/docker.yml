@@ -19,8 +19,9 @@ jobs:
         with:
           images: ghcr.io/kesin11/ci_analyzer
           tag-semver: |
-            {{version}}
-            {{major}}.{{minor}}
+            v{{version}}
+            v{{major}}
+            v{{major}}.{{minor}}
 
       - name: Login to ghcr
         if: github.event_name != 'pull_request'
