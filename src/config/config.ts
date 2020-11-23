@@ -7,6 +7,7 @@ export type YamlConfig = {
   github?: { [key: string]: any }
   circleci?: { [key: string]: any }
   jenkins?: { [key: string]: any }
+  bitrise?: { [key: string]: any }
 }
 
 export type CommonConfig = {
