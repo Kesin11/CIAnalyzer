@@ -1,5 +1,6 @@
 import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToReportTestSuites } from './analyzer'
 import { BuildResponse, BuildLogResponse, App, BitriseStatus } from '../client/bitrise_client'
+import { dropWhile, maxBy, takeWhile } from 'lodash'
 
 type WorkflowReport = {
   // workflow
@@ -50,6 +51,11 @@ type StepReport = {
 type JobParameter = {
   name: string
   value: string
+}
+
+type StepLog = {
+  name: string
+  duration: string
 }
 
 export class BitriseAnalyzer implements Analyzer {
@@ -108,6 +114,37 @@ export class BitriseAnalyzer implements Analyzer {
       default:
         return 'OTHER';
     }
+  }
+
+  parseBuildLog(BuildLogResponse: BuildLogResponse): StepLog[] {
+    const chunks = BuildLogResponse.log_chunks.reverse()
+
+    // Extract chunk that include summary table 
+    const summary = chunks.find((chunk) => chunk.chunk.includes('bitrise summary'))
+    if (!summary) return []
+
+    let rows = summary.chunk.split('\n')
+    // Filter summary table rows only
+    rows = dropWhile(rows, (row) => !row.includes('bitrise summary'))
+    rows = takeWhile(rows, (rows) => !rows.includes('Total runtime'))
+
+    const steps = rows
+      // Filter row that include name and step
+      .filter((row) => row.match(/\d+\s(sec|min)/))
+      .map((row) => {
+        // Step name
+        const names = [...row.matchAll(/;1m(?<name>.+?)\u001b/g)].map((match) => match.groups?.name ?? '')
+        const name = maxBy(names, (name) => name.length)
+        // Duration
+        const duration = row.match(/\d+\.\d+\s(sec|min)/)
+
+        return {
+          name: name ? name.trim() : '',
+          duration: duration ? duration[0].trim() : ''
+        }
+      })
+
+    return steps
   }
 
   async createTestReports(): Promise<TestReport[]> {
