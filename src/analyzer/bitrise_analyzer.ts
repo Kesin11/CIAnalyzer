@@ -1,6 +1,6 @@
-import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToReportTestSuites } from './analyzer'
+import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToReportTestSuites, secRound } from './analyzer'
 import { BuildResponse, BuildLogResponse, App, BitriseStatus } from '../client/bitrise_client'
-import { dropWhile, maxBy, takeWhile } from 'lodash'
+import { dropWhile, maxBy, sumBy, takeWhile } from 'lodash'
 
 type WorkflowReport = {
   // workflow
@@ -77,6 +77,8 @@ export class BitriseAnalyzer implements Analyzer {
     const startedAt = new Date(build.started_on_worker_at)
     const completedAt = new Date(build.finished_at)
     const status = this.normalizeStatus(build.status)
+    const steps = this.createStepReports(startedAt, buildLog)
+    const sumStepsDurationSec = secRound(sumBy(steps, 'stepDurationSec'))
     return {
       service: 'bitrise',
       workflowId,
@@ -90,11 +92,22 @@ export class BitriseAnalyzer implements Analyzer {
       headSha: build.commit_hash ?? '',
       branch: build.branch,
       tag: build.tag ?? '',
-      jobs: [], // TODO
-      startedAt: new Date(build.started_on_worker_at),
-      completedAt: new Date(build.finished_at),
+      jobs: [{
+        workflowRunId,
+        buildNumber,
+        jobId: workflowRunId,
+        jobName: workflowName,
+        status: status,
+        startedAt: startedAt,
+        completedAt: completedAt,
+        jobDurationSec: diffSec(startedAt, completedAt),
+        sumStepsDurationSec,
+        steps: steps
+      }],
+      startedAt,
+      completedAt,
       workflowDurationSec: diffSec(startedAt, completedAt),
-      sumJobsDurationSec: 0, // TODO
+      sumJobsDurationSec: sumStepsDurationSec,
       successCount: (status === 'SUCCESS') ? 1 : 0,
       parameters: [],
       queuedDurationSec: diffSec(createdAt, startedAt)
@@ -145,6 +158,48 @@ export class BitriseAnalyzer implements Analyzer {
       })
 
     return steps
+  }
+
+  createStepReports(startedAt: Date, buildLog: BuildLogResponse): StepReport[] {
+    const steps = this.parseBuildLog(buildLog)
+    let stepSumMilisec = 0
+    return steps.map((step, index) => {
+      const stepStartedTime = startedAt.getTime() + stepSumMilisec
+      const stepMilisec = this.detectStepMilisec(step.duration)
+      const stepCompletedTime = stepStartedTime + stepMilisec
+      stepSumMilisec += stepMilisec
+
+      return {
+        name: this.detectStepName(step.name),
+        status: this.detectStepStatus(step.name),
+        number: index,
+        startedAt: new Date(stepStartedTime),
+        completedAt: new Date(stepCompletedTime),
+        stepDurationSec: secRound(stepMilisec / 1000),
+      }
+    })
+  }
+
+  detectStepMilisec(durationStr: string): number {
+    const [time, unit ] = durationStr.split(' ')
+    switch (unit) {
+      case 'sec':
+        return Number(time) * 1000
+      case 'min':
+        return Number(time) * 60 * 1000
+      default:
+        return Number(time) * 1000
+    }
+  }
+
+  detectStepName(stepName: string): string {
+    return stepName.replace(/\s\(exit code:.+\)$/, '')
+  }
+
+  detectStepStatus(stepName: string): Status {
+    // TODO: Bitriseのログを色々見てどういうケースがあるのか調べる
+    if (stepName.includes('exit code: 1')) return 'FAILURE'
+    return 'SUCCESS'
   }
 
   async createTestReports(): Promise<TestReport[]> {

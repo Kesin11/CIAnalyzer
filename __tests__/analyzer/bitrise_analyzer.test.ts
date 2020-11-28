@@ -4,9 +4,13 @@ import { BitriseAnalyzer } from '../../src/analyzer/bitrise_analyzer'
 import { BuildLogResponse } from '../../src/client/bitrise_client'
 
 describe('BitriseAnalyzer', () => {
+  let analyzer: BitriseAnalyzer
+  beforeEach(() => {
+    analyzer = new BitriseAnalyzer()
+  })
+
   describe('parseBuildLog', () => {
     it('has error step', async () => {
-      const analyzer = new BitriseAnalyzer()
       const fixturePath = path.join(__dirname, '..', 'fixture', 'bitrise_build_log', 'failed.json')
       const buildLogResponse = JSON.parse(await fs.promises.readFile(fixturePath, { encoding: 'utf8' })) as BuildLogResponse
 
@@ -22,6 +26,66 @@ describe('BitriseAnalyzer', () => {
 
       const actual = analyzer.parseBuildLog(buildLogResponse)
       expect(actual).toEqual(expected)
+    })
+  })
+
+  describe('detectStepMilisec', () => {
+    it('sec int', () => {
+      const actual = analyzer.detectStepMilisec('15 sec')
+      expect(actual).toEqual(15000)
+    })
+
+    it('sec float', () => {
+      const actual = analyzer.detectStepMilisec('1.5 sec')
+      expect(actual).toEqual(1500)
+    })
+
+    it('min int', () => {
+      const actual = analyzer.detectStepMilisec('1 min')
+      expect(actual).toEqual(60000)
+    })
+
+    it('min float', () => {
+      const actual = analyzer.detectStepMilisec('1.5 min')
+      expect(actual).toEqual(90000)
+    })
+  })
+
+  describe('detectStepName', () => {
+    it('it has only step name', () => {
+      const actual = analyzer.detectStepName('git-clone')
+      expect(actual).toEqual('git-clone')
+    })
+
+    it('it has version', () => {
+      const actual = analyzer.detectStepName('git-clone@4')
+      expect(actual).toEqual('git-clone@4')
+    })
+
+    it('it has "exit code: 1"', () => {
+      const actual = analyzer.detectStepName('git-clone (exit code: 1)')
+      expect(actual).toEqual('git-clone')
+    })
+
+    it('it has bracket in step name', () => {
+      const actual = analyzer.detectStepName('git (test) clone')
+      expect(actual).toEqual('git (test) clone')
+    })
+
+    it('it has bracket in end of step name', () => {
+      const actual = analyzer.detectStepName('git-clone(test)')
+      expect(actual).toEqual('git-clone(test)')
+    })
+  })
+
+  describe('detectStepStatus', () => {
+    it('it has only step name', () => {
+      const actual = analyzer.detectStepStatus('git-clone')
+      expect(actual).toEqual('SUCCESS')
+    })
+    it('it has "exit code: 1"', () => {
+      const actual = analyzer.detectStepStatus('git-clone (exit code: 1)')
+      expect(actual).toEqual('FAILURE')
     })
   })
 })
