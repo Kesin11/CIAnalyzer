@@ -88,7 +88,7 @@ export class BitriseAnalyzer implements Analyzer {
       createdAt: new Date(build.triggered_at),
       trigger: build.triggered_by,
       status,
-      repository: app.fullname,
+      repository: app.repo,
       headSha: build.commit_hash ?? '',
       branch: build.branch,
       tag: build.tag ?? '',

@@ -31,6 +31,7 @@ type AppsResponse = {
 export type App = {
   slug: string
   fullname: string
+  repo: string
 }
 
 export type BuildResponse = {
@@ -101,7 +102,8 @@ export class BitriseClient {
       .map((app) => {
         return {
           slug: app.slug,
-          fullname: `${app.repo_owner}/${app.repo_slug}`
+          fullname: `${app.repo_owner}/${app.title}`,
+          repo: `${app.repo_owner}/${app.repo_slug}`,
         }
       })
   }
