@@ -149,7 +149,7 @@ export class BitriseAnalyzer implements Analyzer {
         const names = [...row.matchAll(/;1m(?<name>.+?)\u001b/g)].map((match) => match.groups?.name ?? '')
         const name = maxBy(names, (name) => name.length)
         // Duration
-        const duration = row.match(/\d+\.\d+\s(sec|min)/)
+        const duration = row.match(/\d+(\.\d+)?\s(sec|min)/)
 
         return {
           name: name ? name.trim() : '',

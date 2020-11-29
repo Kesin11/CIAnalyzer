@@ -27,6 +27,26 @@ describe('BitriseAnalyzer', () => {
       const actual = analyzer.parseBuildLog(buildLogResponse)
       expect(actual).toEqual(expected)
     })
+
+    it('has int sec duration', async () => {
+      const fixturePath = path.join(__dirname, '..', 'fixture', 'bitrise_build_log', 'int_sec.json')
+      const buildLogResponse = JSON.parse(await fs.promises.readFile(fixturePath, { encoding: 'utf8' })) as BuildLogResponse
+
+      const expected = [
+        { name: "activate-ssh-key", duration: "5.05 sec" },
+        { name: "git-clone@4.0.14", duration: "6.92 sec" },
+        { name: "flutter-installer", duration: "181 sec" },
+        { name: "flutter-analyze", duration: "40 sec" },
+        { name: "flutter-test", duration: "25 sec" },
+        { name: "flutter-build", duration: "299 sec" },
+        { name: "DeployGate Upload apk", duration: "6.90 sec" },
+        { name: "DeployGate Upload ipa (exit code: 1)", duration: "4.18 sec" },
+        { name: "deploy-to-bitrise-io", duration: "20 sec" },
+      ]
+
+      const actual = analyzer.parseBuildLog(buildLogResponse)
+      expect(actual).toEqual(expected)
+    })
   })
 
   describe('detectStepMilisec', () => {
