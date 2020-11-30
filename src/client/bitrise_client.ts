@@ -2,7 +2,7 @@ import { AxiosInstance } from 'axios'
 import { minBy } from 'lodash'
 import { createAxios } from './client'
 
-const DEBUG_PER_PAGE = 10
+const DEBUG_PER_PAGE = 20
 const NOT_FINISHED_STATUS = 0
 
 // /apps/{app-slug}/builds
@@ -36,8 +36,8 @@ export type App = {
 
 export type BuildResponse = {
   triggered_at: string // "2020-11-22T09:45:54Z",
-  started_on_worker_at: string // "2020-11-22T09:45:55Z",
-  environment_prepare_finished_at: string // "2020-11-22T09:45:55Z",
+  started_on_worker_at: string | null // "2020-11-22T09:45:55Z",
+  environment_prepare_finished_at: string | null // "2020-11-22T09:45:55Z",
   finished_at: string // "2020-11-22T09:53:34Z",
   slug: string // "463a0adea17cd32d",
   status: BitriseStatus // 2,

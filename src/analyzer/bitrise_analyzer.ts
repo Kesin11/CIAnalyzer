@@ -74,7 +74,7 @@ export class BitriseAnalyzer implements Analyzer {
     const { workflowId, workflowRunId, buildNumber, workflowName }
       = this.createWorkflowParams(app, build)
     const createdAt = new Date(build.triggered_at)
-    const startedAt = new Date(build.started_on_worker_at)
+    const startedAt = new Date(build.started_on_worker_at ?? build.triggered_at)
     const completedAt = new Date(build.finished_at)
     const status = this.normalizeStatus(build.status)
     const steps = this.createStepReports(startedAt, buildLog)
