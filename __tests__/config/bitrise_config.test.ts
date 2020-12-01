@@ -1,49 +1,47 @@
 import { parseConfig } from '../../src/config/bitrise_config'
 
 describe('parseConfig', () => {
-  describe('repos', () => {
+  describe('apps', () => {
     it('when only string', () => {
       const config = {
         configDir: __dirname,
         bitrise: {
-          repos: [ 'owner/repo' ]
+          apps: [ 'owner/app' ]
         }
       }
 
       const actual = parseConfig(config)
       expect(actual).toEqual({
-        repos: [{
+        apps: [{
           owner: 'owner',
-          repo: 'repo',
-          fullname: 'owner/repo',
-          slug: undefined,
+          title: 'app',
+          fullname: 'owner/app',
           testGlob: [],
           customReports: [],
         }]
       })
     })
 
-    it('when object and provide slug', () => {
+    it('when object', () => {
       const config = {
         configDir: __dirname,
         bitrise: {
-          repos: [{
-            name: 'owner/repo',
-            slug: '1111aaaa2222'
+          apps: [{
+            name: 'owner/app',
           }]
         }
       }
 
       const actual = parseConfig(config)
       expect(actual).toEqual({
-        repos: [{
+        apps: [{
           owner: 'owner',
-          repo: 'repo',
-          fullname: 'owner/repo',
-          slug: '1111aaaa2222',
+          title: 'app',
+          fullname: 'owner/app',
           testGlob: [],
           customReports: [],
         }]
       })
+    })
   })
 })

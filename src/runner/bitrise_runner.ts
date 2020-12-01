@@ -41,17 +41,16 @@ export class BitriseRunner implements Runner {
     // const customReportCollection = new CustomReportCollection()
 
     const allApps = await this.client.fetchApps()
-    const appRepos = this.config.repos.map((repo) => {
-      // TODO: Bitriseのappのfullnameが重複しているケースの考慮を追加
-      // allAppsの方でgroupByして、length > 1のケースでslugがundefinedのケースをエラーでおとす
-      const app = allApps.find((app) => repo.slug
-        ? repo.slug === app.slug
-        : repo.fullname === app.fullname )! // TODO: undefinedのケースは後で考える
-      return { app, repo }
+    const appConfigApps = this.config.apps.map((configApp) => {
+      // NOTE: Bitrise can register duplicate apps that has same owner/title
+      // But it is not common case, so use first matched app simply.
+      const app = allApps.find((app) => app.fullname === configApp.fullname)
+      return { app, configApp }
     })
 
-    for (const { app, repo } of appRepos) {
-      console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
+    for (const { app, configApp } of appConfigApps) {
+      if (!app) continue
+      console.info(`Fetching ${this.service} - ${configApp.fullname} ...`)
 
       try {
         const lastRunId = this.store.getLastRun(app.slug)
@@ -75,13 +74,13 @@ export class BitriseRunner implements Runner {
         }
       }
       catch (error) {
-        const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`
+        const errorMessage = `Some error raised in '${configApp.fullname}', so it skipped.`
         console.error(errorMessage)
         console.error(error)
         result = failure(new Error(errorMessage))
         continue
       }
-      this.setRepoLastRun(repo.fullname, workflowReports)
+      this.setRepoLastRun(configApp.fullname, workflowReports)
       // workflowReports = workflowReports.concat(repoWorkflowReports)
       // testReports = testReports.concat(repoTestReports)
     }
