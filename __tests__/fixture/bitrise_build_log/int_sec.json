@@ -1,0 +1,48 @@
+{
+  "expiring_raw_log_url": "https://bitrise-build-log-archives-production.s3.amazonaws.com/build-logs-v2/331a6d3c439766ba/22cba1a9a0d42a21/14357854/22cba1a9a0d42a21.log?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIV2YZWMVCNWNR2HA%2F20201128%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20201128T160501Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=bf60c3913fc1ae74184d9f89e13a7e56e357196d666202963ca0e63517e31c6e",
+  "generated_log_chunks_num": 51,
+  "is_archived": true,
+  "log_chunks": [
+    {
+      "chunk": "\nCalling mockable JAR artifact transform to create file: ...",
+      "position": 42
+    },
+    {
+      "chunk": "Running Gradle task 'assembleRelease'...",
+      "position": 43
+    },
+    {
+      "chunk": "Built build/app/outputs/apk/release/app-release.apk (10.4MB)...",
+      "position": 44
+    },
+    {
+      "chunk": "\r###########  ...",
+      "position": 45
+    },
+    {
+      "chunk": "+ upload_app\n+ set +ex\n\r...",
+      "position": 46
+    },
+    {
+      "chunk": "\u001b[34;1mConfig:\n\u001b[0m- BuildURL: https://app.bitrise.io/build/22cba1a9a0d42a21\n- ...",
+      "position": 47
+    },
+    {
+      "chunk": "uploading artifact\n  % Total ...",
+      "position": 48
+    },
+    {
+      "chunk": "\r 20  9.8M    0     0   20 2016k...",
+      "position": 49
+    },
+    {
+      "chunk": "\n\u001b[32;1mSuccess\u001b[0m\nYou can find the Artifact on Bitrise, on the Build's page: https://app.bitrise.io/build/22cba1a9a0d42a21\nThe public install page url is now available in the Environment Variable: BITRISE_PUBLIC_INSTALL_PAGE_URL (value: https://app.bitrise.io/artifact/17997747/p/120e1e3de032f9ab42bb4077f32da293)\n\nA map of deployed files and their public install page urls is now available in the Environment Variable: BITRISE_PUBLIC_INSTALL_PAGE_URL_MAP (value: app-release.apk=>https://app.bitrise.io/artifact/17997747/p/120e1e3de032f9ab42bb4077f32da293)\n\n\n\u001b[34;1mUpload test results\u001b[0m\n- uploading (0) test results\n\u001b[32;1mSuccess\u001b[0m\n|                                                                              |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mdeploy-to-bitrise-io\u001b[0m                                          | 20 sec   |\n+---+---------------------------------------------------------------+----------+\n\n\n+------------------------------------------------------------------------------+\n|                               bitrise summary                                |\n+---+---------------------------------------------------------------+----------+\n|   | title                                                         | time (s) |\n+---+---------------------------------------------------------------+----------+\n| \u001b[34;1m-\u001b[0m | \u001b[34;1mactivate-ssh-key\u001b[0m                                              | 5.05 sec |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mgit-clone@4.0.14\u001b[0m                                              | 6.92 sec |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mflutter-installer\u001b[0m                                             | 181 sec  |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mflutter-analyze\u001b[0m                                               | 40 sec   |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mflutter-test\u001b[0m                                                  | 25 sec   |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mflutter-build\u001b[0m                                                 | 299 sec  |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mDeployGate Upload apk\u001b[0m                                         | 6.90 sec |\n+---+---------------------------------------------------------------+----------+\n| \u001b[31;1mx\u001b[0m | \u001b[31;1mDeployGate Upload ipa (exit code: 1)\u001b[0m                          | 4.18 sec |\n+---+---------------------------------------------------------------+----------+\n| Issue tracker: https://github.com/DeployGate/upload-app-bitrise-step/issues  |\n| Source: https://github.com/DeployGate/upload-app-bitrise-step                |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mdeploy-to-bitrise-io\u001b[0m                                          | 20 sec   |\n+---+---------------------------------------------------------------+----------+\n| Total runtime: 587 sec                                                       |\n+------------------------------------------------------------------------------+\n\n\u001b[33;1mOutdated analytics plugin, used format version is lower then host bitrise-cli's format version, please update the plugin\u001b[0m\n\u001b[34;1m\u001b[0m\n\u001b[34;1mSubmitting anonymized usage informations...\u001b[0m\n\u001b[34;1mFor more information visit:\u001b[0m\n\u001b[34;1mhttps://github.com/bitrise-io/bitrise-plugins-analytics/blob/master/README.md\u001b[0m\n",
+      "position": 50
+    },
+    {
+      "chunk": "exit status 1",
+      "position": 52
+    }
+  ],
+  "timestamp": null
+}

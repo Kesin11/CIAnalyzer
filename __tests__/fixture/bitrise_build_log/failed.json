@@ -1,0 +1,48 @@
+{
+  "expiring_raw_log_url": "https://bitrise-build-log-archives-production.s3.amazonaws.com/build-logs-v2/xxxx",
+  "generated_log_chunks_num": 42,
+  "is_archived": true,
+  "log_chunks": [
+    {
+      "chunk": "\u001b[32;1m- $BITRISE_DEPLOY_DIR/Runner.app.zip\u001b[0m\n\u001b[32;1m- ...",
+      "position": 32
+    },
+    {
+      "chunk": "    0.3s\nDownloading android-x64-release/darwin-x64 tools...                 0.2s ...",
+      "position": 33
+    },
+    {
+      "chunk": "\n\n\nWelcome to Gradle 4.10.2!\n\n\n\nHere are the highlights of this release: ...",
+      "position": 34
+    },
+    {
+      "chunk": "\nChecking the license for package Android SDK Build-Tools 28.0.3 in ...",
+      "position": 35
+    },
+    {
+      "chunk": "Running Gradle task 'assembleRelease'...                           87.4s\n...",
+      "position": 36
+    },
+    {
+      "chunk": "\u001b[34;1mConfig:\n\u001b[0m- BuildURL: https://app.bitrise.io/build/463a0adea17cd32d ...",
+      "position": 37
+    },
+    {
+      "chunk": "finishing artifact\n",
+      "position": 38
+    },
+    {
+      "chunk": "\u001b[33;1mis_enable_public_page is set, ...",
+      "position": 39
+    },
+    {
+      "chunk": "- uploading (1) test results\n",
+      "position": 40
+    },
+    {
+      "chunk": "\u001b[32;1mSuccess\u001b[0m\n|                                                                              |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mdeploy-to-bitrise-io\u001b[0m                                          | 30.23 sec|\n+---+---------------------------------------------------------------+----------+\n\n\n+------------------------------------------------------------------------------+\n|                               bitrise summary                                |\n+---+---------------------------------------------------------------+----------+\n|   | title                                                         | time (s) |\n+---+---------------------------------------------------------------+----------+\n| \u001b[34;1m-\u001b[0m | \u001b[34;1mactivate-ssh-key\u001b[0m                                              | 7.28 sec |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mgit-clone@4\u001b[0m                                                   | 8.22 sec |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mflutter-installer\u001b[0m                                             | 1.5 min  |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mflutter-analyze\u001b[0m                                               | 45.71 sec|\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mflutter-test\u001b[0m                                                  | 32.41 sec|\n+---+---------------------------------------------------------------+----------+\n| \u001b[31;1mx\u001b[0m | \u001b[31;1mflutter-build (exit code: 1)\u001b[0m                                  | 4.1 min  |\n+---+---------------------------------------------------------------+----------+\n| Issue tracker: ...thub.com/bitrise-steplib/bitrise-step-flutter-build/issues |\n| Source: https://github.com/bitrise-steplib/bitrise-step-flutter-build        |\n+---+---------------------------------------------------------------+----------+\n| \u001b[32;1m✓\u001b[0m | \u001b[32;1mdeploy-to-bitrise-io\u001b[0m                                          | 30.23 sec|\n+---+---------------------------------------------------------------+----------+\n| Total runtime: 7.6 min                                                       |\n+------------------------------------------------------------------------------+\n\n\u001b[34;1m\u001b[0m\n\u001b[34;1mSubmitting anonymized usage information...\u001b[0m\n\u001b[34;1mFor more information visit:\u001b[0m\n\u001b[34;1mhttps://github.com/bitrise-io/bitrise-plugins-analytics/blob/master/README.md\u001b[0m\n",
+      "position": 41
+    }
+  ],
+  "timestamp": null
+}

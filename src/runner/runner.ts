@@ -3,6 +3,7 @@ import { GithubRunner } from "./github_runner";
 import { CircleciRunner } from "./circleci_runner";
 import { JenkinsRunner } from "./jenkins_runner";
 import { failure, Result, success } from "../result";
+import { BitriseRunner } from "./bitrise_runner";
 
 export interface Runner {
   run (): Promise<Result<void, Error>>
@@ -19,6 +20,8 @@ export class CompositRunner implements Runner {
           return new CircleciRunner(config)
         case 'jenkins':
           return new JenkinsRunner(config)
+        case 'bitrise':
+          return new BitriseRunner(config)
         default:
           return undefined
       }
