@@ -197,7 +197,6 @@ export class BitriseAnalyzer implements Analyzer {
   }
 
   detectStepStatus(stepName: string): Status {
-    // TODO: Bitriseのログを色々見てどういうケースがあるのか調べる
     if (stepName.includes('exit code: 1')) return 'FAILURE'
     return 'SUCCESS'
   }
