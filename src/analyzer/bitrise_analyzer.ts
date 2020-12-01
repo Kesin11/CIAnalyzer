@@ -28,9 +28,9 @@ type WorkflowReport = {
 
 type JobReport = {
   workflowRunId: string, // = workflowRunId
-  buildNumber?: number, // undefined. Bitrise Action does not provide job build number
-  jobId: string, // = id
-  jobName: string,
+  buildNumber?: number, // build_number
+  jobId: string, // = build slug
+  jobName: string, // workflowName
   status: Status,
   startedAt: Date,
   completedAt: Date,
@@ -95,7 +95,7 @@ export class BitriseAnalyzer implements Analyzer {
       jobs: [{
         workflowRunId,
         buildNumber,
-        jobId: workflowRunId,
+        jobId: build.slug,
         jobName: workflowName,
         status: status,
         startedAt: startedAt,
