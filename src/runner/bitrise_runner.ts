@@ -24,10 +24,10 @@ export class BitriseRunner implements Runner {
     this.analyzer = new BitriseAnalyzer()
   }
 
-  private setRepoLastRun(reponame: string, reports: WorkflowReport[]) {
+  private setRepoLastRun(appSlug: string, reports: WorkflowReport[]) {
     const lastRunReport = maxBy(reports, 'buildNumber')
     if (lastRunReport) {
-      this.store?.setLastRun(reponame, lastRunReport.buildNumber)
+      this.store?.setLastRun(appSlug, lastRunReport.buildNumber)
     }
   }
 
@@ -51,6 +51,7 @@ export class BitriseRunner implements Runner {
     for (const { app, configApp } of appConfigApps) {
       if (!app) continue
       console.info(`Fetching ${this.service} - ${configApp.fullname} ...`)
+      const appReports: WorkflowReport[] = []
 
       try {
         const lastRunId = this.store.getLastRun(app.slug)
@@ -63,12 +64,12 @@ export class BitriseRunner implements Runner {
           // const customReportArtifacts = await this.client.fetchCustomReports(repo.owner, repo.repo, workflowRun.run.id, repo.customReports)
 
           // Create report
-          const workflowReport = this.analyzer.createWorkflowReport(app, build, buildLog)
+          const report = this.analyzer.createWorkflowReport(app, build, buildLog)
           // const testReports = await this.analyzer.createTestReports(workflowReport, tests)
           // const runCustomReportCollection = await createCustomReportCollection(workflowReport, customReportArtifacts)
 
           // Aggregate
-          workflowReports.push(workflowReport)
+          appReports.push(report)
           // repoTestReports = repoTestReports.concat(testReports)
           // customReportCollection.aggregate(runCustomReportCollection)
         }
@@ -80,8 +81,8 @@ export class BitriseRunner implements Runner {
         result = failure(new Error(errorMessage))
         continue
       }
-      this.setRepoLastRun(configApp.fullname, workflowReports)
-      // workflowReports = workflowReports.concat(repoWorkflowReports)
+      this.setRepoLastRun(app.slug, appReports)
+      workflowReports = workflowReports.concat(appReports)
       // testReports = testReports.concat(repoTestReports)
     }
 
