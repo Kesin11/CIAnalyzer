@@ -36,7 +36,7 @@
     "@google-cloud/bigquery": "5.5.0",
     "@google-cloud/storage": "5.5.0",
     "@octokit/plugin-retry": "3.0.5",
-    "@octokit/plugin-throttling": "3.3.3",
+    "@octokit/plugin-throttling": "3.3.4",
     "@octokit/rest": "18.0.9",
     "adm-zip": "0.5.1",
     "axios": "0.21.0",
