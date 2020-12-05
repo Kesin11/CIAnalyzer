@@ -1,8 +1,7 @@
 import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods'
 import { sumBy, min, max } from 'lodash'
-import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToReportTestSuites } from './analyzer'
+import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToTestReports } from './analyzer'
 import { RepositoryTagMap } from '../client/github_client'
-import { parse } from 'junit2json'
 import { Artifact } from '../client/client'
 export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listWorkflowRunsForRepo']['response']['data']['workflow_runs'][0]
 export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']['jobs']
@@ -148,37 +147,6 @@ export class GithubAnalyzer implements Analyzer {
   }
 
   async createTestReports(workflowReport: WorkflowReport, junitArtifacts: Artifact[]): Promise<TestReport[]> {
-    const testReports: TestReport[] = []
-    for (const artifact of junitArtifacts) {
-      const xmlString = Buffer.from(artifact.data).toString('utf8')
-      try {
-        const result = await parse(xmlString)
-        const testSuites = ('testsuite' in result) ? result : {
-          // Fill in testsuites property with testsuit values.
-          testsuite: [result],
-          name: workflowReport.workflowId,
-          time: result.time,
-          tests: result.tests,
-          failures: result.failures,
-          errors: result.errors,
-        }
-
-        testReports.push({
-          workflowId: workflowReport.workflowId,
-          workflowRunId: workflowReport.workflowRunId,
-          buildNumber: workflowReport.buildNumber,
-          workflowName: workflowReport.workflowName,
-          createdAt: workflowReport.createdAt,
-          branch: workflowReport.branch,
-          service: workflowReport.service,
-          testSuites: convertToReportTestSuites(testSuites),
-          status: (testSuites.failures && testSuites.failures > 0) ? 'FAILURE' : 'SUCCESS',
-          successCount: (testSuites.failures && testSuites.failures > 0) ? 0 : 1,
-        })
-      } catch (error) {
-        console.error(`Error: Could not parse as JUnit XML. workflowRunId: ${workflowReport.workflowRunId}, path: ${artifact.path}`)
-      }
-    }
-    return testReports
+    return await convertToTestReports(workflowReport, junitArtifacts)
   }
 }

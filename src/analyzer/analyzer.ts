@@ -1,6 +1,7 @@
 import { round } from "lodash"
-import { TestSuites, TestCase, TestSuite } from 'junit2json'
+import { TestSuites, TestCase, TestSuite, parse } from 'junit2json'
 import { Overwrite, Assign } from 'utility-types'
+import { Artifact } from "../client/client"
 
 export type Status = 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
 export type TestStatus = 'SUCCESS' | 'FAILURE'
@@ -125,3 +126,38 @@ export const convertToReportTestSuites = (testSuites: TestSuites): ReportTestSui
     })
   return filterd
 }
+
+export const convertToTestReports = async (workflowReport: WorkflowReport, junitArtifacts: Artifact[]): Promise<TestReport[]> => {
+    const testReports: TestReport[] = []
+    for (const artifact of junitArtifacts) {
+      const xmlString = Buffer.from(artifact.data).toString('utf8')
+      try {
+        const result = await parse(xmlString)
+        const testSuites = ('testsuite' in result) ? result : {
+          // Fill in testsuites property with testsuit values.
+          testsuite: [result],
+          name: workflowReport.workflowId,
+          time: result.time,
+          tests: result.tests,
+          failures: result.failures,
+          errors: result.errors,
+        }
+
+        testReports.push({
+          workflowId: workflowReport.workflowId,
+          workflowRunId: workflowReport.workflowRunId,
+          buildNumber: workflowReport.buildNumber,
+          workflowName: workflowReport.workflowName,
+          createdAt: workflowReport.createdAt,
+          branch: workflowReport.branch,
+          service: workflowReport.service,
+          testSuites: convertToReportTestSuites(testSuites),
+          status: (testSuites.failures && testSuites.failures > 0) ? 'FAILURE' : 'SUCCESS',
+          successCount: (testSuites.failures && testSuites.failures > 0) ? 0 : 1,
+        })
+      } catch (error) {
+        console.error(`Error: Could not parse as JUnit XML. workflowRunId: ${workflowReport.workflowRunId}, path: ${artifact.path}`)
+      }
+    }
+    return testReports
+  }

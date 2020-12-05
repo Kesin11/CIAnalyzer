@@ -1,7 +1,6 @@
-import { Status, Analyzer, secRound, TestReport, WorkflowParams, convertToReportTestSuites } from "./analyzer"
+import { Status, Analyzer, secRound, TestReport, WorkflowParams, convertToTestReports } from "./analyzer"
 import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, TimeInQueueAction } from "../client/jenkins_client"
 import { sumBy, first } from "lodash"
-import { parse } from "junit2json"
 import { Artifact } from "../client/client"
 
 type WorkflowReport = {
@@ -141,38 +140,7 @@ export class JenkinsAnalyzer implements Analyzer {
   }
 
   async createTestReports(workflowReport: WorkflowReport, junitArtifacts: Artifact[]): Promise<TestReport[]> {
-    const testReports: TestReport[] = []
-    for (const artifact of junitArtifacts) {
-      const xmlString = Buffer.from(artifact.data).toString('utf8')
-      try {
-        const result = await parse(xmlString)
-        const testSuites = ('testsuite' in result) ? result : {
-          // Fill in testsuites property with testsuit values.
-          testsuite: [result],
-          name: workflowReport.workflowId,
-          time: result.time,
-          tests: result.tests,
-          failures: result.failures,
-          errors: result.errors,
-        }
-
-        testReports.push({
-          workflowId: workflowReport.workflowId,
-          workflowRunId: workflowReport.workflowRunId,
-          buildNumber: workflowReport.buildNumber,
-          workflowName: workflowReport.workflowName,
-          createdAt: workflowReport.createdAt,
-          branch: workflowReport.branch,
-          service: workflowReport.service,
-          testSuites: convertToReportTestSuites(testSuites),
-          status: (testSuites.failures && testSuites.failures > 0) ? 'FAILURE' : 'SUCCESS',
-          successCount: (testSuites.failures && testSuites.failures > 0) ? 0 : 1,
-        })
-      } catch (error) {
-        console.error(`Error: Could not parse as JUnit XML. workflowRunId: ${workflowReport.workflowRunId}, path: ${artifact.path}`)
-      }
-    }
-    return testReports
+    return await convertToTestReports(workflowReport, junitArtifacts)
   }
 
   detectTrigger(build: BuildResponse): string {
