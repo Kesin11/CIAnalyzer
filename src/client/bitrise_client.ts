@@ -1,8 +1,9 @@
 import { AxiosInstance } from 'axios'
 import { minBy } from 'lodash'
-import { createAxios } from './client'
+import { Artifact, createAxios } from './client'
+import minimatch from 'minimatch'
 
-const DEBUG_PER_PAGE = 20
+const DEBUG_PER_PAGE = 10
 const NOT_FINISHED_STATUS = 0
 
 // /apps/{app-slug}/builds
@@ -73,20 +74,36 @@ export type BuildLogResponse = {
   timestamp: null // null
 }
 
-// type ArtifactsResponse = {
-//   path: string,
-//   prettry_path: string,
-//   node_index: number,
-//   url: string,
-// }[]
+type ArtifactListResponse = {
+  title: string // "Runner.app.zip",
+  artifact_type: string // "file",
+  artifact_meta: string | null // null,
+  is_public_page_enabled: boolean // false,
+  slug: string // "fb1be55b0400fa40",
+  file_size_bytes: number // 10738854
+}[]
+
+type ArtifactResponse = {
+  title: string // "flutter_json_test_results.json",
+  artifact_type: string // "file",
+  artifact_meta: string | null // null,
+  expiring_download_url: string // https://bitrise-prod-build-storage.s3.amazonaws.com/builds/...",
+  is_public_page_enabled: boolean // false,
+  slug: string // "6b581c121b295603",
+  public_install_page_url: string // "",
+  file_size_bytes: number // 4914
+}
 
 export class BitriseClient {
   private axios: AxiosInstance
+  private artifactAxios: AxiosInstance
   constructor(token: string, baseUrl?: string) {
     this.axios = createAxios({
       baseURL: baseUrl ?? 'https://api.bitrise.io/v0.1',
       headers: {'Authorization': token },
     })
+
+    this.artifactAxios = createAxios({ })
   }
 
   // https://api-docs.bitrise.io/#/application/app-list
@@ -142,39 +159,54 @@ export class BitriseClient {
     return res.data as BuildLogResponse
   }
 
-  // async fetchTests(owner: string, repo: string, vcsType: string, runId: number) {
-  //   const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}/${runId}/tests`)
-  //   return {
-  //     ...res.data,
-  //     run_id: runId
-  //   } as TestResponse
-  // }
+  async fetchTests(appSlug: string, buildSlug: string, globs: string[]) {
+    // Skip if test file globs not provided
+    if (globs.length < 1) return []
 
-  // async fetchArtifactsList(owner: string, repo: string, vcsType: string, runId: number): Promise<ArtifactsResponse> {
-  //   const res = await this.axios.get(
-  //     `project/${vcsType}/${owner}/${repo}/${runId}/artifacts`
-  //   )
-  //   return res.data
-  // }
+    const artifactsList = await this.fetchArtifactsList(appSlug, buildSlug)
+    const testArtifactsList = artifactsList.filter((artifact) => {
+      return globs.some((glob) => minimatch(artifact.title, glob))
+    })
+    return await this.fetchArtifacts(appSlug, buildSlug, testArtifactsList)
+  }
 
-  // async fetchArtifacts(artifactsResponse: ArtifactsResponse): Promise<Artifact[]> {
-  //   const pathResponses = artifactsResponse.map((artifact) => {
-  //     const response = this.axios.get(
-  //       artifact.url,
-  //       { responseType: 'arraybuffer'}
-  //     )
-  //     return { path: artifact.path, response }
-  //   })
+  async fetchArtifactsList(appSlug: string, buildSlug: string): Promise<ArtifactListResponse> {
+    const res = await this.axios.get(
+      `/apps/${appSlug}/builds/${buildSlug}/artifacts`,
+      { params: { limit: 50 }} // API allowed max 50
+    )
+    return res.data.data as ArtifactListResponse
+  }
 
-  //   const artifacts = []
-  //   for (const { path, response } of pathResponses) {
-  //     artifacts.push({
-  //       path,
-  //       data: (await response).data as ArrayBuffer
-  //     })
-  //   }
-  //   return artifacts
-  // }
+  async fetchArtifacts(appSlug: string, buildSlug: string, artifactList: ArtifactListResponse): Promise<Artifact[]> {
+    const artifactResponses: ArtifactResponse[] = []
+    for (const artifact of artifactList) {
+      const res = await this.axios.get(
+        `/apps/${appSlug}/builds/${buildSlug}/artifacts/${artifact.slug}`
+      )
+      artifactResponses.push(res.data.data as ArtifactResponse)
+    }
+
+    // Fetch artifacts in parallel
+    const pathResponses = artifactResponses.map((artifact) => {
+      // NOTE: Bitrise store their artifacts to S3.
+      // S3 does not accept 'Authorization' header, so using another axios client that is not set Bitrise Authorization header.
+      const response = this.artifactAxios.get(
+        artifact.expiring_download_url,
+        { responseType: 'arraybuffer'}
+      )
+      return { path: artifact.title, response }
+    })
+
+    const artifacts = []
+    for (const { path, response } of pathResponses) {
+      artifacts.push({
+        path,
+        data: (await response).data as ArrayBuffer
+      })
+    }
+    return artifacts
+  }
 
   // async fetchCustomReports(owner: string, repo: string, vcsType: string, runId: number, customReportsConfigs: CustomReportConfig[]): Promise<CustomReportArtifact> {
   //   // Skip if custom report config are not provided

@@ -1,6 +1,7 @@
-import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToReportTestSuites, secRound } from './analyzer'
+import { Analyzer, diffSec, Status, TestReport, WorkflowParams, secRound, convertToTestReports } from './analyzer'
 import { BuildResponse, BuildLogResponse, App, BitriseStatus } from '../client/bitrise_client'
 import { dropWhile, maxBy, sumBy, takeWhile } from 'lodash'
+import { Artifact } from '../client/client'
 
 type WorkflowReport = {
   // workflow
@@ -201,7 +202,7 @@ export class BitriseAnalyzer implements Analyzer {
     return 'SUCCESS'
   }
 
-  async createTestReports(): Promise<TestReport[]> {
-    return []
+  async createTestReports(workflowReport: WorkflowReport, junitArtifacts: Artifact[]): Promise<TestReport[]> {
+    return await convertToTestReports(workflowReport, junitArtifacts)
   }
 }
