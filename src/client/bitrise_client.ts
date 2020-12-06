@@ -1,7 +1,8 @@
 import { AxiosInstance } from 'axios'
 import { minBy } from 'lodash'
-import { Artifact, createAxios } from './client'
+import { Artifact, createAxios, CustomReportArtifact } from './client'
 import minimatch from 'minimatch'
+import { CustomReportConfig } from '../config/config'
 
 const DEBUG_PER_PAGE = 10
 const NOT_FINISHED_STATUS = 0
@@ -208,27 +209,27 @@ export class BitriseClient {
     return artifacts
   }
 
-  // async fetchCustomReports(owner: string, repo: string, vcsType: string, runId: number, customReportsConfigs: CustomReportConfig[]): Promise<CustomReportArtifact> {
-  //   // Skip if custom report config are not provided
-  //   if (customReportsConfigs?.length < 1) return new Map()
+  async fetchCustomReports(appSlug: string, buildSlug: string, customReportsConfigs: CustomReportConfig[]): Promise<CustomReportArtifact> {
+    // Skip if custom report config are not provided
+    if (customReportsConfigs?.length < 1) return new Map()
 
-  //   const artifactsResponse = await this.fetchArtifactsList(owner, repo, vcsType, runId)
+    const artifactsList = await this.fetchArtifactsList(appSlug, buildSlug)
 
-  //   // Fetch artifacts in parallel
-  //   const customReports: CustomReportArtifact = new Map<string, Artifact[]>()
-  //   const nameArtifacts = customReportsConfigs.map((customReportConfig) => {
-  //     const reportArtifacts = artifactsResponse.filter((artifact) => {
-  //       return customReportConfig.paths.some((glob) => minimatch(artifact.path, glob))
-  //     })
-  //     return {
-  //       name: customReportConfig.name,
-  //       artifacts: this.fetchArtifacts(reportArtifacts)
-  //     }
-  //   })
-  //   for (const { name, artifacts } of nameArtifacts) {
-  //     customReports.set(name, await artifacts)
-  //   }
+    // Fetch artifacts in parallel
+    const customReports: CustomReportArtifact = new Map<string, Artifact[]>()
+    const nameArtifacts = customReportsConfigs.map((customReportConfig) => {
+      const customArtifaactsList = artifactsList.filter((artifact) => {
+        return customReportConfig.paths.some((glob) => minimatch(artifact.title, glob))
+      })
+      return {
+        name: customReportConfig.name,
+        artifacts: this.fetchArtifacts(appSlug, buildSlug, customArtifaactsList)
+      }
+    })
+    for (const { name, artifacts } of nameArtifacts) {
+      customReports.set(name, await artifacts)
+    }
 
-  //   return customReports
-  // }
+    return customReports
+  }
 }

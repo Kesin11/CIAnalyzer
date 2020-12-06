@@ -4,6 +4,7 @@ import { BitriseAnalyzer } from "../analyzer/bitrise_analyzer"
 import { BitriseClient } from "../client/bitrise_client"
 import { BitriseConfig, parseConfig } from "../config/bitrise_config"
 import { YamlConfig } from "../config/config"
+import { createCustomReportCollection, CustomReportCollection } from "../custom_report_collection"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
 import { Result, success, failure } from "../result"
@@ -38,7 +39,7 @@ export class BitriseRunner implements Runner {
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
-    // const customReportCollection = new CustomReportCollection()
+    const customReportCollection = new CustomReportCollection()
 
     const allApps = await this.client.fetchApps()
     const appConfigApps = this.config.apps.map((configApp) => {
@@ -62,17 +63,17 @@ export class BitriseRunner implements Runner {
           // Fetch data
           const buildLog = await this.client.fetchJobLog(app.slug, build.slug)
           const tests = await this.client.fetchTests(app.slug, build.slug, configApp.testGlob)
-          // const customReportArtifacts = await this.client.fetchCustomReports(repo.owner, repo.repo, workflowRun.run.id, repo.customReports)
+          const customReportArtifacts = await this.client.fetchCustomReports(app.slug, build.slug, configApp.customReports)
 
           // Create report
-          const report = this.analyzer.createWorkflowReport(app, build, buildLog)
-          const testReports = await this.analyzer.createTestReports(report, tests)
-          // const runCustomReportCollection = await createCustomReportCollection(workflowReport, customReportArtifacts)
+          const workflowReport = this.analyzer.createWorkflowReport(app, build, buildLog)
+          const testReports = await this.analyzer.createTestReports(workflowReport, tests)
+          const runCustomReportCollection = await createCustomReportCollection(workflowReport, customReportArtifacts)
 
           // Aggregate
-          appReports.push(report)
+          appReports.push(workflowReport)
           appTestReports = appTestReports.concat(testReports)
-          // customReportCollection.aggregate(runCustomReportCollection)
+          customReportCollection.aggregate(runCustomReportCollection)
         }
       }
       catch (error) {
@@ -91,7 +92,7 @@ export class BitriseRunner implements Runner {
     const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
     await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
-    // await exporter.exportCustomReports(customReportCollection)
+    await exporter.exportCustomReports(customReportCollection)
 
     this.store.save()
     console.info(`Done execute '${this.service}'. status: ${result.type}`)
