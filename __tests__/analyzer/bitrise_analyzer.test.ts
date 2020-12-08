@@ -47,6 +47,14 @@ describe('BitriseAnalyzer', () => {
       const actual = analyzer.parseBuildLog(buildLogResponse)
       expect(actual).toEqual(expected)
     })
+
+    it('summary table get across multiple log chunks', async () => {
+      const fixturePath = path.join(__dirname, '..', 'fixture', 'bitrise_build_log', 'long_summary.json')
+      const buildLogResponse = JSON.parse(await fs.promises.readFile(fixturePath, { encoding: 'utf8' })) as BuildLogResponse
+
+      const actual = analyzer.parseBuildLog(buildLogResponse)
+      expect(actual.length).toBeGreaterThanOrEqual(20)
+    })
   })
 
   describe('detectStepMilisec', () => {

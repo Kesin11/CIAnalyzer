@@ -131,16 +131,15 @@ export class BitriseAnalyzer implements Analyzer {
   }
 
   parseBuildLog(BuildLogResponse: BuildLogResponse): StepLog[] {
-    const chunks = BuildLogResponse.log_chunks.reverse()
-
     // Extract chunk that include summary table 
-    const summary = chunks.find((chunk) => chunk.chunk.includes('bitrise summary'))
-    if (!summary) return []
+    const chunks = dropWhile(BuildLogResponse.log_chunks, (chunk) => !chunk.chunk.includes('bitrise summary'))
+    if (!chunks) return []
 
-    let rows = summary.chunk.split('\n')
+    let rows = chunks.flatMap((chunk) => chunk.chunk.split('\n'))
+
     // Filter summary table rows only
     rows = dropWhile(rows, (row) => !row.includes('bitrise summary'))
-    rows = takeWhile(rows, (rows) => !rows.includes('Total runtime'))
+    rows = takeWhile(rows, (row) => !row.includes('Total runtime'))
 
     const steps = rows
       // Filter row that include name and step
