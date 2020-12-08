@@ -127,7 +127,7 @@ export class GithubClient {
     // Unarchive zip artifacts
     const zipExtractor = new ZipExtractor()
     for (const { name, response } of nameResponse) {
-      await zipExtractor.put(name, (await response).data)
+      await zipExtractor.put(name, (await response).data as ArrayBuffer)
     }
     const zipEntries = await zipExtractor.extract(globs)
     await zipExtractor.rmTmpZip()
