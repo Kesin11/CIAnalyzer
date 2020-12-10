@@ -56,6 +56,7 @@ Test report is a data about test. If you output test result as JUnit format XML 
     - Collecting some metrics need to install these plugins
     - [GitHub Pull Request Builder](https://plugins.jenkins.io/ghprb/)
     - [Metrics](https://plugins.jenkins.io/metrics/)
+  - Bitrise
 - Export
   - BigQuery
   - Local file (output JSON or JSON Lines)
@@ -69,6 +70,7 @@ docker run \
   -e CIRCLECI_TOKEN=${CIRCLECI_TOKEN} \
   -e JENKINS_USER=${JENKINS_USER} \
   -e JENKINS_TOKEN=${JENKINS_TOKEN} \
+  -e BITRISE_TOKEN=${BITRISE_TOKEN} \
   -e GOOGLE_APPLICATION_CREDENTIALS=/service_account.json \
   kesin/ci_analyzer:latest -c ci_analyzer.yaml
 ```
@@ -79,6 +81,7 @@ docker run \
   - CIRCLECI_TOKEN: CircleCI API token
   - JENKINS_USER: Username for login to your Jenkins
   - JENKINS_TOKEN: Jenkins user API token
+  - BITRISE_TOKEN: Bitrise personal access token
 - Exporter
   - GOOGLE_APPLICATION_CREDENTIALS: GCP service account json path
 - LastRunStore
@@ -337,7 +340,7 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 - [x] Collect test data
 - [x] Collect any of JSON format from build artifacts
 - [ ] Implement better logger
-- [ ] Support Bitrise
+- [x] Support Bitrise
 
 # Development
 ## Install

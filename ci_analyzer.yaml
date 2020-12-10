@@ -40,7 +40,7 @@ github:
 circleci:
   # baseUrl: https://circleci.com/api/v1.1 # Change it if you using CircleCI Enterprise
   repos:
-    - Kesin11/CIAnalyzer
+    - Kesin11/CIAnalyzer # Can use abbr format
     - name: Kesin11/CIAnalyzer
       vsc_type: github # github or bitbucket. default: github
       customReports:
@@ -70,3 +70,17 @@ jenkins:
     - ci_analyzer_pull_request
   exporter: *exporter
   # If 'lastRunStore' is omitted, local backend is used
+
+bitrise:
+  baseUrl: https://api.bitrise.io/v0.1 # default
+  apps:
+    # Bitrise {org_name}/{app_name}
+    - name: Kesin11/FlutterGettingStarted
+      tests:
+        - "*_test_results.xml"
+      customReports:
+        - name: { CUSTOM_REPORT_NAME }
+          paths:
+            - 'custom_*.json'
+    - Kesin11/FlutterGettingStarted2 # Can use abbr format
+  exporter: *exporter
