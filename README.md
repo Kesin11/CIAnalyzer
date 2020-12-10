@@ -1,6 +1,7 @@
 # CIAnalyzer
 [![CI](https://github.com/Kesin11/CIAnalyzer/workflows/CI/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
 [![Docker build](https://github.com/Kesin11/CIAnalyzer/workflows/Docker%20build/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
+[![Docker Pulls](https://img.shields.io/badge/docker%20pulls-ghcr.io-blue)](https://github.com/users/Kesin11/packages/container/ci_analyzer/versions)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kesin/ci_analyzer)](https://hub.docker.com/r/kesin/ci_analyzer)
 
 CIAnalyzer is a tool for collecting build data from CI services. You can create a dashboard to analyze your build from the collected data.
@@ -56,6 +57,7 @@ Test report is a data about test. If you output test result as JUnit format XML 
     - Collecting some metrics need to install these plugins
     - [GitHub Pull Request Builder](https://plugins.jenkins.io/ghprb/)
     - [Metrics](https://plugins.jenkins.io/metrics/)
+  - Bitrise
 - Export
   - BigQuery
   - Local file (output JSON or JSON Lines)
@@ -69,8 +71,9 @@ docker run \
   -e CIRCLECI_TOKEN=${CIRCLECI_TOKEN} \
   -e JENKINS_USER=${JENKINS_USER} \
   -e JENKINS_TOKEN=${JENKINS_TOKEN} \
+  -e BITRISE_TOKEN=${BITRISE_TOKEN} \
   -e GOOGLE_APPLICATION_CREDENTIALS=/service_account.json \
-  kesin/ci_analyzer:latest -c ci_analyzer.yaml
+  ghcr.io/kesin11/ci_analyzer:latest -c ci_analyzer.yaml
 ```
 
 ## Setup ENV
@@ -79,6 +82,7 @@ docker run \
   - CIRCLECI_TOKEN: CircleCI API token
   - JENKINS_USER: Username for login to your Jenkins
   - JENKINS_TOKEN: Jenkins user API token
+  - BITRISE_TOKEN: Bitrise personal access token
 - Exporter
   - GOOGLE_APPLICATION_CREDENTIALS: GCP service account json path
 - LastRunStore
@@ -337,7 +341,7 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 - [x] Collect test data
 - [x] Collect any of JSON format from build artifacts
 - [ ] Implement better logger
-- [ ] Support Bitrise
+- [x] Support Bitrise
 
 # Development
 ## Install
