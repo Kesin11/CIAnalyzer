@@ -1,5 +1,8 @@
 # [3.1.0](https://github.com/Kesin11/CIAnalyzer/compare/v3.0.1...v3.1.0) (2020-12-10)
 
+### New
+CIAnalyzer support to correct Bitrise build data from v3.1.0 :tada:
+
 
 ### Bug Fixes
 
