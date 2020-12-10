@@ -1,3 +1,22 @@
+# [3.1.0](https://github.com/Kesin11/CIAnalyzer/compare/v3.0.1...v3.1.0) (2020-12-10)
+
+### New
+CIAnalyzer support to correct Bitrise build data from v3.1.0 :tada:
+
+
+### Bug Fixes
+
+* **Bitrise:** Parse steps correctly when summary table is too long ([32dabd7](https://github.com/Kesin11/CIAnalyzer/commit/32dabd75f2fc18d6460fdd8abc96a881881440a6))
+* **Github:** Adopt for update octokit types ([2dd67ec](https://github.com/Kesin11/CIAnalyzer/commit/2dd67ecfeccdc39ba9fe8618905551a1dee2aebe))
+
+
+### Features
+
+* **Bitrise:** Correct custom report from Bitrise artifacts ([87c7fe2](https://github.com/Kesin11/CIAnalyzer/commit/87c7fe23592ab67a89ae527af274af52bcb5bdd9))
+* **Bitrise:** Correct JUnit test data from Bitrise artifacts ([217a952](https://github.com/Kesin11/CIAnalyzer/commit/217a952845577a88cf481181f5cd7ff19ceb399e))
+
+
+
 ## [3.0.1](https://github.com/Kesin11/CIAnalyzer/compare/v3.0.0...v3.0.1) (2020-11-20)
 
 
