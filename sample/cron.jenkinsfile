@@ -13,7 +13,7 @@ pipeline {
       }
       steps {
         sh '''
-          docker pull kesin/ci_analyzer:latest
+          docker pull ghcr.io/kesin11/ci_analyzer:latest
           docker run \
             --mount type=bind,src=${WORKSPACE},dst=/app/ \
             --mount type=bind,src=${SERVICE_ACCOUNT},dst=/service_account.json \
@@ -24,7 +24,7 @@ pipeline {
             -e JENKINS_USER=${JENKINS_USR} \
             -e JENKINS_TOKEN=${JENKINS_PSW} \
             -e GOOGLE_APPLICATION_CREDENTIALS=/service_account.json \
-            kesin/ci_analyzer:latest
+            ghcr.io/kesin11/ci_analyzer:latest
         '''
       }
       post {

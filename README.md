@@ -1,6 +1,7 @@
 # CIAnalyzer
 [![CI](https://github.com/Kesin11/CIAnalyzer/workflows/CI/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
 [![Docker build](https://github.com/Kesin11/CIAnalyzer/workflows/Docker%20build/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
+[![Docker Pulls](https://img.shields.io/badge/docker%20pulls-ghcr.io-blue)](https://github.com/users/Kesin11/packages/container/ci_analyzer/versions)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kesin/ci_analyzer)](https://hub.docker.com/r/kesin/ci_analyzer)
 
 CIAnalyzer is a tool for collecting build data from CI services. You can create a dashboard to analyze your build from the collected data.
@@ -72,7 +73,7 @@ docker run \
   -e JENKINS_TOKEN=${JENKINS_TOKEN} \
   -e BITRISE_TOKEN=${BITRISE_TOKEN} \
   -e GOOGLE_APPLICATION_CREDENTIALS=/service_account.json \
-  kesin/ci_analyzer:latest -c ci_analyzer.yaml
+  ghcr.io/kesin11/ci_analyzer:latest -c ci_analyzer.yaml
 ```
 
 ## Setup ENV
