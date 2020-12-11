@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@types/adm-zip": "0.4.33",
-    "@types/jest": "26.0.16",
+    "@types/jest": "26.0.19",
     "@types/js-yaml": "3.12.5",
     "@types/lodash": "4.14.165",
     "@types/node": "14.14.10",
