@@ -21,7 +21,7 @@ type WorkflowReport = {
   jobs: JobReport[],
   startedAt: Date, // = min(jobs start_time)
   completedAt: Date // = max(jobs stop_time)
-  workflowDurationSec: number // = sum(job jobDurationSec)
+  workflowDurationSec: number // = completedAt - startedAt
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
   parameters: [] // CircleciAnalyzer does not support output build parameters yet
@@ -36,7 +36,7 @@ type JobReport = {
   status: Status,
   startedAt: Date, // start_time
   completedAt: Date, // stop_time
-  jobDurationSec: number, // = build_time_millis
+  jobDurationSec: number, // = completedAt - startedAt
   sumStepsDurationSec: number // = sum(steps duration)
   steps: StepReport[],
 }
@@ -132,7 +132,7 @@ export class CircleciAnalyzer implements Analyzer {
       jobs: jobReports,
       startedAt,
       completedAt,
-      workflowDurationSec: secRound(sumBy(jobReports, 'jobDurationSec')),
+      workflowDurationSec: diffSec(startedAt, completedAt),
       sumJobsDurationSec: secRound(sumBy(jobReports, 'sumStepsDurationSec')),
       successCount: (status === 'SUCCESS') ? 1 : 0,
       parameters: [],
