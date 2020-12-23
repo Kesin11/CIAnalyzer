@@ -1,3 +1,12 @@
+## [3.1.1](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.0...v3.1.1) (2020-12-23)
+
+
+### Bug Fixes
+
+* **CircleCI:** Fix workflowDurationSec correctly when jobs ran in parallel ([398f1b3](https://github.com/Kesin11/CIAnalyzer/commit/398f1b38daefdec1941203cd71b49ccd4d8f93b9))
+
+
+
 # [3.1.0](https://github.com/Kesin11/CIAnalyzer/compare/v3.0.1...v3.1.0) (2020-12-10)
 
 ### New
