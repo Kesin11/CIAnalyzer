@@ -1,11 +1,12 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base",
     ":label(renovate)",
     ":dependencyDashboard",
     ":prConcurrentLimit10",
     ":timezone(Asia/Tokyo)",
-    ":unpublishSafe",
+    "npm:unpublishSafe",
     ":enableVulnerabilityAlerts",
     ":semanticCommitTypeAll(chore)",
     ":automergeMinor"
