@@ -64,7 +64,7 @@ const defaultPath = './ci_analyzer.yaml'
 export const loadConfig = (configPath?: string): YamlConfig => {
   configPath = configPath ?? defaultPath
 
-  const config = yaml.safeLoad(fs.readFileSync(configPath, 'utf8'))
+  const config = yaml.load(fs.readFileSync(configPath, 'utf8'))
   if (!config || typeof config !== "object") throw `Failed to load ${configPath} or config is not object`
 
   if (process.env['CI_ANALYZER_DEBUG']) {
