@@ -10,6 +10,7 @@ import { CustomReportConfig } from "../config/config";
 
 const DEBUG_PER_PAGE = 10
 
+export type WorkflowItem = RestEndpointMethodTypes['actions']['listRepoWorkflows']['response']['data']['workflows'][0]
 type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listWorkflowRunsForRepo']['response']['data']['workflow_runs'][0]
 // see: https://developer.github.com/v3/checks/runs/#create-a-check-run
 type RunStatus = 'queued' | 'in_progress' | 'completed'
@@ -46,29 +47,16 @@ export class GithubClient {
   }
 
   // see: https://developer.github.com/v3/actions/workflow-runs/#list-repository-workflow-runs
-  async fetchWorkflowRuns(owner: string, repo: string, lastRunId?: number) {
-    const workflows = await this.fetchWorkflows(owner, repo)
-    const workflowIdMap = new Map((
-      workflows.map((workflow) => [String(workflow.id), workflow.name])
-    ))
-
-    const runs = await this.octokit.actions.listWorkflowRunsForRepo({
+  async fetchWorkflowRuns(owner: string, repo: string, workflowId: number, lastRunId?: number) {
+    const runs = await this.octokit.actions.listWorkflowRuns({
       owner,
       repo,
+      workflow_id: workflowId,
       per_page: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : 100, // API default is 100
       // page: 1, // order desc
     })
 
-    const filterdWorkflowRuns = this.filterWorkflowRuns(runs.data.workflow_runs, lastRunId)
-
-    // Attach workflow name
-    return filterdWorkflowRuns.map((run) => {
-      const workflowId = run.workflow_url.split('/').pop()! // parse workflow_url
-      return {
-        name: workflowIdMap.get(workflowId)!,
-        run: run
-      }
-    })
+    return this.filterWorkflowRuns(runs.data.workflow_runs, lastRunId)
   }
 
   // Filter to: lastRunId < Id < firstInprogressId

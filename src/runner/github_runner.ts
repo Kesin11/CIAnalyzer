@@ -1,14 +1,16 @@
-import { maxBy } from "lodash"
+import { groupBy, maxBy } from "lodash"
 import { Runner } from "./runner"
 import { YamlConfig } from "../config/config"
-import { GithubClient } from "../client/github_client"
-import { GithubAnalyzer } from "../analyzer/github_analyzer"
+import { GithubClient, WorkflowItem } from "../client/github_client"
+import { GithubAnalyzer, WorkflowRunsItem } from "../analyzer/github_analyzer"
 import { GithubConfig, parseConfig } from "../config/github_config"
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
 import { CustomReportCollection, createCustomReportCollection } from "../custom_report_collection"
 import { failure, Result, success } from "../result"
+
+type GithubConfigRepo = GithubConfig['repos'][0]
 
 export class GithubRunner implements Runner {
   service: string = 'github'
@@ -25,10 +27,16 @@ export class GithubRunner implements Runner {
     this.analyzer = new GithubAnalyzer()
   }
 
-  private setRepoLastRun(reponame: string, reports: WorkflowReport[]) {
-    const lastRunReport = maxBy(reports, 'buildNumber')
-    if (lastRunReport) {
-      this.store?.setLastRun(reponame, lastRunReport.buildNumber)
+  private getLastRun(repo: GithubConfigRepo, workflow: WorkflowItem ) {
+    return this.store?.getLastRun(`${repo.fullname}-${workflow.name}`)
+  }
+  private setRepoLastRun(repo: GithubConfigRepo, reports: WorkflowReport[]) {
+    const workflowNameToReports = groupBy(reports, 'workflowName')
+    for (const [workflowName, reports] of Object.entries(workflowNameToReports)) {
+      const lastRunReport = maxBy(reports, 'buildNumber')
+      if (lastRunReport) {
+        this.store?.setLastRun(`${repo.fullname}-${workflowName}`, lastRunReport.buildNumber)
+      }
     }
   }
 
@@ -44,20 +52,26 @@ export class GithubRunner implements Runner {
       console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
       const repoWorkflowReports: WorkflowReport[] = []
       let repoTestReports: TestReport[] = []
+      let workflowRuns: WorkflowRunsItem[] = []
 
       try {
-        const lastRunId = this.store.getLastRun(repo.fullname)
-        const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, lastRunId)
         const tagMap = await this.client.fetchRepositoryTagMap(repo.owner, repo.repo)
+        // Fetch repository workflow runs
+        const workflows = await this.client.fetchWorkflows(repo.owner, repo.repo)
+        for (const workflow of workflows) {
+          const lastRunId = this.getLastRun(repo, workflow)
+          const _workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, workflow.id, lastRunId)
+          workflowRuns = workflowRuns.concat(_workflowRuns)
+        }
 
         for (const workflowRun of workflowRuns) {
           // Fetch data
-          const jobs = await this.client.fetchJobs(repo.owner, repo.repo, workflowRun.run.id)
-          const tests = await this.client.fetchTests(repo.owner, repo.repo, workflowRun.run.id, repo.testGlob)
-          const customReportArtifacts = await this.client.fetchCustomReports(repo.owner, repo.repo, workflowRun.run.id, repo.customReports)
+          const jobs = await this.client.fetchJobs(repo.owner, repo.repo, workflowRun.id)
+          const tests = await this.client.fetchTests(repo.owner, repo.repo, workflowRun.id, repo.testGlob)
+          const customReportArtifacts = await this.client.fetchCustomReports(repo.owner, repo.repo, workflowRun.id, repo.customReports)
 
           // Create report
-          const workflowReport = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun.run, jobs, tagMap)
+          const workflowReport = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun, jobs, tagMap)
           const testReports = await this.analyzer.createTestReports(workflowReport, tests)
           const runCustomReportCollection = await createCustomReportCollection(workflowReport, customReportArtifacts)
 
@@ -74,7 +88,7 @@ export class GithubRunner implements Runner {
         result = failure(new Error(errorMessage))
         continue
       }
-      this.setRepoLastRun(repo.fullname, repoWorkflowReports)
+      this.setRepoLastRun(repo, repoWorkflowReports)
       workflowReports = workflowReports.concat(repoWorkflowReports)
       testReports = testReports.concat(repoTestReports)
     }
