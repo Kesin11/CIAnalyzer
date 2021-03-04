@@ -1,5 +1,5 @@
 export type Result<T, E> = Success<T, E> | Failure<T, E>
-export const success = <T, E>(value?: T): Success<T | undefined, E> => new Success(value)
+export const success = <T, E>(value: T): Success<T, E> => new Success(value)
 export const failure = <T, E>(value: E): Failure<T, E> => new Failure(value)
 
 class Success<T, E> {

@@ -6,7 +6,7 @@ import { failure, Result, success } from "../result";
 import { BitriseRunner } from "./bitrise_runner";
 
 export interface Runner {
-  run (): Promise<Result<void, Error>>
+  run (): Promise<Result<unknown, Error>>
 }
 
 export class CompositRunner implements Runner {
@@ -28,7 +28,7 @@ export class CompositRunner implements Runner {
     }).filter((runner): runner is NonNullable<typeof runner> => runner !== undefined)
   }
 
-  async run(): Promise<Result<void, Error>> {
+  async run(): Promise<Result<unknown, Error>> {
     const results = await Promise.allSettled(
       this.runners.map((runner) => runner.run())
     )
@@ -42,6 +42,6 @@ export class CompositRunner implements Runner {
       return failure(new Error('Some runner throws error!!'))
     }
 
-    return success()
+    return success('composit')
   }
 }

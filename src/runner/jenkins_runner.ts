@@ -35,8 +35,8 @@ export class JenkinsRunner implements Runner {
     }
   }
 
-  async run (): Promise<Result<void, Error>> {
-    let result: Result<void, Error> = success()
+  async run (): Promise<Result<unknown, Error>> {
+    let result: Result<unknown, Error> = success(this.service)
     if (!this.config) return failure(new Error('this.config must not be undefined'))
     if (!this.client) return failure(new Error('this.client must not be undefined'))
     this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
