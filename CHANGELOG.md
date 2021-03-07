@@ -1,3 +1,14 @@
+## [3.1.2](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.1...v3.1.2) (2021-03-07)
+
+
+### Bug Fixes
+
+* Fix type compile error from ts 4.2 ([01011cb](https://github.com/Kesin11/CIAnalyzer/commit/01011cb7b8034338693c80f41dbb3d2d2fd55ba2))
+* Update nodejs version inside Docker 12 to 14 ([c8d22fe](https://github.com/Kesin11/CIAnalyzer/commit/c8d22fe641790498b31d19b6d90480d28e24492e))
+* **Github:** Bugfix storing last run id each by repo workflows ([1e248a4](https://github.com/Kesin11/CIAnalyzer/commit/1e248a4e458493453ce1e5f506ef37648c6a2e39))
+
+
+
 ## [3.1.1](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.0...v3.1.1) (2020-12-23)
 
 
