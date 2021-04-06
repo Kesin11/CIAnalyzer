@@ -1,3 +1,13 @@
+## [3.1.3](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.2...v3.1.3) (2021-04-06)
+
+
+### Bug Fixes
+
+* Little improve docker image size ([5ec970a](https://github.com/Kesin11/CIAnalyzer/commit/5ec970a28bed4b3afd62e36ed6f13c264b231be4))
+* npm audit fix ([35acf54](https://github.com/Kesin11/CIAnalyzer/commit/35acf54d8437e5982ddb2b35f1e408222a25f82a))
+
+
+
 ## [3.1.2](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.1...v3.1.2) (2021-03-07)
 
 
