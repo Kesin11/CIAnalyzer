@@ -50,7 +50,7 @@
     "yargs": "16.2.0"
   },
   "devDependencies": {
-    "@types/adm-zip": "0.4.33",
+    "@types/adm-zip": "0.4.34",
     "@types/jest": "26.0.22",
     "@types/js-yaml": "4.0.0",
     "@types/lodash": "4.14.168",
