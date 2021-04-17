@@ -15,13 +15,14 @@ jobs:
       - uses: docker/setup-buildx-action@v1
       - name: Docker meta
         id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2
         with:
           images: ghcr.io/kesin11/ci_analyzer
-          tag-semver: |
-            v{{version}}
-            v{{major}}
-            v{{major}}.{{minor}}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern=v{{version}}
+            type=semver,pattern=v{{major}}
+            type=semver,pattern=v{{major}}.{{minor}}
 
       - name: Login to ghcr
         if: github.event_name != 'pull_request'
