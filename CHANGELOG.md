@@ -1,5 +1,7 @@
 ## [3.1.4](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.3...v3.1.4) (2021-04-17)
 
+* Bump dependencies
+* Migrate craze-max/ghaction-docker-meta v1 to v2 [#264](https://github.com/Kesin11/CIAnalyzer/pull/264)
 
 
 ## [3.1.3](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.2...v3.1.3) (2021-04-06)
