@@ -33,7 +33,7 @@
     "release:trigger": "shipjs trigger"
   },
   "dependencies": {
-    "@google-cloud/bigquery": "5.5.0",
+    "@google-cloud/bigquery": "5.6.0",
     "@google-cloud/storage": "5.8.4",
     "@octokit/plugin-retry": "3.0.7",
     "@octokit/plugin-throttling": "3.4.1",
