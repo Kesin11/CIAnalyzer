@@ -1,3 +1,12 @@
+## [3.1.5](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.4...v3.1.5) (2021-05-27)
+
+
+### Bug Fixes
+
+* Fix add await to adopt yargs 7.0 types ([3341d67](https://github.com/Kesin11/CIAnalyzer/commit/3341d672eecc60e380ef71609a937fe87390a333))
+
+
+
 ## [3.1.4](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.3...v3.1.4) (2021-04-17)
 
 * Bump dependencies
