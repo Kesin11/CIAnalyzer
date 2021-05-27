@@ -1,5 +1,6 @@
 ## [3.1.5](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.4...v3.1.5) (2021-05-27)
 
+* Bump dependencies and fix security vulnerabilities.
 
 ### Bug Fixes
 
