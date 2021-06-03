@@ -74,7 +74,8 @@ jenkins:
 bitrise:
   baseUrl: https://api.bitrise.io/v0.1 # default
   apps:
-    # Bitrise {org_name}/{app_name}
+    # {repo_owner}/{title} from https://api.bitrise.io/v0.1/apps API response
+    # see: https://api-docs.bitrise.io/
     - name: Kesin11/FlutterGettingStarted
       tests:
         - "*_test_results.xml"
