@@ -9,7 +9,8 @@
     "npm:unpublishSafe",
     ":enableVulnerabilityAlerts",
     ":semanticCommitTypeAll(chore)",
-    ":automergeMinor"
+    ":automergeMinor",
+    "group:definitelyTyped"
   ],
   "packageRules": [
     {
@@ -18,12 +19,6 @@
       "extends": [
         ":automergeMajor",
         "schedule:weekends"
-      ]
-    },
-    {
-      "depTypeList": ["devDependencies"],
-      "extends": [
-        "group:definitelyTyped"
       ]
     },
     {
