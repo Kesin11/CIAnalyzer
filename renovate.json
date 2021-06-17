@@ -14,7 +14,7 @@
   ],
   "packageRules": [
     {
-      "depTypeList": ["devDependencies"],
+      "matchDepTypes": ["devDependencies"],
       "separateMajorMinor": false,
       "extends": [
         ":automergeMajor",
@@ -23,8 +23,8 @@
     },
     {
       "groupName": "jest packages",
-      "packagePatterns": ["jest"],
-      "depTypeList": ["devDependencies"]
+      "matchPackagePatterns": ["jest"],
+      "matchDepTypes": ["devDependencies"]
     }
   ]
 }
