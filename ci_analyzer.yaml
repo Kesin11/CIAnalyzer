@@ -12,8 +12,6 @@ github:
           paths:
             - 'custom_report.json' # Path at inside of artifact.
     - Kesin11/Firestore-simple # Can use abbr format if don't collect test report
-  vcsBaseUrl: # It used for collect git tag data.
-    github: https://api.github.com # default
   exporter: &exporter # Can use yaml anchor
     local:
       outDir: ./output # default: output
