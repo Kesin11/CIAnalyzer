@@ -14,7 +14,7 @@ export type CommonConfig = {
   baseUrl?: string
   exporter?: ExporterConfig
   lastRunStore?: LastRunStoreConfig
-  vscBaseUrl?: {
+  vcsBaseUrl?: {
     github?: string
   }
 }

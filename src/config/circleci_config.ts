@@ -2,7 +2,7 @@ import { YamlConfig, CommonConfig, CustomReportConfig } from './config'
 
 export type CircleciConfig = CommonConfig & {
   repos: {
-    vscType: string
+    vcsType: string
     owner: string
     repo: string
     fullname: string
@@ -12,7 +12,7 @@ export type CircleciConfig = CommonConfig & {
 
 type RepoYaml = string | {
   name: string
-  vsc_type?: string
+  vcs_type?: string
   customReports?: CustomReportConfig[]
 }
 
@@ -26,18 +26,18 @@ export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
     let owner, repo
     if (typeof repoYaml === 'string') {
       [owner, repo] = repoYaml.split('/')
-      const vscType = 'github'
-      const fullname = `${vscType}/${owner}/${repo}`
-      return { vscType, owner, repo, fullname, customReports: [] }
+      const vcsType = 'github'
+      const fullname = `${vcsType}/${owner}/${repo}`
+      return { vcsType, owner, repo, fullname, customReports: [] }
     }
 
     [owner, repo] = repoYaml.name.split('/')
-    const vscType = repoYaml.vsc_type ?? 'github'
+    const vcsType = repoYaml.vcs_type ?? 'github'
     return {
-      vscType,
+      vcsType,
       owner,
       repo,
-      fullname: `${vscType}/${owner}/${repo}`,
+      fullname: `${vcsType}/${owner}/${repo}`,
       customReports: repoYaml.customReports ?? [],
     }
   })

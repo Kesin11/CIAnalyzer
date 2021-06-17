@@ -3,7 +3,7 @@
 circleci:
   repos:
     - name: Kesin11/CIAnalyzer
-  vscBaseUrl:
+  vcsBaseUrl:
     github: https://api.github.com
   exporter:
     local:

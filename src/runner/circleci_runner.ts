@@ -27,7 +27,7 @@ export class CircleciRunner implements Runner {
     this.analyzer = new CircleciAnalyzer()
 
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
-    this.githubClient = new GithubClient(GITHUB_TOKEN, this.config?.vscBaseUrl?.github)
+    this.githubClient = new GithubClient(GITHUB_TOKEN, this.config?.vcsBaseUrl?.github)
   }
 
   private setRepoLastRun(reponame: string, reports: WorkflowReport[]) {
@@ -52,7 +52,7 @@ export class CircleciRunner implements Runner {
 
       try {
         const lastRunId = this.store.getLastRun(repo.fullname)
-        const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, repo.vscType, lastRunId)
+        const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, repo.vcsType, lastRunId)
         const tagMap = await this.githubClient.fetchRepositoryTagMap(repo.owner, repo.repo)
 
         for (const workflowRun of workflowRuns) {
