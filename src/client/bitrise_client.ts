@@ -6,6 +6,7 @@ import { CustomReportConfig } from '../config/config'
 
 const DEBUG_PER_PAGE = 10
 const NOT_FINISHED_STATUS = 0
+const MAX_LIMIT = 50
 
 // /apps/{app-slug}/builds
 // The status of the build: not finished (0), successful (1), failed (2), aborted with failure (3), aborted with success (4)
@@ -131,8 +132,7 @@ export class BitriseClient {
     const res = await this.axios.get( `apps/${appSlug}/builds`, {
       params: {
         sort_by: 'created_at',
-        // API default is 50 and max is unknown
-        limit: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : 100,
+        limit: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : MAX_LIMIT,
       }
     })
     let builds = res.data.data as BuildResponse[]
@@ -174,7 +174,7 @@ export class BitriseClient {
   async fetchArtifactsList(appSlug: string, buildSlug: string): Promise<ArtifactListResponse> {
     const res = await this.axios.get(
       `/apps/${appSlug}/builds/${buildSlug}/artifacts`,
-      { params: { limit: 50 }} // API allowed max 50
+      { params: { limit: MAX_LIMIT }}
     )
     return res.data.data as ArtifactListResponse
   }
