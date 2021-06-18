@@ -1,3 +1,14 @@
+# [4.0.0](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.5...v4.0.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* **Github:** Remove vscBaseUrl config from github ([ddec5e8](https://github.com/Kesin11/CIAnalyzer/commit/ddec5e886dcb02369b0ba01b94b72fc9fffef5f7))
+* Rename config key typo vsc -> vcs ([7fc19c4](https://github.com/Kesin11/CIAnalyzer/commit/7fc19c450ee244b05f0c28200fe250da39718c22))
+* **Bitrise:** Adopt to current bitrise API limit ([1bf6abb](https://github.com/Kesin11/CIAnalyzer/commit/1bf6abb24edd8088e063b51cd0ac1f4aaa0487ac))
+
+
+
 ## [3.1.5](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.4...v3.1.5) (2021-05-27)
 
 * Bump dependencies and fix security vulnerabilities.
