@@ -1,7 +1,7 @@
 import { parseConfig } from '../../src/config/circleci_config'
 
 describe('parseConfig', () => {
-  describe('vscType', () => {
+  describe('vcsType', () => {
     it('should github when value is repo string', () => {
       const config = {
         configDir: __dirname,
@@ -15,7 +15,7 @@ describe('parseConfig', () => {
         repos: [{
           owner: 'owner',
           repo: 'repo',
-          vscType: 'github',
+          vcsType: 'github',
           fullname: 'github/owner/repo',
           customReports: [],
         }]
@@ -26,7 +26,7 @@ describe('parseConfig', () => {
       const config = {
         configDir: __dirname,
         circleci: {
-          repos: [{ name: 'owner/repo', vsc_type: 'bitbucket' }]
+          repos: [{ name: 'owner/repo', vcs_type: 'bitbucket' }]
         }
       }
 
@@ -35,14 +35,14 @@ describe('parseConfig', () => {
         repos: [{
           owner: 'owner',
           repo: 'repo',
-          vscType: 'bitbucket',
+          vcsType: 'bitbucket',
           fullname: 'bitbucket/owner/repo',
           customReports: [],
         }]
       })
     })
 
-    it('should github when object vsc_type is null', () => {
+    it('should github when object vcs_type is null', () => {
       const config = {
         configDir: __dirname,
         circleci: {
@@ -55,7 +55,7 @@ describe('parseConfig', () => {
         repos: [{
           owner: 'owner',
           repo: 'repo',
-          vscType: 'github',
+          vcsType: 'github',
           fullname: 'github/owner/repo',
           customReports: [],
         }]
@@ -79,7 +79,7 @@ describe('parseConfig', () => {
       const actual = parseConfig(config)
       expect(actual).toEqual({
         repos: [{
-          owner: 'owner', repo: 'repo', vscType: 'github', fullname: 'github/owner/repo',
+          owner: 'owner', repo: 'repo', vcsType: 'github', fullname: 'github/owner/repo',
           customReports: [],
         }]
       })
@@ -99,7 +99,7 @@ describe('parseConfig', () => {
       const actual = parseConfig(config)
       expect(actual).toEqual({
         repos: [{
-          owner: 'owner', repo: 'repo', vscType: 'github', fullname: 'github/owner/repo',
+          owner: 'owner', repo: 'repo', vcsType: 'github', fullname: 'github/owner/repo',
           customReports: [ customReport ]
         }]
       })

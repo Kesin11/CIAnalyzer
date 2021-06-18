@@ -12,8 +12,6 @@ github:
           paths:
             - 'custom_report.json' # Path at inside of artifact.
     - Kesin11/Firestore-simple # Can use abbr format if don't collect test report
-  vscBaseUrl: # It used for collect git tag data.
-    github: https://api.github.com # default
   exporter: &exporter # Can use yaml anchor
     local:
       outDir: ./output # default: output
@@ -42,12 +40,12 @@ circleci:
   repos:
     - Kesin11/CIAnalyzer # Can use abbr format
     - name: Kesin11/CIAnalyzer
-      vsc_type: github # github or bitbucket. default: github
+      vcs_type: github # github or bitbucket. default: github
       customReports:
         - name: { CUSTOM_REPORT_NAME }
           paths:
             - 'custom_report.json'
-  vscBaseUrl:
+  vcsBaseUrl:
     # Using for collect git tag data. **Currently only support github**
     github: https://api.github.com # Change it if you using GitHub Enterprise Server
   exporter: *exporter # Can use yaml anchor
