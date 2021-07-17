@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import yargs from 'yargs'
+import { ArgumentOptions } from './arg_options'
 import { loadConfig } from './config/config'
 import { CompositRunner } from './runner/runner'
 
@@ -10,12 +11,14 @@ const main = async () => {
     .options({
       c: { type: 'string', alias: 'config', describe: 'Path to config yaml' },
       v: { type: 'count', alias: 'verbose' },
+      'only-services': { type: 'string', array: true, describe: 'Exec only selected services. ex: --only-services circleci github' },
     })
     .strict()
     .argv
   const yamlConfig = loadConfig(argv.c)
+  const argOptions = new ArgumentOptions(argv)
 
-  const runner = new CompositRunner(yamlConfig)
+  const runner = new CompositRunner(yamlConfig, argOptions)
   const result = await runner.run()
 
   if (result.isFailure()) {
