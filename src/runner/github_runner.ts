@@ -71,7 +71,7 @@ export class GithubRunner implements Runner {
           const customReportArtifacts = await this.client.fetchCustomReports(repo.owner, repo.repo, workflowRun.id, repo.customReports)
 
           // Create report
-          const workflowReport = this.analyzer.createWorkflowReport(workflowRun.name, workflowRun, jobs, tagMap)
+          const workflowReport = this.analyzer.createWorkflowReport(workflowRun.name!, workflowRun, jobs, tagMap)
           const testReports = await this.analyzer.createTestReports(workflowReport, tests)
           const runCustomReportCollection = await createCustomReportCollection(workflowReport, customReportArtifacts)
 

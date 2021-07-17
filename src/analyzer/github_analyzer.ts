@@ -71,9 +71,9 @@ export class GithubAnalyzer implements Analyzer {
       = this.createWorkflowParams(workflowName, workflow)
 
     const jobReports: JobReport[] = jobs.map((job) => {
-      const stepReports: StepReport[] = job.steps.map((step) => {
-        const startedAt = new Date(step.started_at)
-        const completedAt = new Date(step.completed_at)
+      const stepReports: StepReport[] = job.steps!.map((step) => {
+        const startedAt = new Date(step.started_at!)
+        const completedAt = new Date(step.completed_at!)
         // step
         return {
           name: step.name,
@@ -86,7 +86,7 @@ export class GithubAnalyzer implements Analyzer {
       })
 
       const startedAt = new Date(job.started_at)
-      const completedAt = new Date(job.completed_at)
+      const completedAt = new Date(job.completed_at!)
       // job
       return {
         workflowRunId: workflowRunId,
@@ -118,7 +118,7 @@ export class GithubAnalyzer implements Analyzer {
       status,
       repository: workflow.repository.full_name,
       headSha: workflow.head_sha,
-      branch: workflow.head_branch,
+      branch: workflow.head_branch ?? '',
       tag: tagMap.get(workflow.head_sha) ?? '',
       jobs: jobReports,
       startedAt,
@@ -131,7 +131,7 @@ export class GithubAnalyzer implements Analyzer {
     }
   }
 
-  normalizeStatus(status: string): Status {
+  normalizeStatus(status: string | null): Status {
     switch (status) {
       case 'success':
         return 'SUCCESS'
