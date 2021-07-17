@@ -9,6 +9,7 @@ import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
 import { CustomReportCollection, createCustomReportCollection } from "../custom_report_collection"
 import { failure, Result, success } from "../result"
+import { ArgumentOptions } from "../arg_options"
 
 type GithubConfigRepo = GithubConfig['repos'][0]
 
@@ -19,7 +20,7 @@ export class GithubRunner implements Runner {
   configDir: string
   config: GithubConfig | undefined
   store?: LastRunStore
-  constructor(public yamlConfig: YamlConfig) {
+  constructor(public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
     this.configDir = yamlConfig.configDir
     this.config = parseConfig(yamlConfig)
@@ -43,7 +44,7 @@ export class GithubRunner implements Runner {
   async run (): Promise<Result<unknown, Error>> {
     let result: Result<unknown, Error> = success(this.service)
     if (!this.config) return failure(new Error('this.config must not be undefined'))
-    this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
+    this.store = await LastRunStore.init(this.options, this.service, this.configDir, this.config.lastRunStore)
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []

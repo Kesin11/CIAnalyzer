@@ -1,6 +1,7 @@
 import { maxBy } from "lodash"
 import { TestReport, WorkflowReport } from "../analyzer/analyzer"
 import { BitriseAnalyzer } from "../analyzer/bitrise_analyzer"
+import { ArgumentOptions } from "../arg_options"
 import { BitriseClient } from "../client/bitrise_client"
 import { BitriseConfig, parseConfig } from "../config/bitrise_config"
 import { YamlConfig } from "../config/config"
@@ -17,7 +18,7 @@ export class BitriseRunner implements Runner {
   configDir: string
   config: BitriseConfig | undefined
   store?: LastRunStore
-  constructor(public yamlConfig: YamlConfig) {
+  constructor(public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const BITRISE_TOKEN = process.env['BITRISE_TOKEN'] || ''
     this.configDir = yamlConfig.configDir
     this.config = parseConfig(yamlConfig)
@@ -35,7 +36,7 @@ export class BitriseRunner implements Runner {
   async run (): Promise<Result<unknown, Error>> {
     let result: Result<unknown, Error> = success(this.service)
     if (!this.config) return failure(new Error('this.config must not be undefined'))
-    this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
+    this.store = await LastRunStore.init(this.options, this.service, this.configDir, this.config.lastRunStore)
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []

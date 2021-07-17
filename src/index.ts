@@ -11,6 +11,7 @@ const main = async () => {
     .options({
       c: { type: 'string', alias: 'config', describe: 'Path to config yaml' },
       v: { type: 'count', alias: 'verbose' },
+      'debug': { type: 'boolean', default: false, describe: 'Enable debug mode' },
       'only-services': { type: 'string', array: true, describe: 'Exec only selected services. ex: --only-services circleci github' },
     })
     .strict()

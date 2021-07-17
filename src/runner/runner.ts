@@ -20,13 +20,13 @@ export class CompositRunner implements Runner {
     this.runners = services.map((service) => {
       switch (service) {
         case 'github':
-          return new GithubRunner(config)
+          return new GithubRunner(config, options)
         case 'circleci':
-          return new CircleciRunner(config)
+          return new CircleciRunner(config, options)
         case 'jenkins':
-          return new JenkinsRunner(config)
+          return new JenkinsRunner(config, options)
         case 'bitrise':
-          return new BitriseRunner(config)
+          return new BitriseRunner(config, options)
         default:
           return undefined
       }
