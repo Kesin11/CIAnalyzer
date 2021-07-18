@@ -2,19 +2,16 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 
 export type YamlConfig = {
-  github?: { [key: string]: any }
-  circleci?: { [key: string]: any }
-  jenkins?: { [key: string]: any }
-  bitrise?: { [key: string]: any }
+  github?: { [key: string]: unknown }
+  circleci?: { [key: string]: unknown }
+  jenkins?: { [key: string]: unknown }
+  bitrise?: { [key: string]: unknown }
 }
 
 export type CommonConfig = {
   baseUrl?: string
   exporter?: ExporterConfig
   lastRunStore?: LastRunStoreConfig
-  vcsBaseUrl?: {
-    github?: string
-  }
 }
 
 export type ExporterConfig = {

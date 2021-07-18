@@ -25,7 +25,7 @@ export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {
 
   const jenkinsConfig = config.jenkins
   // overwrite jobs
-  jenkinsConfig.jobs = jenkinsConfig.jobs.map((jobYaml: JobYaml): JenkinsConfig['jobs'][0] => {
+  jenkinsConfig.jobs = (jenkinsConfig.jobs as JobYaml[]).map((jobYaml): JenkinsConfig['jobs'][0] => {
     if (typeof jobYaml === 'string') {
       return { name: jobYaml, testGlob: [], customReports: [] }
     }
