@@ -14,7 +14,7 @@ export interface Exporter {
 export class CompositExporter implements Exporter {
   exporters: Exporter[]
   constructor(options: ArgumentOptions, service: string, config?: ExporterConfig) {
-    if (!config) {
+    if (options.debug || !config) {
       this.exporters = [ new LocalExporter(service, options.configDir, {}) ]
       return
     }
