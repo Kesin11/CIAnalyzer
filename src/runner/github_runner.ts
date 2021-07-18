@@ -22,7 +22,7 @@ export class GithubRunner implements Runner {
   constructor(public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
-    this.client = new GithubClient(GITHUB_TOKEN, this.config?.baseUrl)
+    this.client = new GithubClient(GITHUB_TOKEN, options, this.config?.baseUrl)
     this.analyzer = new GithubAnalyzer()
   }
 

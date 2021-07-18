@@ -1,3 +1,4 @@
+import { ArgumentOptions } from '../../src/arg_options'
 import { CircleciClient } from '../../src/client/circleci_client'
 
 const allCompletedRuns = [
@@ -16,8 +17,11 @@ const hasInprogressRuns = [
 describe('CircleciClient', () => {
   describe('filterWorkflowRuns', () => {
     let client: CircleciClient
+    const options = new ArgumentOptions({
+      "c": "./dummy.yaml"
+    })
     beforeEach(() => {
-      client = new CircleciClient('DUMMY_TOKEN')
+      client = new CircleciClient('DUMMY_TOKEN', options)
     })
 
     it('when has not in_pregress runs', async () => {

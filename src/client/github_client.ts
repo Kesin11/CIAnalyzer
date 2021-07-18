@@ -5,6 +5,7 @@ import { CustomReportArtifact, Artifact } from './client'
 import { minBy } from "lodash";
 import { ZipExtractor } from "../zip_extractor";
 import { CustomReportConfig } from "../config/config";
+import { ArgumentOptions } from "../arg_options";
 
 // Oktokit document: https://octokit.github.io/rest.js/v18#actions
 
@@ -19,12 +20,12 @@ export type RepositoryTagMap = Map<string, string>
 
 export class GithubClient {
   private octokit: Octokit
-  constructor(token: string, baseUrl?: string) {
+  constructor(token: string, private options: ArgumentOptions, baseUrl?: string) {
     const MyOctokit = Octokit.plugin(throttling, retry)
     this.octokit = new MyOctokit({
       auth: token,
       baseUrl: (baseUrl) ? baseUrl : 'https://api.github.com',
-      log: (process.env['CI_ANALYZER_DEBUG']) ? console : undefined,
+      log: (options.debug) ? console : undefined,
       throttle: {
         onRateLimit: (retryAfter: number, options: any) => {
           this.octokit.log.warn(
@@ -52,7 +53,7 @@ export class GithubClient {
       owner,
       repo,
       workflow_id: workflowId,
-      per_page: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : 100, // API default is 100
+      per_page: (this.options.debug) ? DEBUG_PER_PAGE : 100, // API default is 100
       // page: 1, // order desc
     })
 

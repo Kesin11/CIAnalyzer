@@ -3,6 +3,7 @@ import { AxiosInstance } from 'axios'
 import { groupBy, max, minBy } from 'lodash'
 import { Artifact, CustomReportArtifact, createAxios } from './client'
 import { CustomReportConfig } from '../config/config'
+import { ArgumentOptions } from '../arg_options'
 
 const DEBUG_PER_PAGE = 10
 
@@ -110,7 +111,7 @@ type ArtifactsResponse = {
 
 export class CircleciClient {
   private axios: AxiosInstance
-  constructor(token: string, baseUrl?: string) {
+  constructor(token: string, private options: ArgumentOptions, baseUrl?: string) {
     this.axios = createAxios({
       baseURL: baseUrl ?? 'https://circleci.com/api/v1.1',
       auth: {
@@ -126,7 +127,7 @@ export class CircleciClient {
       params: {
         // API default is 30 and max is 100
         // ref: https://circleci.com/docs/api/#recent-builds-for-a-single-project
-        limit: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : 100,
+        limit: (this.options.debug) ? DEBUG_PER_PAGE : 100,
         // limit: 3,
         // offset: 5,
         // filter: "completed"

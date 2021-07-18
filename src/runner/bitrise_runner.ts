@@ -20,7 +20,7 @@ export class BitriseRunner implements Runner {
   constructor(public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const BITRISE_TOKEN = process.env['BITRISE_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
-    this.client = new BitriseClient(BITRISE_TOKEN)
+    this.client = new BitriseClient(BITRISE_TOKEN, options)
     this.analyzer = new BitriseAnalyzer()
   }
 

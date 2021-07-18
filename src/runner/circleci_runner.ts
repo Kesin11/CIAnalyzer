@@ -22,11 +22,11 @@ export class CircleciRunner implements Runner {
   constructor(public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
-    this.client = new CircleciClient(CIRCLECI_TOKEN, this.config?.baseUrl)
+    this.client = new CircleciClient(CIRCLECI_TOKEN, options, this.config?.baseUrl)
     this.analyzer = new CircleciAnalyzer()
 
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
-    this.githubClient = new GithubClient(GITHUB_TOKEN, this.config?.vcsBaseUrl?.github)
+    this.githubClient = new GithubClient(GITHUB_TOKEN, options, this.config?.vcsBaseUrl?.github)
   }
 
   private setRepoLastRun(reponame: string, reports: WorkflowReport[]) {
