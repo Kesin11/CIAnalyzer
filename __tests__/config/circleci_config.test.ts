@@ -4,7 +4,6 @@ describe('parseConfig', () => {
   describe('vcsType', () => {
     it('should github when value is repo string', () => {
       const config = {
-        configDir: __dirname,
         circleci: {
           repos: [ 'owner/repo' ]
         }
@@ -24,7 +23,6 @@ describe('parseConfig', () => {
 
     it('should same as provides when value is object', () => {
       const config = {
-        configDir: __dirname,
         circleci: {
           repos: [{ name: 'owner/repo', vcs_type: 'bitbucket' }]
         }
@@ -44,7 +42,6 @@ describe('parseConfig', () => {
 
     it('should github when object vcs_type is null', () => {
       const config = {
-        configDir: __dirname,
         circleci: {
           repos: [{ name: 'owner/repo' }]
         }
@@ -68,7 +65,6 @@ describe('parseConfig', () => {
 
     it('that has not customReports', () => {
       const config = {
-        configDir: __dirname,
         circleci: {
           repos: [{
             name: 'owner/repo',
@@ -87,7 +83,6 @@ describe('parseConfig', () => {
 
     it('that has customReports', () => {
       const config = {
-        configDir: __dirname,
         circleci: {
           repos: [{
             name: 'owner/repo',

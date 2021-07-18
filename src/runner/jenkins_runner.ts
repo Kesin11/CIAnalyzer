@@ -3,7 +3,7 @@ import { Runner } from "./runner"
 import { YamlConfig } from "../config/config"
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
-import { BuildResponse, JenkinsClient } from "../client/jenkins_client"
+import { JenkinsClient } from "../client/jenkins_client"
 import { JenkinsAnalyzer } from "../analyzer/jenkins_analyzer"
 import { JenkinsConfig, JenkinsConfigJob, parseConfig } from "../config/jenkins_config"
 import { LastRunStore } from "../last_run_store"
@@ -15,11 +15,9 @@ export class JenkinsRunner implements Runner {
   service: string = 'jenkins'
   client?: JenkinsClient
   analyzer: JenkinsAnalyzer 
-  configDir: string
   config?: JenkinsConfig
   store?: LastRunStore
   constructor(public yamlConfig: YamlConfig, public options: ArgumentOptions) {
-    this.configDir = yamlConfig.configDir
     this.config = parseConfig(yamlConfig)
     this.analyzer = new JenkinsAnalyzer()
 
@@ -40,7 +38,7 @@ export class JenkinsRunner implements Runner {
     let result: Result<unknown, Error> = success(this.service)
     if (!this.config) return failure(new Error('this.config must not be undefined'))
     if (!this.client) return failure(new Error('this.client must not be undefined'))
-    this.store = await LastRunStore.init(this.options, this.service, this.configDir, this.config.lastRunStore)
+    this.store = await LastRunStore.init(this.options, this.service, this.config.lastRunStore)
 
     const jobs = await this.getJobs()
 
@@ -87,7 +85,7 @@ export class JenkinsRunner implements Runner {
     }
 
     console.info(`Exporting ${this.service} workflow reports ...`)
-    const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
+    const exporter = new CompositExporter(this.options, this.service, this.config.exporter)
     await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
     await exporter.exportCustomReports(customReportCollection)

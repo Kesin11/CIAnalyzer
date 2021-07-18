@@ -16,13 +16,11 @@ export class CircleciRunner implements Runner {
   service: string = 'circleci'
   client: CircleciClient
   analyzer: CircleciAnalyzer 
-  configDir: string
   config: CircleciConfig | undefined
   store?: LastRunStore
   githubClient: GithubClient
   constructor(public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
-    this.configDir = yamlConfig.configDir
     this.config = parseConfig(yamlConfig)
     this.client = new CircleciClient(CIRCLECI_TOKEN, this.config?.baseUrl)
     this.analyzer = new CircleciAnalyzer()
@@ -41,7 +39,7 @@ export class CircleciRunner implements Runner {
   async run (): Promise<Result<unknown, Error>> {
     let result: Result<unknown, Error> = success(this.service)
     if (!this.config) return failure(new Error('this.config must not be undefined'))
-    this.store = await LastRunStore.init(this.options, this.service, this.configDir, this.config.lastRunStore)
+    this.store = await LastRunStore.init(this.options, this.service, this.config.lastRunStore)
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
@@ -110,7 +108,7 @@ export class CircleciRunner implements Runner {
     }
 
     console.info(`Exporting ${this.service} workflow reports ...`)
-    const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
+    const exporter = new CompositExporter(this.options, this.service, this.config.exporter)
     await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
     await exporter.exportCustomReports(customReportCollection)

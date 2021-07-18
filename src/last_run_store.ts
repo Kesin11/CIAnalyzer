@@ -16,16 +16,16 @@ export class LastRunStore {
   store: Store
   lastRun: LastRun
 
-  static async init(options: ArgumentOptions, service: string, configDir: string, config?: LastRunStoreConfig) {
+  static async init(options: ArgumentOptions, service: string, config?: LastRunStoreConfig) {
     let store
     if (options.debug) {
       store = new NullStore()
     }
     else if (!config) {
-      store = new LocalStore(service, configDir)
+      store = new LocalStore(service, options.configDir)
     }
     else if (config.backend === 'local') {
-      store = new LocalStore(service, configDir, config.path)
+      store = new LocalStore(service, options.configDir, config.path)
     }
     else if (config.backend === 'gcs') {
       store = new GcsStore(service, config.project, config.bucket, config.path)

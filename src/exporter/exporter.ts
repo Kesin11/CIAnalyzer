@@ -3,6 +3,7 @@ import { WorkflowReport, TestReport } from "../analyzer/analyzer";
 import { ExporterConfig, LocalExporterConfig, BigqueryExporterConfig } from "../config/config";
 import { BigqueryExporter } from "./bigquery_exporter";
 import { CustomReportCollection } from "../custom_report_collection";
+import { ArgumentOptions } from "../arg_options";
 
 export interface Exporter {
   exportWorkflowReports(reports: WorkflowReport[]): Promise<void>
@@ -12,9 +13,9 @@ export interface Exporter {
 
 export class CompositExporter implements Exporter {
   exporters: (Exporter | undefined)[]
-  constructor(service: string, configDir: string, config?: ExporterConfig) {
+  constructor(options: ArgumentOptions, service: string, config?: ExporterConfig) {
     if (!config) {
-      this.exporters = [ new LocalExporter(service, configDir, {}) ]
+      this.exporters = [ new LocalExporter(service, options.configDir, {}) ]
       return
     }
 
@@ -23,10 +24,10 @@ export class CompositExporter implements Exporter {
       switch (exporter) {
         case 'local':
           _config = config['local'] ?? {}
-          return new LocalExporter(service, configDir, _config)
+          return new LocalExporter(service, options.configDir, _config)
         case 'bigquery':
           _config = config['bigquery'] ?? {}
-          return new BigqueryExporter(_config, configDir)
+          return new BigqueryExporter(_config, options.configDir)
         default:
           return undefined
       }
