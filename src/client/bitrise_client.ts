@@ -3,6 +3,7 @@ import { minBy } from 'lodash'
 import { Artifact, createAxios, CustomReportArtifact } from './client'
 import minimatch from 'minimatch'
 import { CustomReportConfig } from '../config/config'
+import { ArgumentOptions } from '../arg_options'
 
 const DEBUG_PER_PAGE = 10
 const NOT_FINISHED_STATUS = 0
@@ -99,7 +100,7 @@ type ArtifactResponse = {
 export class BitriseClient {
   private axios: AxiosInstance
   private artifactAxios: AxiosInstance
-  constructor(token: string, baseUrl?: string) {
+  constructor(token: string, private options: ArgumentOptions, baseUrl?: string) {
     this.axios = createAxios({
       baseURL: baseUrl ?? 'https://api.bitrise.io/v0.1',
       headers: {'Authorization': token },
@@ -132,7 +133,7 @@ export class BitriseClient {
     const res = await this.axios.get( `apps/${appSlug}/builds`, {
       params: {
         sort_by: 'created_at',
-        limit: (process.env['CI_ANALYZER_DEBUG']) ? DEBUG_PER_PAGE : MAX_LIMIT,
+        limit: (this.options.debug) ? DEBUG_PER_PAGE : MAX_LIMIT,
       }
     })
     let builds = res.data.data as BuildResponse[]

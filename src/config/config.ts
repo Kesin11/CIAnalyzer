@@ -1,22 +1,17 @@
 import fs from 'fs'
-import path from 'path'
 import yaml from 'js-yaml'
 
 export type YamlConfig = {
-  configDir: string
-  github?: { [key: string]: any }
-  circleci?: { [key: string]: any }
-  jenkins?: { [key: string]: any }
-  bitrise?: { [key: string]: any }
+  github?: { [key: string]: unknown }
+  circleci?: { [key: string]: unknown }
+  jenkins?: { [key: string]: unknown }
+  bitrise?: { [key: string]: unknown }
 }
 
 export type CommonConfig = {
   baseUrl?: string
   exporter?: ExporterConfig
   lastRunStore?: LastRunStoreConfig
-  vcsBaseUrl?: {
-    github?: string
-  }
 }
 
 export type ExporterConfig = {
@@ -59,11 +54,7 @@ export type CustomReportConfig = {
   paths: string[]
 }
 
-const defaultPath = './ci_analyzer.yaml'
-
-export const loadConfig = (configPath?: string): YamlConfig => {
-  configPath = configPath ?? defaultPath
-
+export const loadConfig = (configPath: string): YamlConfig => {
   const config = yaml.load(fs.readFileSync(configPath, 'utf8'))
   if (!config || typeof config !== "object") throw `Failed to load ${configPath} or config is not object`
 
@@ -72,8 +63,5 @@ export const loadConfig = (configPath?: string): YamlConfig => {
     console.debug(JSON.stringify(config, null, 2))
   }
 
-  return {
-    ...config,
-    ...{ configDir: path.dirname(path.resolve(configPath)) }
-  } as YamlConfig
+  return config as YamlConfig
 }

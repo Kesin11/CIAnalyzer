@@ -4,7 +4,6 @@ describe('parseConfig', () => {
   describe('apps', () => {
     it('when only string', () => {
       const config = {
-        configDir: __dirname,
         bitrise: {
           apps: [ 'owner/app' ]
         }
@@ -24,7 +23,6 @@ describe('parseConfig', () => {
 
     it('when object', () => {
       const config = {
-        configDir: __dirname,
         bitrise: {
           apps: [{
             name: 'owner/app',

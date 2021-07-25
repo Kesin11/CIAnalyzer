@@ -1,3 +1,4 @@
+import { ArgumentOptions } from '../../src/arg_options'
 import { GithubClient } from '../../src/client/github_client'
 
 const allCompletedRuns = [
@@ -19,8 +20,11 @@ const hasInprogressRuns = [
 describe('GithubClient', () => {
   describe('filterWorkflowRuns', () => {
     let client: GithubClient
+    const options = new ArgumentOptions({
+      "c": "./dummy.yaml"
+    })
     beforeEach(() => {
-      client = new GithubClient('DUMMY_TOKEN')
+      client = new GithubClient('DUMMY_TOKEN', options)
     })
 
     it('when lastRunId is undef and has not in_pregress runs', async () => {

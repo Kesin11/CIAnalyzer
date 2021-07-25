@@ -1,6 +1,7 @@
 import { maxBy } from "lodash"
 import { TestReport, WorkflowReport } from "../analyzer/analyzer"
 import { BitriseAnalyzer } from "../analyzer/bitrise_analyzer"
+import { ArgumentOptions } from "../arg_options"
 import { BitriseClient } from "../client/bitrise_client"
 import { BitriseConfig, parseConfig } from "../config/bitrise_config"
 import { YamlConfig } from "../config/config"
@@ -14,14 +15,12 @@ export class BitriseRunner implements Runner {
   service: string = 'bitrise'
   client: BitriseClient
   analyzer: BitriseAnalyzer
-  configDir: string
   config: BitriseConfig | undefined
   store?: LastRunStore
-  constructor(public yamlConfig: YamlConfig) {
+  constructor(public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const BITRISE_TOKEN = process.env['BITRISE_TOKEN'] || ''
-    this.configDir = yamlConfig.configDir
     this.config = parseConfig(yamlConfig)
-    this.client = new BitriseClient(BITRISE_TOKEN)
+    this.client = new BitriseClient(BITRISE_TOKEN, options)
     this.analyzer = new BitriseAnalyzer()
   }
 
@@ -35,7 +34,7 @@ export class BitriseRunner implements Runner {
   async run (): Promise<Result<unknown, Error>> {
     let result: Result<unknown, Error> = success(this.service)
     if (!this.config) return failure(new Error('this.config must not be undefined'))
-    this.store = await LastRunStore.init(this.service, this.configDir, this.config.lastRunStore)
+    this.store = await LastRunStore.init(this.options, this.service, this.config.lastRunStore)
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
@@ -89,7 +88,7 @@ export class BitriseRunner implements Runner {
     }
 
     console.info(`Exporting ${this.service} workflow reports ...`)
-    const exporter = new CompositExporter(this.service, this.configDir, this.config.exporter)
+    const exporter = new CompositExporter(this.options, this.service, this.config.exporter)
     await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
     await exporter.exportCustomReports(customReportCollection)

@@ -3,7 +3,6 @@ import { parseConfig } from '../../src/config/github_config'
 describe('parseConfig', () => {
   it('when repos are string', () => {
     const config = {
-      configDir: __dirname,
       github: {
         repos: [
           'owner/repo'
@@ -24,7 +23,6 @@ describe('parseConfig', () => {
   describe('when repos are object', () => {
     it('that has only name', () => {
       const config = {
-        configDir: __dirname,
         github: {
           repos: [{
             name: 'owner/repo',
@@ -44,7 +42,6 @@ describe('parseConfig', () => {
 
     it('that has tests', () => {
       const config = {
-        configDir: __dirname,
         github: {
           repos: [{
             name: 'owner/repo',
@@ -66,7 +63,6 @@ describe('parseConfig', () => {
     it('that has customReports', () => {
       const customReport = { name: 'custom', paths: ['custom.json'] }
       const config = {
-        configDir: __dirname,
         github: {
           repos: [{
             name: 'owner/repo',

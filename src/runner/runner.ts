@@ -4,6 +4,7 @@ import { CircleciRunner } from "./circleci_runner";
 import { JenkinsRunner } from "./jenkins_runner";
 import { failure, Result, success } from "../result";
 import { BitriseRunner } from "./bitrise_runner";
+import { ArgumentOptions } from "../arg_options";
 
 export interface Runner {
   run (): Promise<Result<unknown, Error>>
@@ -11,17 +12,21 @@ export interface Runner {
 
 export class CompositRunner implements Runner {
   runners: Runner[]
-  constructor(public config: YamlConfig) {
-    this.runners = Object.keys(config).map((service) => {
+  constructor(public config: YamlConfig, public options: ArgumentOptions) {
+    const services = options.onlyServices
+      ? Object.keys(config).filter((service) => options.onlyServices?.includes(service))
+      : Object.keys(config)
+
+    this.runners = services.map((service) => {
       switch (service) {
         case 'github':
-          return new GithubRunner(config)
+          return new GithubRunner(config, options)
         case 'circleci':
-          return new CircleciRunner(config)
+          return new CircleciRunner(config, options)
         case 'jenkins':
-          return new JenkinsRunner(config)
+          return new JenkinsRunner(config, options)
         case 'bitrise':
-          return new BitriseRunner(config)
+          return new BitriseRunner(config, options)
         default:
           return undefined
       }

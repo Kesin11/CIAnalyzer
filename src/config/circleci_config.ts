@@ -8,6 +8,9 @@ export type CircleciConfig = CommonConfig & {
     fullname: string
     customReports: CustomReportConfig[]
   }[]
+  vcsBaseUrl?: {
+    github?: string
+  }
 }
 
 type RepoYaml = string | {
@@ -22,7 +25,7 @@ export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
   const circleciConfig = config.circleci
 
   // overwrite repos
-  circleciConfig.repos = circleciConfig.repos.map((repoYaml: RepoYaml): CircleciConfig['repos'][0] => {
+  circleciConfig.repos = (circleciConfig.repos as RepoYaml[]).map((repoYaml): CircleciConfig['repos'][0] => {
     let owner, repo
     if (typeof repoYaml === 'string') {
       [owner, repo] = repoYaml.split('/')

@@ -3,6 +3,7 @@ import { WorkflowReport, TestReport } from "../analyzer/analyzer";
 import { ExporterConfig, LocalExporterConfig, BigqueryExporterConfig } from "../config/config";
 import { BigqueryExporter } from "./bigquery_exporter";
 import { CustomReportCollection } from "../custom_report_collection";
+import { ArgumentOptions } from "../arg_options";
 
 export interface Exporter {
   exportWorkflowReports(reports: WorkflowReport[]): Promise<void>
@@ -11,43 +12,45 @@ export interface Exporter {
 }
 
 export class CompositExporter implements Exporter {
-  exporters: (Exporter | undefined)[]
-  constructor(service: string, configDir: string, config?: ExporterConfig) {
-    if (!config) {
-      this.exporters = [ new LocalExporter(service, configDir, {}) ]
+  exporters: Exporter[]
+  constructor(options: ArgumentOptions, service: string, config?: ExporterConfig) {
+    if (options.debug || !config) {
+      this.exporters = [ new LocalExporter(service, options.configDir, {}) ]
       return
     }
 
-    this.exporters = Object.keys(config).map((exporter) => {
+    const exporters = options.onlyExporters
+      ? Object.keys(config).filter((exporter) => options.onlyExporters?.includes(exporter))
+      : Object.keys(config)
+
+    this.exporters = exporters.map((exporter) => {
       let _config: LocalExporterConfig | BigqueryExporterConfig
       switch (exporter) {
         case 'local':
-          _config = config['local'] ?? {}
-          return new LocalExporter(service, configDir, _config)
+          _config = config[exporter] ?? {}
+          return new LocalExporter(service, options.configDir, _config)
         case 'bigquery':
-          _config = config['bigquery'] ?? {}
-          return new BigqueryExporter(_config, configDir)
-        default:
-          return undefined
+          _config = config[exporter] ?? {}
+          return new BigqueryExporter(_config, options.configDir)
       }
-    })
+    }).filter((exporter): exporter is NonNullable<typeof exporter> => exporter !== undefined)
   }
 
   async exportWorkflowReports(reports: WorkflowReport[]) {
     await Promise.all(
-      this.exporters.map((exporter) => exporter?.exportWorkflowReports(reports))
+      this.exporters.map((exporter) => exporter.exportWorkflowReports(reports))
     )
   }
 
   async exportTestReports(reports: TestReport[]) {
     await Promise.all(
-      this.exporters.map((exporter) => exporter?.exportTestReports(reports))
+      this.exporters.map((exporter) => exporter.exportTestReports(reports))
     )
   }
 
   async exportCustomReports(customReportCollection: CustomReportCollection) {
     await Promise.all(
-      this.exporters.map((exporter) => exporter?.exportCustomReports(customReportCollection))
+      this.exporters.map((exporter) => exporter.exportCustomReports(customReportCollection))
     )
   }
 }

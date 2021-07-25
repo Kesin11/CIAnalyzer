@@ -21,7 +21,7 @@ export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
 
   const githubConfig = config.github
   // overwrite repos
-  githubConfig.repos = githubConfig.repos.map((repoYaml: RepoYaml): GithubConfig['repos'][0] => {
+  githubConfig.repos = (githubConfig.repos as RepoYaml[]).map((repoYaml): GithubConfig['repos'][0] => {
     let owner, repo
     if (typeof repoYaml === 'string') {
       [owner, repo] = repoYaml.split('/')

@@ -3,7 +3,6 @@ import { parseConfig } from '../../src/config/jenkins_config'
 describe('parseConfig', () => {
   it('when repos are string', () => {
     const config = {
-      configDir: __dirname,
       jenkins: {
         baseUrl: 'http://localhost:8080',
         jobs: [ 'sample-job' ]
@@ -17,7 +16,6 @@ describe('parseConfig', () => {
   describe('when repos are object', () => {
     it('that has only name', () => {
       const config = {
-        configDir: __dirname,
         jenkins: {
           baseUrl: 'http://localhost:8080',
           jobs: [{
@@ -39,7 +37,6 @@ describe('parseConfig', () => {
 
     it('that has tests', () => {
       const config = {
-        configDir: __dirname,
         jenkins: {
           baseUrl: 'http://localhost:8080',
           jobs: [{
@@ -62,7 +59,6 @@ describe('parseConfig', () => {
 
     it('that has customReports', () => {
       const config = {
-        configDir: __dirname,
         jenkins: {
           baseUrl: 'http://localhost:8080',
           jobs: [{

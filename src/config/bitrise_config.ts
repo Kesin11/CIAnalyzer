@@ -22,7 +22,7 @@ export const parseConfig = (config: YamlConfig): BitriseConfig | undefined => {
   const bitriseConfig = config.bitrise
 
   // overwrite repos
-  bitriseConfig.apps = bitriseConfig.apps.map((appYaml: AppYaml): BitriseConfig['apps'][0] => {
+  bitriseConfig.apps = (bitriseConfig.apps as AppYaml[]).map((appYaml): BitriseConfig['apps'][0] => {
     let owner, title
     if (typeof appYaml === 'string') {
       [owner, title] = appYaml.split('/')

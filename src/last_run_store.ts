@@ -2,6 +2,8 @@ import { Store } from "./store/store"
 import { LocalStore } from "./store/local_store"
 import { LastRunStoreConfig } from "./config/config"
 import { GcsStore } from "./store/gcs_store"
+import { ArgumentOptions } from "./arg_options"
+import { NullStore } from "./store/null_store"
 
 type LastRun = {
   [repo: string]: {
@@ -14,13 +16,16 @@ export class LastRunStore {
   store: Store
   lastRun: LastRun
 
-  static async init(service: string, configDir: string, config?: LastRunStoreConfig) {
+  static async init(options: ArgumentOptions, service: string, config?: LastRunStoreConfig) {
     let store
-    if (!config) {
-      store = new LocalStore(service, configDir)
+    if (options.debug) {
+      store = new NullStore()
+    }
+    else if (!config) {
+      store = new LocalStore(service, options.configDir)
     }
     else if (config.backend === 'local') {
-      store = new LocalStore(service, configDir, config.path)
+      store = new LocalStore(service, options.configDir, config.path)
     }
     else if (config.backend === 'gcs') {
       store = new GcsStore(service, config.project, config.bucket, config.path)
