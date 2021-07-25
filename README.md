@@ -345,6 +345,21 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 - [ ] Implement better logger
 - [ ] Support to fetch past build result
 
+# Debug options
+- Fetch only selected service
+  - `--only-services`
+  - ex: `--only-services github circleci`
+- Using only selected exporters
+  - `--only-exporters`
+  - ex: `--only-exporters local`
+- Enable debug mode
+  - `--debug`
+  - Limit fetching build results only 10 by each services
+  - Export result to local only
+  - Don't loading and storing last build number
+- Enable debug log
+  - `export CI_ANALYZER_DEBUG=1`
+
 # Development
 ## Install
 ```bash
@@ -358,9 +373,6 @@ npm run start
 # or
 node dist/index.js -c your_custom_config.yaml
 ```
-
-## For debuging
-- Export `CI_ANALYZER_DEBUG=1`
 
 # LICENSE
 MIT
