@@ -1,3 +1,20 @@
+# [4.1.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.0.0...v4.1.0) (2021-07-25)
+
+
+### Bug Fixes
+
+* **Github:** Adopt types that changed by octokit-rest-18.x ([e33ce63](https://github.com/Kesin11/CIAnalyzer/commit/e33ce6336f6010b39bf8dfe67adcc93b01a1dbbd))
+
+
+### Features
+
+* Add --debug options and Null LastRunStore ([77a143b](https://github.com/Kesin11/CIAnalyzer/commit/77a143ba1938084cfe539ac27fe78bb3be317890))
+* Add --only-exporters options ([1abb7ca](https://github.com/Kesin11/CIAnalyzer/commit/1abb7ca7e31a00eff5e55428efe9031d956f754b))
+* Add --only-services options ([ff821ff](https://github.com/Kesin11/CIAnalyzer/commit/ff821ffcfeb588b52542da8980508afde42f8554))
+* Using local exporter when --debug options ([34deb15](https://github.com/Kesin11/CIAnalyzer/commit/34deb15db394ae4688e9584b4a1507ca46983505))
+
+
+
 # [4.0.0](https://github.com/Kesin11/CIAnalyzer/compare/v3.1.5...v4.0.0) (2021-06-18)
 
 ### BREAKING CHANGES
