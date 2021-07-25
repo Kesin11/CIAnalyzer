@@ -340,8 +340,10 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 # Roadmap
 - [x] Collect test data
 - [x] Collect any of JSON format from build artifacts
-- [ ] Implement better logger
 - [x] Support Bitrise
+- [ ] Support CircleCI API v2
+- [ ] Implement better logger
+- [ ] Support to fetch past build result
 
 # Development
 ## Install
