@@ -60,7 +60,7 @@ jobs:
           path: |
             junit/*.xml
             custom_report.json
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v2
         name: Upload coverage
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
