@@ -7,6 +7,7 @@ import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { Exporter } from "./exporter"
 import { BigqueryExporterConfig } from "../config/config"
 import { CustomReportCollection } from "../custom_report_collection"
+import { Logger } from "tslog"
 
 const schemaPaths = {
   workflow: path.join(__dirname, '..', '..', 'bigquery_schema/workflow_report.json'),
@@ -22,10 +23,13 @@ export class BigqueryExporter implements Exporter {
   }
   customReportTableInfo: Map<string, { table: string, schemaPath: string }>
   maxBadRecords: number
-  constructor( config: BigqueryExporterConfig, configDir: string ) {
+  logger: Logger
+
+  constructor( logger:Logger, config: BigqueryExporterConfig, configDir: string ) {
     if (!config.project || !config.dataset) {
       throw "Must need 'project', 'dataset' parameter in exporter.bigquery config."
     }
+    this.logger = logger.getChildLogger({ name: BigqueryExporter.name })
     this.bigquery = new BigQuery({ projectId: config.project })
     this.dataset = config.dataset
 
@@ -71,7 +75,7 @@ export class BigqueryExporter implements Exporter {
     const schema = JSON.parse(schemaFile.toString())
 
     // Load to BigQuery
-    console.info(`(BigQuery) Loading ${tmpJsonPath} to ${this.dataset}.${table}. tmp file will be deleted if load complete with no error.`)
+    this.logger.info(`Loading ${tmpJsonPath} to ${this.dataset}.${table}. tmp file will be deleted if load complete with no error.`)
     try {
       await this.bigquery
         .dataset(this.dataset)
@@ -84,8 +88,8 @@ export class BigqueryExporter implements Exporter {
           writeDisposition: 'WRITE_APPEND',
         })
     } catch (error) {
-      console.error(`(BigQuery) ERROR!! loading ${tmpJsonPath} to ${this.dataset}.${table}`)
-      console.error(error)
+      this.logger.error(`ERROR!! loading ${tmpJsonPath} to ${this.dataset}.${table}`)
+      this.logger.error(error)
       throw error
     }
 

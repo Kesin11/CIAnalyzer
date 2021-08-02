@@ -5,6 +5,7 @@ import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { Exporter } from "./exporter"
 import { LocalExporterConfig } from "../config/config"
 import { CustomReportCollection } from "../custom_report_collection"
+import { Logger } from "tslog"
 
 const defaultOutDir = 'output'
 
@@ -13,7 +14,10 @@ export class LocalExporter implements Exporter {
   outDir: string
   formatter: (report: unknown[]) => string
   fsPromises = fs.promises
+  logger: Logger
+
   constructor(
+    logger: Logger,
     service: string,
     configDir: string,
     config: LocalExporterConfig,
@@ -25,6 +29,7 @@ export class LocalExporter implements Exporter {
       : path.resolve(configDir, _outDir)
     const format = config?.format ?? 'json'
     this.formatter = (format === 'json') ? this.formatJson : this.formatJsonLines
+    this.logger = logger.getChildLogger({ name: LocalExporter.name })
   }
 
   private async exportReports(type: string, reports: unknown[]) {
@@ -36,7 +41,7 @@ export class LocalExporter implements Exporter {
     const formated = this.formatter(reports)
     await this.fsPromises.writeFile(outputPath, formated, { encoding: 'utf8' })
 
-    console.info(`(Local) Export ${type} reports to ${outputPath}`)
+    this.logger.info(`Export ${type} reports to ${outputPath}`)
   }
 
   async exportWorkflowReports (reports: WorkflowReport[]) {

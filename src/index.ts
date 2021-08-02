@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { Logger } from 'tslog'
 import yargs from 'yargs'
 import { ArgumentOptions } from './arg_options'
 import { loadConfig } from './config/config'
@@ -21,7 +22,15 @@ const main = async () => {
   const argOptions = new ArgumentOptions(argv)
   const yamlConfig = loadConfig(argOptions.configPath)
 
-  const runner = new CompositRunner(yamlConfig, argOptions)
+  const logger = new Logger({
+    overwriteConsole: true,
+    minLevel: "debug",
+    displayInstanceName: true,
+    displayDateTime: false,
+    displayFunctionName: false,
+    displayFilePath: "hidden",
+  })
+  const runner = new CompositRunner(logger, yamlConfig, argOptions)
   const result = await runner.run()
 
   if (result.isFailure()) {

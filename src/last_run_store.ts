@@ -4,6 +4,7 @@ import { LastRunStoreConfig } from "./config/config"
 import { GcsStore } from "./store/gcs_store"
 import { ArgumentOptions } from "./arg_options"
 import { NullStore } from "./store/null_store"
+import { Logger } from "tslog"
 
 type LastRun = {
   [repo: string]: {
@@ -16,19 +17,19 @@ export class LastRunStore {
   store: Store
   lastRun: LastRun
 
-  static async init(options: ArgumentOptions, service: string, config?: LastRunStoreConfig) {
+  static async init(logger:Logger, options: ArgumentOptions, service: string, config?: LastRunStoreConfig) {
     let store
     if (options.debug) {
-      store = new NullStore()
+      store = new NullStore(logger)
     }
     else if (!config) {
-      store = new LocalStore(service, options.configDir)
+      store = new LocalStore(logger, service, options.configDir)
     }
     else if (config.backend === 'local') {
-      store = new LocalStore(service, options.configDir, config.path)
+      store = new LocalStore(logger, service, options.configDir, config.path)
     }
     else if (config.backend === 'gcs') {
-      store = new GcsStore(service, config.project, config.bucket, config.path)
+      store = new GcsStore(logger, service, config.project, config.bucket, config.path)
     }
     else {
       throw `Error: Unknown LastRunStore.backend type '${(config as any).backend}'`

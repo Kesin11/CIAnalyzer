@@ -4,6 +4,7 @@ import { ExporterConfig, LocalExporterConfig, BigqueryExporterConfig } from "../
 import { BigqueryExporter } from "./bigquery_exporter";
 import { CustomReportCollection } from "../custom_report_collection";
 import { ArgumentOptions } from "../arg_options";
+import { Logger } from "tslog";
 
 export interface Exporter {
   exportWorkflowReports(reports: WorkflowReport[]): Promise<void>
@@ -13,9 +14,9 @@ export interface Exporter {
 
 export class CompositExporter implements Exporter {
   exporters: Exporter[]
-  constructor(options: ArgumentOptions, service: string, config?: ExporterConfig) {
+  constructor(logger: Logger, options: ArgumentOptions, service: string, config?: ExporterConfig) {
     if (options.debug || !config) {
-      this.exporters = [ new LocalExporter(service, options.configDir, {}) ]
+      this.exporters = [ new LocalExporter(logger,service, options.configDir, {}) ]
       return
     }
 
@@ -28,10 +29,10 @@ export class CompositExporter implements Exporter {
       switch (exporter) {
         case 'local':
           _config = config[exporter] ?? {}
-          return new LocalExporter(service, options.configDir, _config)
+          return new LocalExporter(logger, service, options.configDir, _config)
         case 'bigquery':
           _config = config[exporter] ?? {}
-          return new BigqueryExporter(_config, options.configDir)
+          return new BigqueryExporter(logger, _config, options.configDir)
       }
     }).filter((exporter): exporter is NonNullable<typeof exporter> => exporter !== undefined)
   }

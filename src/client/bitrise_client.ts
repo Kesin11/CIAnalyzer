@@ -4,6 +4,7 @@ import { Artifact, createAxios, CustomReportArtifact } from './client'
 import minimatch from 'minimatch'
 import { CustomReportConfig } from '../config/config'
 import { ArgumentOptions } from '../arg_options'
+import { Logger } from 'tslog'
 
 const DEBUG_PER_PAGE = 10
 const NOT_FINISHED_STATUS = 0
@@ -100,13 +101,14 @@ type ArtifactResponse = {
 export class BitriseClient {
   private axios: AxiosInstance
   private artifactAxios: AxiosInstance
-  constructor(token: string, private options: ArgumentOptions, baseUrl?: string) {
-    this.axios = createAxios({
+  constructor(token: string, logger: Logger, private options: ArgumentOptions, baseUrl?: string) {
+    const axiosLogger = logger.getChildLogger({ name: BitriseClient.name })
+    this.axios = createAxios(axiosLogger, {
       baseURL: baseUrl ?? 'https://api.bitrise.io/v0.1',
       headers: {'Authorization': token },
     })
 
-    this.artifactAxios = createAxios({ })
+    this.artifactAxios = createAxios(axiosLogger, {})
   }
 
   // https://api-docs.bitrise.io/#/application/app-list

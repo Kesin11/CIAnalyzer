@@ -4,6 +4,7 @@ import { groupBy, max, minBy } from 'lodash'
 import { Artifact, CustomReportArtifact, createAxios } from './client'
 import { CustomReportConfig } from '../config/config'
 import { ArgumentOptions } from '../arg_options'
+import { Logger } from 'tslog'
 
 const DEBUG_PER_PAGE = 10
 
@@ -111,8 +112,9 @@ type ArtifactsResponse = {
 
 export class CircleciClient {
   private axios: AxiosInstance
-  constructor(token: string, private options: ArgumentOptions, baseUrl?: string) {
-    this.axios = createAxios({
+  constructor(token: string, logger: Logger, private options: ArgumentOptions, baseUrl?: string) {
+    const axiosLogger = logger.getChildLogger({ name: CircleciClient.name })
+    this.axios = createAxios(axiosLogger, {
       baseURL: baseUrl ?? 'https://circleci.com/api/v1.1',
       auth: {
         username: token,
