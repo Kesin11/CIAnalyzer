@@ -33,9 +33,7 @@ export const createAxios = (logger: Logger, config: AxiosRequestConfig) => {
     return req
   }
 
-  if (process.env['CI_ANALYZER_DEBUG']) {
-    axiosInstance.interceptors.request.use(axiosRequestLogger)
-  }
+  axiosInstance.interceptors.request.use(axiosRequestLogger)
   return axiosInstance
 }
 

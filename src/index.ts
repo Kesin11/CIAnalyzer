@@ -20,16 +20,16 @@ const main = async () => {
     .strict()
     .argv
   const argOptions = new ArgumentOptions(argv)
-  const yamlConfig = loadConfig(argOptions.configPath)
-
   const logger = new Logger({
     overwriteConsole: true,
-    minLevel: "debug",
+    minLevel: argOptions.logLevel,
     displayInstanceName: true,
     displayDateTime: false,
     displayFunctionName: false,
     displayFilePath: "hidden",
   })
+
+  const yamlConfig = loadConfig(logger, argOptions.configPath)
   const runner = new CompositRunner(logger, yamlConfig, argOptions)
   const result = await runner.run()
 

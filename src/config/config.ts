@@ -1,5 +1,6 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
+import { Logger } from 'tslog'
 
 export type YamlConfig = {
   github?: { [key: string]: unknown }
@@ -54,14 +55,12 @@ export type CustomReportConfig = {
   paths: string[]
 }
 
-export const loadConfig = (configPath: string): YamlConfig => {
+export const loadConfig = (logger: Logger, configPath: string): YamlConfig => {
   const config = yaml.load(fs.readFileSync(configPath, 'utf8'))
   if (!config || typeof config !== "object") throw `Failed to load ${configPath} or config is not object`
 
-  if (process.env['CI_ANALYZER_DEBUG']) {
-    console.debug('Parsed config file:')
-    console.debug(JSON.stringify(config, null, 2))
-  }
+  logger.debug('Parsed config file:')
+  logger.debug(JSON.stringify(config, null, 2))
 
   return config as YamlConfig
 }
