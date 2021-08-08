@@ -1,9 +1,12 @@
+import { Logger } from 'tslog'
 import { NullStore } from '../../src/store/null_store'
+
+const logger = new Logger({ minLevel: 'warn' })
 
 describe('LocalStore', () => {
   let store: NullStore
   beforeEach(() => {
-    store = new NullStore()
+    store = new NullStore(logger)
   })
 
   describe('read', () => {

@@ -2,6 +2,7 @@ import path from "path"
 import { BigqueryExporter } from '../../src/exporter/bigquery_exporter'
 import { BigqueryExporterConfig } from '../../src/config/config'
 import { CustomReportCollection } from '../../src/custom_report_collection'
+import { Logger } from "tslog"
 
 const bigqueryMock = {
   dataset: jest.fn().mockReturnThis(),
@@ -12,6 +13,7 @@ const configDir = path.join(__dirname, '..', '..')
 const fixtureSchemaPath = {
   custom: './__tests__/fixture/custom_table.json'
 }
+const logger = new Logger({ minLevel: 'warn' })
 
 describe('BigqueryExporter', () => {
   const workflowTable = 'workflow'
@@ -27,35 +29,35 @@ describe('BigqueryExporter', () => {
   describe('new', () => {
     it('should not throw when any params are not undefined', async () => {
       expect(() => {
-        new BigqueryExporter(baseConfig, configDir)
+        new BigqueryExporter(logger, baseConfig, configDir)
       })
     })
 
     it('should throw when project is undefined', async () => {
       const config = { ...baseConfig, project: undefined }
       expect(() => {
-        new BigqueryExporter(config, configDir)
+        new BigqueryExporter(logger, config, configDir)
       }).toThrow()
     })
 
     it('should throw when dataset is undefined', async () => {
       const config = { ...baseConfig, dataset: undefined }
       expect(() => {
-        new BigqueryExporter(config, configDir)
+        new BigqueryExporter(logger, config, configDir)
       }).toThrow()
     })
 
     it('should throw when workflow table is undefined', async () => {
       const config = { ...baseConfig, reports: [{ name: 'workflow', table: 'workflow'}] }
       expect(() => {
-        new BigqueryExporter(config as any, configDir)
+        new BigqueryExporter(logger, config as any, configDir)
       }).toThrow()
     })
 
     it('should throw when test_report table is undefined', async () => {
       const config = { ...baseConfig, reports: [{ name: 'test_report', table: 'test_report'}] }
       expect(() => {
-        new BigqueryExporter(config as any, configDir)
+        new BigqueryExporter(logger, config as any, configDir)
       }).toThrow()
     })
   })
@@ -64,7 +66,7 @@ describe('BigqueryExporter', () => {
     const report = [{}]
     let exporter: BigqueryExporter
     beforeEach(() => {
-      exporter = new BigqueryExporter(baseConfig, configDir)
+      exporter = new BigqueryExporter(logger, baseConfig, configDir)
       exporter.bigquery = bigqueryMock as any
     })
 
@@ -93,7 +95,7 @@ describe('BigqueryExporter', () => {
     let exporter: BigqueryExporter
     let reportCollection: CustomReportCollection
     beforeEach(() => {
-      exporter = new BigqueryExporter(config, configDir)
+      exporter = new BigqueryExporter(logger, config, configDir)
       exporter.bigquery = bigqueryMock as any
       reportCollection = new CustomReportCollection()
       reportCollection.set('custom', [])
@@ -122,7 +124,7 @@ describe('BigqueryExporter', () => {
           { name: 'custom2', table: 'custom_table2', schema: fixtureSchemaPath.custom }
         ]
       }
-      const exporter = new BigqueryExporter(config, configDir)
+      const exporter = new BigqueryExporter(logger, config, configDir)
       exporter.bigquery = bigqueryMock as any
       reportCollection.set('custom2', [])
 
@@ -140,7 +142,7 @@ describe('BigqueryExporter', () => {
           { name: 'custom', table: 'custom_table', schema: './imaginary.json' },
         ]
       }
-      const exporter = new BigqueryExporter(config, configDir)
+      const exporter = new BigqueryExporter(logger, config, configDir)
       exporter.bigquery = bigqueryMock as any
 
       await expect(
