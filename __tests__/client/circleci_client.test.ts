@@ -1,5 +1,8 @@
+import { Logger } from 'tslog'
 import { ArgumentOptions } from '../../src/arg_options'
 import { CircleciClient } from '../../src/client/circleci_client'
+
+const logger = new Logger({ minLevel: 'warn' })
 
 const allCompletedRuns = [
   { build_nums: [2,3], last_build_num: 3, lifecycles: ['finished','finished'] },
@@ -21,7 +24,7 @@ describe('CircleciClient', () => {
       "c": "./dummy.yaml"
     })
     beforeEach(() => {
-      client = new CircleciClient('DUMMY_TOKEN', options)
+      client = new CircleciClient('DUMMY_TOKEN', logger, options)
     })
 
     it('when has not in_pregress runs', async () => {

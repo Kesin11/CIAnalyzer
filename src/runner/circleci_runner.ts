@@ -11,6 +11,7 @@ import { GithubClient } from "../client/github_client"
 import { CustomReportCollection, createCustomReportCollection, aggregateCustomReportArtifacts } from "../custom_report_collection"
 import { failure, Result, success } from "../result"
 import { ArgumentOptions } from "../arg_options"
+import { Logger } from "tslog"
 
 export class CircleciRunner implements Runner {
   service: string = 'circleci'
@@ -19,10 +20,13 @@ export class CircleciRunner implements Runner {
   config: CircleciConfig | undefined
   store?: LastRunStore
   githubClient: GithubClient
-  constructor(public yamlConfig: YamlConfig, public options: ArgumentOptions) {
+  logger: Logger
+
+  constructor(logger: Logger, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
-    this.client = new CircleciClient(CIRCLECI_TOKEN, options, this.config?.baseUrl)
+    this.logger = logger.getChildLogger({ name: CircleciRunner.name, instanceName: this.service })
+    this.client = new CircleciClient(CIRCLECI_TOKEN, this.logger, options, this.config?.baseUrl)
     this.analyzer = new CircleciAnalyzer()
 
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
@@ -39,13 +43,13 @@ export class CircleciRunner implements Runner {
   async run (): Promise<Result<unknown, Error>> {
     let result: Result<unknown, Error> = success(this.service)
     if (!this.config) return failure(new Error('this.config must not be undefined'))
-    this.store = await LastRunStore.init(this.options, this.service, this.config.lastRunStore)
+    this.store = await LastRunStore.init(this.logger, this.options, this.service, this.config.lastRunStore)
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
     const customReportCollection = new CustomReportCollection()
     for (const repo of this.config.repos) {
-      console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
+      this.logger.info(`Fetching ${this.service} - ${repo.fullname} ...`)
       const repoWorkflowReports: WorkflowReport[] = []
       let repoTestReports: TestReport[] = []
 
@@ -100,21 +104,21 @@ export class CircleciRunner implements Runner {
       }
       catch (error) {
         const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`
-        console.error(errorMessage)
-        console.error(error)
+        this.logger.error(errorMessage)
+        this.logger.error(error)
         result = failure(new Error(errorMessage))
         continue
       }
     }
 
-    console.info(`Exporting ${this.service} workflow reports ...`)
-    const exporter = new CompositExporter(this.options, this.service, this.config.exporter)
+    this.logger.info(`Exporting ${this.service} workflow reports ...`)
+    const exporter = new CompositExporter(this.logger, this.options, this.service, this.config.exporter)
     await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
     await exporter.exportCustomReports(customReportCollection)
 
     this.store.save()
-    console.info(`Done execute '${this.service}'. status: ${result.type}`)
+    this.logger.info(`Done execute '${this.service}'. status: ${result.type}`)
 
     return result
   }

@@ -1,18 +1,20 @@
 import { LocalExporter } from '../../src/exporter/local_exporter'
 import path from 'path'
 import { LocalExporterConfig } from '../../src/config/config'
+import { Logger } from 'tslog'
 
 const mockFsPromises = {
   mkdir: jest.fn(),
   writeFile: jest.fn(),
 }
+const logger = new Logger({ minLevel: 'warn' })
 
 describe('LocalExporter', () => {
   describe('new', () => {
     it('should all property set with default parameter when options is null', async () => {
       const config: LocalExporterConfig = {}
       const configDir = __dirname
-      const exporter = new LocalExporter('github', configDir, config )
+      const exporter = new LocalExporter(logger,'github', configDir, config )
 
       expect(exporter.outDir).toEqual(path.resolve(configDir, 'output'))
       expect(exporter.formatter).toEqual(exporter.formatJson)
@@ -24,7 +26,7 @@ describe('LocalExporter', () => {
         outDir: expectedDir
       }
       const configDir = __dirname
-      const exporter = new LocalExporter('github', configDir, config )
+      const exporter = new LocalExporter(logger, 'github', configDir, config )
 
       expect(exporter.outDir).toEqual(path.resolve(configDir, expectedDir))
     })
@@ -34,7 +36,7 @@ describe('LocalExporter', () => {
         format: 'json_lines'
       }
       const configDir = __dirname
-      const exporter = new LocalExporter('github', configDir, config )
+      const exporter = new LocalExporter(logger, 'github', configDir, config )
 
       expect(exporter.formatter).toEqual(exporter.formatJsonLines)
     })
@@ -45,7 +47,7 @@ describe('LocalExporter', () => {
     const configDir = __dirname
     let exporter: LocalExporter
     beforeEach(() => {
-      exporter = new LocalExporter('github', configDir, config)
+      exporter = new LocalExporter(logger, 'github', configDir, config)
       exporter.fsPromises = mockFsPromises as any
     })
 

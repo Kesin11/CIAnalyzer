@@ -1,12 +1,16 @@
 import fs from 'fs'
 import path from 'path'
+import { Logger } from 'tslog'
 import { Store, AnyObject } from './store'
 
 const defaultDir = path.join('.ci_analyzer', 'last_run')
 
 export class LocalStore implements Store {
   filePath: string
-  constructor(service: string, configDir: string, filePath?: string) {
+  logger: Logger
+
+  constructor(logger: Logger, service: string, configDir: string, filePath?: string) {
+    this.logger = logger.getChildLogger({ name: LocalStore.name })
 
     const _filePath = filePath ?? path.join(defaultDir, `${service}.json`)
     this.filePath = (path.isAbsolute(_filePath))
@@ -17,11 +21,11 @@ export class LocalStore implements Store {
   async read<T extends AnyObject>(): Promise<T> {
     try {
       await fs.promises.access(this.filePath)
-      console.info(`(LocalStore) ${this.filePath} was successfully loaded.`)
+      this.logger.info(`${this.filePath} was successfully loaded.`)
       return JSON.parse(await fs.promises.readFile(this.filePath, { encoding: 'utf8' }))
     }
     catch (error) {
-      console.info(`(LocalStore) ${this.filePath} was not found, empty object is used instead.`)
+      this.logger.info(`${this.filePath} was not found, empty object is used instead.`)
       return {} as T
     }
   }
@@ -36,7 +40,7 @@ export class LocalStore implements Store {
     await fs.promises.mkdir(outDir, { recursive: true })
     await fs.promises.writeFile(this.filePath, JSON.stringify(store, null, 2))
 
-    console.info(`(LocalStore) ${this.filePath} was successfully saved.`)
+    this.logger.info(`${this.filePath} was successfully saved.`)
 
     return store
   }

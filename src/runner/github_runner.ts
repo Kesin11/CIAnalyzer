@@ -10,6 +10,7 @@ import { LastRunStore } from "../last_run_store"
 import { CustomReportCollection, createCustomReportCollection } from "../custom_report_collection"
 import { failure, Result, success } from "../result"
 import { ArgumentOptions } from "../arg_options"
+import { Logger } from "tslog"
 
 type GithubConfigRepo = GithubConfig['repos'][0]
 
@@ -19,9 +20,12 @@ export class GithubRunner implements Runner {
   analyzer: GithubAnalyzer 
   config: GithubConfig | undefined
   store?: LastRunStore
-  constructor(public yamlConfig: YamlConfig, public options: ArgumentOptions) {
+  logger: Logger
+
+  constructor(logger: Logger, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
+    this.logger = logger.getChildLogger({ name: GithubRunner.name, instanceName: this.service })
     this.client = new GithubClient(GITHUB_TOKEN, options, this.config?.baseUrl)
     this.analyzer = new GithubAnalyzer()
   }
@@ -42,13 +46,13 @@ export class GithubRunner implements Runner {
   async run (): Promise<Result<unknown, Error>> {
     let result: Result<unknown, Error> = success(this.service)
     if (!this.config) return failure(new Error('this.config must not be undefined'))
-    this.store = await LastRunStore.init(this.options, this.service, this.config.lastRunStore)
+    this.store = await LastRunStore.init(this.logger, this.options, this.service, this.config.lastRunStore)
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
     const customReportCollection = new CustomReportCollection()
     for (const repo of this.config.repos) {
-      console.info(`Fetching ${this.service} - ${repo.fullname} ...`)
+      this.logger.info(`Fetching ${this.service} - ${repo.fullname} ...`)
       const repoWorkflowReports: WorkflowReport[] = []
       let repoTestReports: TestReport[] = []
       let workflowRuns: WorkflowRunsItem[] = []
@@ -82,8 +86,8 @@ export class GithubRunner implements Runner {
       }
       catch (error) {
         const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`
-        console.error(errorMessage)
-        console.error(error)
+        this.logger.error(errorMessage)
+        this.logger.error(error)
         result = failure(new Error(errorMessage))
         continue
       }
@@ -92,14 +96,14 @@ export class GithubRunner implements Runner {
       testReports = testReports.concat(repoTestReports)
     }
 
-    console.info(`Exporting ${this.service} workflow reports ...`)
-    const exporter = new CompositExporter(this.options, this.service, this.config.exporter)
+    this.logger.info(`Exporting ${this.service} workflow reports ...`)
+    const exporter = new CompositExporter(this.logger, this.options, this.service, this.config.exporter)
     await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
     await exporter.exportCustomReports(customReportCollection)
 
     this.store.save()
-    console.info(`Done execute '${this.service}'. status: ${result.type}`)
+    this.logger.info(`Done execute '${this.service}'. status: ${result.type}`)
 
     return result
   }

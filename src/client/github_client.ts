@@ -33,7 +33,7 @@ export class GithubClient {
           )
           // Retry twice after hitting a rate limit error, then give up
           if (options.request.retryCount <= 2) {
-            console.log(`Retrying after ${retryAfter} seconds!`);
+            this.octokit.log.warn(`Retrying after ${retryAfter} seconds!`);
             return true;
           }
         },

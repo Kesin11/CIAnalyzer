@@ -3,6 +3,7 @@ import { Artifact, CustomReportArtifact, createAxios } from './client'
 import { minBy } from 'lodash'
 import minimatch from 'minimatch'
 import { CustomReportConfig } from '../config/config'
+import { Logger } from 'tslog'
 
 // ref: https://github.com/jenkinsci/pipeline-stage-view-plugin/blob/master/rest-api/src/main/java/com/cloudbees/workflow/rest/external/StatusExt.java
 export type JenkinsStatus = 'SUCCESS' | 'FAILED' | 'ABORTED' | 'NOT_EXECUTED' | 'IN_PROGRESS' | 'PAUSED_PENDING_INPUT' | 'UNSTABLE'
@@ -170,7 +171,7 @@ export type TimeInQueueAction = {
 
 export class JenkinsClient {
   private axios: AxiosInstance
-  constructor(baseUrl: string, user?: string, token?: string) {
+  constructor(baseUrl: string, logger: Logger, user?: string, token?: string) {
     if ((user && !token) || (!user && token)) throw 'Either $JENKSIN_USER or $JENKINS_TOKEN is undefined.'
 
     const auth = (user && token) ? {
@@ -178,7 +179,8 @@ export class JenkinsClient {
       password: token,
     } : undefined
 
-    this.axios = createAxios({
+    const axiosLogger = logger.getChildLogger({ name: JenkinsClient.name })
+    this.axios = createAxios(axiosLogger, {
       baseURL: baseUrl,
       auth,
     })

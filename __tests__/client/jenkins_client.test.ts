@@ -1,29 +1,32 @@
+import { Logger } from 'tslog'
 import { JenkinsClient } from '../../src/client/jenkins_client'
+
+const logger = new Logger({ minLevel: "warn" })
 
 describe('JenkinsClient', () => {
   const baseUrl = 'http://localhost:8080'
   describe('new', () => {
     it('should not throw error when both user and token are undefined', async () => {
-      const client = new JenkinsClient(baseUrl)
+      const client = new JenkinsClient(baseUrl, logger)
 
       expect(client).toBeTruthy()
     })
 
     it('should not throw error when both user and token are valid', async () => {
-      const client = new JenkinsClient(baseUrl, 'user', 'token')
+      const client = new JenkinsClient(baseUrl, logger, 'user', 'token')
 
       expect(client).toBeTruthy()
     })
 
     it('should throw error when only user is undeinfed', async () => {
       expect(() => {
-        const client = new JenkinsClient(baseUrl, undefined, 'token')
+        const client = new JenkinsClient(baseUrl, logger, undefined, 'token')
       }).toThrow()
     })
 
     it('should throw error when only token is undeinfed', async () => {
       expect(() => {
-        const client = new JenkinsClient(baseUrl, 'usre', undefined)
+        const client = new JenkinsClient(baseUrl, logger, 'usre', undefined)
       }).toThrow()
     })
   })
@@ -47,7 +50,7 @@ describe('JenkinsClient', () => {
 
     let client: JenkinsClient
     beforeEach(() => {
-      client = new JenkinsClient(baseUrl)
+      client = new JenkinsClient(baseUrl, logger)
     })
 
     it('when lastRunId is undef and has not in_pregress runs', async () => {

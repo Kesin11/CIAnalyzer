@@ -1,4 +1,5 @@
 import { maxBy } from "lodash"
+import { Logger } from "tslog"
 import { TestReport, WorkflowReport } from "../analyzer/analyzer"
 import { BitriseAnalyzer } from "../analyzer/bitrise_analyzer"
 import { ArgumentOptions } from "../arg_options"
@@ -17,10 +18,13 @@ export class BitriseRunner implements Runner {
   analyzer: BitriseAnalyzer
   config: BitriseConfig | undefined
   store?: LastRunStore
-  constructor(public yamlConfig: YamlConfig, public options: ArgumentOptions) {
+  logger: Logger
+
+  constructor(logger: Logger, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const BITRISE_TOKEN = process.env['BITRISE_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
-    this.client = new BitriseClient(BITRISE_TOKEN, options)
+    this.logger = logger.getChildLogger({ name: BitriseRunner.name, instanceName: this.service })
+    this.client = new BitriseClient(BITRISE_TOKEN, this.logger, options)
     this.analyzer = new BitriseAnalyzer()
   }
 
@@ -34,7 +38,7 @@ export class BitriseRunner implements Runner {
   async run (): Promise<Result<unknown, Error>> {
     let result: Result<unknown, Error> = success(this.service)
     if (!this.config) return failure(new Error('this.config must not be undefined'))
-    this.store = await LastRunStore.init(this.options, this.service, this.config.lastRunStore)
+    this.store = await LastRunStore.init(this.logger, this.options, this.service, this.config.lastRunStore)
 
     let workflowReports: WorkflowReport[] = []
     let testReports: TestReport[] = []
@@ -50,7 +54,7 @@ export class BitriseRunner implements Runner {
 
     for (const { app, configApp } of appConfigApps) {
       if (!app) continue
-      console.info(`Fetching ${this.service} - ${configApp.fullname} ...`)
+      this.logger.info(`Fetching ${this.service} - ${configApp.fullname} ...`)
       const appReports: WorkflowReport[] = []
       let appTestReports: TestReport[] = []
 
@@ -77,8 +81,8 @@ export class BitriseRunner implements Runner {
       }
       catch (error) {
         const errorMessage = `Some error raised in '${configApp.fullname}', so it skipped.`
-        console.error(errorMessage)
-        console.error(error)
+        this.logger.error(errorMessage)
+        this.logger.error(error)
         result = failure(new Error(errorMessage))
         continue
       }
@@ -87,14 +91,14 @@ export class BitriseRunner implements Runner {
       testReports = testReports.concat(appTestReports)
     }
 
-    console.info(`Exporting ${this.service} workflow reports ...`)
-    const exporter = new CompositExporter(this.options, this.service, this.config.exporter)
+    this.logger.info(`Exporting ${this.service} workflow reports ...`)
+    const exporter = new CompositExporter(this.logger, this.options, this.service, this.config.exporter)
     await exporter.exportWorkflowReports(workflowReports)
     await exporter.exportTestReports(testReports)
     await exporter.exportCustomReports(customReportCollection)
 
     this.store.save()
-    console.info(`Done execute '${this.service}'. status: ${result.type}`)
+    this.logger.info(`Done execute '${this.service}'. status: ${result.type}`)
 
     return result
   }

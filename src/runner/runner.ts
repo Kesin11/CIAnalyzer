@@ -5,6 +5,7 @@ import { JenkinsRunner } from "./jenkins_runner";
 import { failure, Result, success } from "../result";
 import { BitriseRunner } from "./bitrise_runner";
 import { ArgumentOptions } from "../arg_options";
+import { Logger } from "tslog";
 
 export interface Runner {
   run (): Promise<Result<unknown, Error>>
@@ -12,7 +13,7 @@ export interface Runner {
 
 export class CompositRunner implements Runner {
   runners: Runner[]
-  constructor(public config: YamlConfig, public options: ArgumentOptions) {
+  constructor(private logger: Logger, public config: YamlConfig, public options: ArgumentOptions) {
     const services = options.onlyServices
       ? Object.keys(config).filter((service) => options.onlyServices?.includes(service))
       : Object.keys(config)
@@ -20,13 +21,13 @@ export class CompositRunner implements Runner {
     this.runners = services.map((service) => {
       switch (service) {
         case 'github':
-          return new GithubRunner(config, options)
+          return new GithubRunner(logger, config, options)
         case 'circleci':
-          return new CircleciRunner(config, options)
+          return new CircleciRunner(logger, config, options)
         case 'jenkins':
-          return new JenkinsRunner(config, options)
+          return new JenkinsRunner(logger, config, options)
         case 'bitrise':
-          return new BitriseRunner(config, options)
+          return new BitriseRunner(logger, config, options)
         default:
           return undefined
       }
@@ -43,7 +44,7 @@ export class CompositRunner implements Runner {
         (result.status === 'fulfilled' && result.value.isFailure())
     })
     if (errorResults.length > 0) {
-      errorResults.forEach((error) => console.error(error))
+      errorResults.forEach((error) => this.logger.error(error))
       return failure(new Error('Some runner throws error!!'))
     }
 

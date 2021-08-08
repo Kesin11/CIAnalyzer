@@ -3,8 +3,10 @@ import os from 'os'
 import fs from 'fs'
 import path from 'path'
 import crypto from 'crypto'
+import { Logger } from 'tslog'
 
 const createRandomStr = () => crypto.randomBytes(8).toString('hex')
+const logger = new Logger({ minLevel: 'warn' })
 
 describe('LocalStore', () => {
   const repo = 'owner/repo'
@@ -16,7 +18,7 @@ describe('LocalStore', () => {
       `${createRandomStr()}.json`
     )
     const configDir = path.dirname(storePath)
-    localStore = new LocalStore('test', configDir, storePath)
+    localStore = new LocalStore(logger, 'test', configDir, storePath)
   })
   afterEach(async () => {
     try {
