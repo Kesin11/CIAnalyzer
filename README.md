@@ -21,7 +21,7 @@ It created by DataStudio with BigQuery
 ![cianalyzer_test_report](https://user-images.githubusercontent.com/1324862/89435621-15380500-d780-11ea-8131-5dde21beb3fa.png)
 
 # Architecture
-![CIAnalyzer Architecture](https://user-images.githubusercontent.com/1324862/89551373-d7051900-d845-11ea-9176-332c8995141f.png)
+![CIAnalyzer Architecture](https://user-images.githubusercontent.com/1324862/128656632-de08a369-4c71-4e91-9084-626396f42a03.png)
 
 
 # Export data
