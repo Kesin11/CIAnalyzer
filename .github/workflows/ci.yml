@@ -14,19 +14,12 @@ jobs:
       image: "node:lts"
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - run: npm ci
       - name: Lint
         run: npm run lint
   
   build_and_test:
     runs-on: ubuntu-latest
-    needs: lint
     container:
       image: "node:lts"
     steps:
