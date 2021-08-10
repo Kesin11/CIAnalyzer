@@ -89,23 +89,35 @@ docker run \
   - GOOGLE_APPLICATION_CREDENTIALS
 
 ## Setup BigQuery (Recommend)
-If you want to use `bigquery_exporter`, you have to create table that CIAnalyzer will export data to it.
+If you want to use `bigquery_exporter`, you have to create dataset and table that CIAnalyzer will export data to it.
 
 ```bash
+# Prepare bigquery schema json files
+git clone https://github.com/Kesin11/CIAnalyzer.git
+cd CIAnalyzer
+
+# Create dataset
 bq mk
-  --project_id=${YOUR_GCP_PROJECT_ID} \
+  --project_id=${GCP_PROJECT_ID} \
+  --location=${LOCATION} \
+  --dataset \
+  ${DATASET}
+
+# Create tables
+bq mk
+  --project_id=${GCP_PROJECT_ID} \
   --location=${LOCATION} \
   --table \
   --time_partitioning_field=createdAt \
-  ${DATASET}.${TABLE} \
+  ${DATASET}.${WORKFLOW_TABLE} \
   ./bigquery_schema/workflow_report.json
 
 bq mk
-  --project_id=${YOUR_GCP_PROJECT_ID} \
+  --project_id=${GCP_PROJECT_ID} \
   --location=${LOCATION} \
   --table \
   --time_partitioning_field=createdAt \
-  ${DATASET}.${TABLE} \
+  ${DATASET}.${TEST_REPORT_TABLE} \
   ./bigquery_schema/test_report.json
 ```
 
@@ -125,7 +137,7 @@ Resolving these problems, CIAnalyzer can use GCS as LastRunStore to read/write t
 If you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket before execute CIAnalyzer.
 
 ```bash
-gsutil mb -l ${LOCATION} gs://${BUCKET_NAME}
+gsutil mb -b on -l ${LOCATION} gs://${BUCKET_NAME}
 ```
 
 And also GCP service account needs to read and write permissions for the target bucket. More detail, check [GCS access control document](https://cloud.google.com/storage/docs/access-control/iam-permissions).
