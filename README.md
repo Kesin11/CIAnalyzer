@@ -73,8 +73,28 @@ docker run \
   -e JENKINS_TOKEN=${JENKINS_TOKEN} \
   -e BITRISE_TOKEN=${BITRISE_TOKEN} \
   -e GOOGLE_APPLICATION_CREDENTIALS=/service_account.json \
-  ghcr.io/kesin11/ci_analyzer:latest -c ci_analyzer.yaml
+  ghcr.io/kesin11/ci_analyzer:v4 -c ci_analyzer.yaml
 ```
+
+## Container tagging scheme
+The versioning follows [Semantic Versioning](https://semver.org/):
+
+> Given a version number MAJOR.MINOR.PATCH, increment the:
+>
+> 1. MAJOR version when you make incompatible API changes,
+> 2. MINOR version when you add functionality in a backwards-compatible manner, and
+> 3. PATCH version when you make backwards-compatible bug fixes.
+
+Most recommend tag for user is `v{major}`. If you prefere more conservetive versioning, `v{major}.{minor}` or `v{major}.{minor}.{patch}` are recommended.
+
+|tag|when update|for|
+|----|----|----|
+|`v{major}`|Create release|User|
+|`v{major}.{minor}`|Create release|User|
+|`v{major}.{minor}.{patch}`|Create release|User|
+|`latest`|Create release|Developer|
+|`master`|Push master|Developer|
+
 
 ## Setup ENV
 - Services
@@ -354,7 +374,7 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 - [x] Collect any of JSON format from build artifacts
 - [x] Support Bitrise
 - [ ] Support CircleCI API v2
-- [ ] Implement better logger
+- [x] Implement better logger
 - [ ] Support to fetch past build result
 
 # Debug options
