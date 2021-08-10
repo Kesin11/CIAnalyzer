@@ -22,4 +22,4 @@ jenkins:
     backend: gcs
     project: { GCP_PROJECT_ID }
     bucket: { BUCKET_NAME }
-    path: ci_analyzer/ample/jenkins.json
+    path: ci_analyzer/sample/jenkins.json
