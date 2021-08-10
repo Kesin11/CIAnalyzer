@@ -18,12 +18,12 @@ github:
       format: json # default: json. 'json' and 'json_lines' are supported.
     bigquery:
       project: { GCP_PROJECT_ID }
-      dataset: { BIGQUERY_DATASET }
+      dataset: { DATASET }
       reports:
         - name: workflow
-          table: { WORKFLOW_TABLE_NAME }
+          table: { WORKFLOW_TABLE }
         - name: test_report
-          table: { TEST_REPORT_TABLE_NAME }
+          table: { TEST_REPORT_TABLE }
       customReports:
         - name: { CUSTOM_REPORT_NAME } # It must be same repos[].customReports[].name
           table: { CUSTOM_REPORT_TABLE }

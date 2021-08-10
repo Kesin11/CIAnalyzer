@@ -73,8 +73,28 @@ docker run \
   -e JENKINS_TOKEN=${JENKINS_TOKEN} \
   -e BITRISE_TOKEN=${BITRISE_TOKEN} \
   -e GOOGLE_APPLICATION_CREDENTIALS=/service_account.json \
-  ghcr.io/kesin11/ci_analyzer:latest -c ci_analyzer.yaml
+  ghcr.io/kesin11/ci_analyzer:v4 -c ci_analyzer.yaml
 ```
+
+## Container tagging scheme
+The versioning follows [Semantic Versioning](https://semver.org/):
+
+> Given a version number MAJOR.MINOR.PATCH, increment the:
+>
+> 1. MAJOR version when you make incompatible API changes,
+> 2. MINOR version when you add functionality in a backwards-compatible manner, and
+> 3. PATCH version when you make backwards-compatible bug fixes.
+
+Most recommend tag for user is `v{major}`. If you prefere more conservetive versioning, `v{major}.{minor}` or `v{major}.{minor}.{patch}` are recommended.
+
+|tag|when update|for|
+|----|----|----|
+|`v{major}`|Create release|User|
+|`v{major}.{minor}`|Create release|User|
+|`v{major}.{minor}.{patch}`|Create release|User|
+|`latest`|Create release|Developer|
+|`master`|Push master|Developer|
+
 
 ## Setup ENV
 - Services
@@ -89,23 +109,35 @@ docker run \
   - GOOGLE_APPLICATION_CREDENTIALS
 
 ## Setup BigQuery (Recommend)
-If you want to use `bigquery_exporter`, you have to create table that CIAnalyzer will export data to it.
+If you want to use `bigquery_exporter`, you have to create dataset and table that CIAnalyzer will export data to it.
 
 ```bash
+# Prepare bigquery schema json files
+git clone https://github.com/Kesin11/CIAnalyzer.git
+cd CIAnalyzer
+
+# Create dataset
 bq mk
-  --project_id=${YOUR_GCP_PROJECT_ID} \
+  --project_id=${GCP_PROJECT_ID} \
+  --location=${LOCATION} \
+  --dataset \
+  ${DATASET}
+
+# Create tables
+bq mk
+  --project_id=${GCP_PROJECT_ID} \
   --location=${LOCATION} \
   --table \
   --time_partitioning_field=createdAt \
-  ${DATASET}.${TABLE} \
+  ${DATASET}.${WORKFLOW_TABLE} \
   ./bigquery_schema/workflow_report.json
 
 bq mk
-  --project_id=${YOUR_GCP_PROJECT_ID} \
+  --project_id=${GCP_PROJECT_ID} \
   --location=${LOCATION} \
   --table \
   --time_partitioning_field=createdAt \
-  ${DATASET}.${TABLE} \
+  ${DATASET}.${TEST_REPORT_TABLE} \
   ./bigquery_schema/test_report.json
 ```
 
@@ -125,7 +157,7 @@ Resolving these problems, CIAnalyzer can use GCS as LastRunStore to read/write t
 If you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket before execute CIAnalyzer.
 
 ```bash
-gsutil mb -l ${LOCATION} gs://${BUCKET_NAME}
+gsutil mb -b on -l ${LOCATION} gs://${BUCKET_NAME}
 ```
 
 And also GCP service account needs to read and write permissions for the target bucket. More detail, check [GCS access control document](https://cloud.google.com/storage/docs/access-control/iam-permissions).
@@ -342,7 +374,7 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 - [x] Collect any of JSON format from build artifacts
 - [x] Support Bitrise
 - [ ] Support CircleCI API v2
-- [ ] Implement better logger
+- [x] Implement better logger
 - [ ] Support to fetch past build result
 
 # Debug options
