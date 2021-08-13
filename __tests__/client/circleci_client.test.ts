@@ -17,6 +17,19 @@ const hasInprogressRuns = [
   { build_nums: [8,9], last_build_num: 9, lifecycles: ['finished','finished'] },
 ] as any
 
+const hasNotRuns = [
+  { build_nums: [2,3], last_build_num: 3, lifecycles: ['finished','finished'] },
+  { build_nums: [4],   last_build_num: 4, lifecycles: ['not_run'] },
+  { build_nums: [5,6], last_build_num: 6, lifecycles: ['finished','finished'] },
+] as any
+
+const hasNotRunAndInprogressRuns = [
+  { build_nums: [2],   last_build_num: 2, lifecycles: ['not_run'] },
+  { build_nums: [3,4], last_build_num: 4, lifecycles: ['finished','finished'] },
+  { build_nums: [5,6], last_build_num: 6, lifecycles: ['running','queued'] },
+  { build_nums: [7,8], last_build_num: 8, lifecycles: ['finished','finished'] },
+] as any
+
 describe('CircleciClient', () => {
   describe('filterWorkflowRuns', () => {
     let client: CircleciClient
@@ -27,16 +40,28 @@ describe('CircleciClient', () => {
       client = new CircleciClient('DUMMY_TOKEN', logger, options)
     })
 
-    it('when has not in_pregress runs', async () => {
+    it('when all finished', async () => {
       const actual = client.filterWorkflowRuns(allCompletedRuns)
 
       expect(actual.map((run) => run.last_build_num)).toEqual([3,5,7])
     })
 
-    it('when has in_pregress runs', async () => {
+    it('when has in_pregress', async () => {
       const actual = client.filterWorkflowRuns(hasInprogressRuns)
 
       expect(actual.map((run) => run.last_build_num)).toEqual([3])
+    })
+
+    it('when has not_run', async () => {
+      const actual = client.filterWorkflowRuns(hasNotRuns)
+
+      expect(actual.map((run) => run.last_build_num)).toEqual([3,6])
+    })
+
+    it('when has not_run and in_pregress', async () => {
+      const actual = client.filterWorkflowRuns(hasNotRunAndInprogressRuns)
+
+      expect(actual.map((run) => run.last_build_num)).toEqual([4])
     })
   })
 })

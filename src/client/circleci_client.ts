@@ -7,6 +7,7 @@ import { ArgumentOptions } from '../arg_options'
 import { Logger } from 'tslog'
 
 const DEBUG_PER_PAGE = 10
+const FETCH_RECENT_BUILD_API_NUM = 3
 
 export type CircleciStatus = 'retried' | 'canceled' | 'infrastructure_fail' | 'timedout' | 'not_run' | 'running' | 'failed' | 'queued' | 'scheduled' | 'not_running' | 'no_tests' | 'fixed' | 'success'
 type RecentBuildResponse = {
@@ -125,18 +126,22 @@ export class CircleciClient {
 
   // https://circleci.com/api/v1.1/project/:vcs-type/:username/:project?circle-token=:token&limit=20&offset=5&filter=completed
   async fetchWorkflowRuns(owner: string, repo: string, vcsType: string, lastRunId?: number) {
-    const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}`, {
-      params: {
-        // API default is 30 and max is 100
-        // ref: https://circleci.com/docs/api/#recent-builds-for-a-single-project
-        limit: (this.options.debug) ? DEBUG_PER_PAGE : 100,
-        // limit: 3,
-        // offset: 5,
-        // filter: "completed"
-        shallow: true,
-      }
-    })
-    let recentBuilds = res.data as RecentBuildResponse[]
+    const limit = (this.options.debug) ? DEBUG_PER_PAGE : 100
+    let recentBuilds = [] as RecentBuildResponse[]
+    for (let index = 0; index < FETCH_RECENT_BUILD_API_NUM; index++) {
+      const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}`, {
+        params: {
+          // API default is 30 and max is 100
+          // ref: https://circleci.com/docs/api/#recent-builds-for-a-single-project
+          limit: limit,
+          // limit: 3,
+          offset: index * limit,
+          // filter: "completed"
+          shallow: true,
+        }
+      })
+      recentBuilds.push(...res.data)
+    }
     recentBuilds = (lastRunId)
       ? recentBuilds.filter((build) => build.build_num > lastRunId)
       : recentBuilds
@@ -177,13 +182,16 @@ export class CircleciClient {
     return this.filterWorkflowRuns(workflowRuns)
   }
 
-  // Filter to: Id < firstInprogressId
+  // Filter to: Each workflow's last build number < first running build number
   filterWorkflowRuns (runs: WorkflowRun[]): WorkflowRun[] {
-    const hasNotFinishedRuns = runs.filter((run) => {
+    // Ignore not_run workflows that are [ci-skip] commit OR skipped redundant build
+    runs = runs.filter((run) => { return !run.lifecycles.some((lifecycle) => lifecycle === 'not_run') })
+
+    const inprogressRuns = runs.filter((run) => {
       return !run.lifecycles.every((lifecycle) => lifecycle === 'finished')
     })
     const firstInprogress = minBy(
-      hasNotFinishedRuns,
+      inprogressRuns,
       (run) => run.last_build_num,
     )
     runs = (firstInprogress)
