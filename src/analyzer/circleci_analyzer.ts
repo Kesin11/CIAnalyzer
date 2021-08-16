@@ -28,7 +28,7 @@ type WorkflowReport = {
   queuedDurationSec: number // createdAt - min(jobs start_time)
 }
 
-type JobReport = {
+export type JobReport = {
   workflowRunId: string, // = workflowRunId
   buildNumber: number, // = build_number
   jobId: string, // = workflows.job_id
@@ -113,7 +113,7 @@ export class CircleciAnalyzer implements Analyzer {
 
     const startedAt = min(jobReports.map((job) => job.startedAt ))!
     const completedAt = max(jobReports.map((job) => job.completedAt ))!
-    const status = this.normalizeStatus(lastJob.status)
+    const status = this.estimateWorkflowStatus(jobReports)
     const createdAt = min(jobs.map((job) => new Date(job.queued_at)))!
     // workflow
     return {
@@ -155,6 +155,15 @@ export class CircleciAnalyzer implements Analyzer {
       default:
         return 'OTHER';
     }
+  }
+
+  estimateWorkflowStatus(jobs: JobReport[]): Status {
+    const statuses = jobs.map((job) => job.status)
+
+    if ( statuses.some((status) => status === 'ABORTED' )) return 'ABORTED'
+    else if ( statuses.some((status) => status === 'FAILURE' )) return 'FAILURE'
+    else if ( statuses.some((status) => status === 'SUCCESS' )) return 'SUCCESS'
+    else return 'OTHER'
   }
 
   async createTestReports( workflowReport: WorkflowReport, jobs: SingleBuildResponse[], tests: TestResponse[]): Promise<TestReport[]> {
