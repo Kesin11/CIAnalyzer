@@ -1,3 +1,19 @@
+# [4.2.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.1.0...v4.2.0) (2021-08-16)
+
+
+### Bug Fixes
+
+* **CircleCI:** Fix detect workflow status ([a8b5264](https://github.com/Kesin11/CIAnalyzer/commit/a8b52642eed62d57b0d686d7ea84caecf7d42be7))
+* **CircleCI:** Fix finished workflow filter when CircleCI history has not_run workflows ([c394f9b](https://github.com/Kesin11/CIAnalyzer/commit/c394f9bb04c6333068fcb902f5e89b1e815c27a1))
+
+
+### Features
+
+* Enable -v option ([3aacab9](https://github.com/Kesin11/CIAnalyzer/commit/3aacab9f37966b198eba24fa21d6b233079205f5))
+* Improve log format ([65da4d0](https://github.com/Kesin11/CIAnalyzer/commit/65da4d013ccaa5205d7cde6a4c5f158a67b2d0d7))
+
+
+
 # [4.1.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.0.0...v4.1.0) (2021-07-25)
 
 
