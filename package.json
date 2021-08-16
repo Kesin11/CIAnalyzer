@@ -48,7 +48,7 @@
     "minimatch": "3.0.4",
     "tslog": "3.2.0",
     "utility-types": "3.10.0",
-    "yargs": "17.1.0"
+    "yargs": "17.1.1"
   },
   "devDependencies": {
     "@types/adm-zip": "0.4.34",
