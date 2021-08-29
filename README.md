@@ -15,6 +15,8 @@ Unfortunately, few services provide a dashboard for analyzing build data. As far
 CIAnalyzer collects build data using each service API, then normalizes the data format and exports it. So you can create a dashboard that allows you to analyze build data across multiple CI services using your favorite BI tools.
 
 # Sample dashboard
+[CIAnalyzer sample dashboard (DataStudio)](https://datastudio.google.com/reporting/71454c60-96f9-47e0-8dc6-2d5f98b60609/page/11yEB)
+
 It created by DataStudio with BigQuery
 ![ci_analyzer_dashboard1](https://user-images.githubusercontent.com/1324862/82752752-3d5bcd00-9dfb-11ea-9cb3-a32e81c5f3b9.png)
 ![ci_analyzer_dashboard2](https://user-images.githubusercontent.com/1324862/82752755-42b91780-9dfb-11ea-91df-c3451e51772a.png)
