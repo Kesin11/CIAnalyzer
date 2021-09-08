@@ -119,14 +119,14 @@ git clone https://github.com/Kesin11/CIAnalyzer.git
 cd CIAnalyzer
 
 # Create dataset
-bq mk
+bq mk \
   --project_id=${GCP_PROJECT_ID} \
   --location=${LOCATION} \
   --dataset \
   ${DATASET}
 
 # Create tables
-bq mk
+bq mk \
   --project_id=${GCP_PROJECT_ID} \
   --location=${LOCATION} \
   --table \
@@ -134,7 +134,7 @@ bq mk
   ${DATASET}.${WORKFLOW_TABLE} \
   ./bigquery_schema/workflow_report.json
 
-bq mk
+bq mk \
   --project_id=${GCP_PROJECT_ID} \
   --location=${LOCATION} \
   --table \
