@@ -37,6 +37,7 @@ github:
 
 circleci:
   # baseUrl: https://circleci.com/api/v1.1 # Change it if you using CircleCI Enterprise
+  version: 2
   repos:
     - Kesin11/CIAnalyzer # Can use abbr format
     - name: Kesin11/CIAnalyzer

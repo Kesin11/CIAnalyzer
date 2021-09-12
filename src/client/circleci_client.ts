@@ -110,7 +110,6 @@ type ArtifactsResponse = {
   url: string,
 }[]
 
-
 export class CircleciClient {
   private axios: AxiosInstance
   constructor(token: string, logger: Logger, private options: ArgumentOptions, baseUrl?: string) {
@@ -200,6 +199,17 @@ export class CircleciClient {
     return runs
   }
 
+  async fetchWorkflowJobs(workflowRun: WorkflowRun) {
+    return await Promise.all(workflowRun.build_nums.map((buildNum) => {
+      return this.fetchJobs(
+        workflowRun.username,
+        workflowRun.reponame,
+        workflowRun.vcs_type,
+        buildNum
+        )
+    }))
+  }
+
   // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021
   async fetchJobs(owner: string, repo: string, vcsType: string, runId: number) {
     const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}/${runId}`, {})
@@ -221,6 +231,17 @@ export class CircleciClient {
       workflow_id: `${repo}-workflow-${startTime.getTime()}`,
       workflow_name: 'workflow'
     }
+  }
+
+  async fetchWorkflowTests(workflowRun: WorkflowRun) {
+    return await Promise.all(workflowRun.build_nums.map((buildNum) => {
+      return this.fetchTests(
+        workflowRun.username,
+        workflowRun.reponame,
+        workflowRun.vcs_type,
+        buildNum
+      )
+    }))
   }
 
   // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021/tests
@@ -257,6 +278,18 @@ export class CircleciClient {
       })
     }
     return artifacts
+  }
+
+  async fetchWorkflowCustomReports(workflowRun: WorkflowRun, customReportConfigs: CustomReportConfig[]) {
+    return await Promise.all(workflowRun.build_nums.map((buildNum) => {
+      return this.fetchCustomReports(
+        workflowRun.username,
+        workflowRun.reponame,
+        workflowRun.vcs_type,
+        buildNum,
+        customReportConfigs,
+      )
+    }))
   }
 
   async fetchCustomReports(owner: string, repo: string, vcsType: string, runId: number, customReportsConfigs: CustomReportConfig[]): Promise<CustomReportArtifact> {
