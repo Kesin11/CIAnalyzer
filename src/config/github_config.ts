@@ -19,7 +19,7 @@ type RepoYaml = string | {
 export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
   if (!config.github) return
 
-  const githubConfig = config.github
+  const githubConfig = { ...config.github }
   // overwrite repos
   githubConfig.repos = (githubConfig.repos as RepoYaml[]).map((repoYaml): GithubConfig['repos'][0] => {
     let owner, repo

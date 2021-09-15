@@ -22,7 +22,7 @@ type RepoYaml = string | {
 export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
   if (!config.circleci) return
 
-  const circleciConfig = config.circleci
+  const circleciConfig = { ...config.circleci }
 
   // overwrite repos
   circleciConfig.repos = (circleciConfig.repos as RepoYaml[]).map((repoYaml): CircleciConfig['repos'][0] => {
