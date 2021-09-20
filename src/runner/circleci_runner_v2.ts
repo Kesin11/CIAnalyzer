@@ -13,12 +13,17 @@ import { Logger } from "tslog"
 import { CircleciClientV2, Pipeline } from "../client/circleci_client_v2"
 import { CircleciAnalyzerV2 } from "../analyzer/circleci_analyzer_v2"
 
+const META_VERSION = 2
+export type CircleciV2LastRunMetadata = {
+  version: number
+}
+
 export class CircleciRunnerV2 implements Runner {
   service: string = 'circleci'
   client: CircleciClientV2
   analyzer: CircleciAnalyzerV2
   config: CircleciConfig | undefined
-  store?: LastRunStore
+  store?: LastRunStore<CircleciV2LastRunMetadata>
   githubClient: GithubClient
   logger: Logger
 
@@ -47,7 +52,7 @@ export class CircleciRunnerV2 implements Runner {
   async run (): Promise<Result<unknown, Error>> {
     let result: Result<unknown, Error> = success(this.service)
     if (!this.config) return failure(new Error('this.config must not be undefined'))
-    this.store = await LastRunStore.init(this.logger, this.options, this.service, this.config.lastRunStore)
+    this.store = await LastRunStore.init<CircleciV2LastRunMetadata>(this.logger, this.options, this.service, this.config.lastRunStore)
 
     const workflowReports: WorkflowReport[] = []
     const testReports: TestReport[] = []
@@ -56,6 +61,7 @@ export class CircleciRunnerV2 implements Runner {
       this.logger.info(`Fetching ${this.service} - ${repo.fullname} ...`)
 
       try {
+        this.migrateLastRun(repo.fullname)
         const lastRunId = this.store.getLastRun(repo.fullname)
         const pipelines = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, repo.vcsType, lastRunId)
 
@@ -104,5 +110,20 @@ export class CircleciRunnerV2 implements Runner {
     this.logger.info(`Done execute '${this.service}'. status: ${result.type}`)
 
     return result
+  }
+
+  migrateLastRun(repoFullname: string) {
+    const metadata = this.store?.getMeta(repoFullname)
+    if (metadata?.version === META_VERSION) return
+
+    if (metadata === undefined || metadata.version < META_VERSION) {
+        // v1 is used job.number as WorkflowRunId that is grater than pipeline.number
+        // As a result, should reset lastRun number before execute when migrate v1 to v2.
+        this.store?.resetLastRun(repoFullname)
+        this.store?.setMeta(repoFullname, { version: META_VERSION })
+    }
+    else if (metadata.version > META_VERSION) {
+      throw `${repoFullname} was executed with ${metadata.version} that is newer than ${CircleciRunnerV2.name}`
+    }
   }
 }

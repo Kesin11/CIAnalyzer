@@ -18,7 +18,7 @@ describe('parseConfig', () => {
           fullname: 'github/owner/repo',
           customReports: [],
         }],
-        version: "1_1"
+        version: 1
       })
     })
 
@@ -38,7 +38,7 @@ describe('parseConfig', () => {
           fullname: 'bitbucket/owner/repo',
           customReports: [],
         }],
-        version: "1_1"
+        version: 1
       })
     })
 
@@ -58,7 +58,7 @@ describe('parseConfig', () => {
           fullname: 'github/owner/repo',
           customReports: [],
         }],
-        version: "1_1"
+        version: 1
       })
     })
   })
@@ -81,7 +81,7 @@ describe('parseConfig', () => {
           owner: 'owner', repo: 'repo', vcsType: 'github', fullname: 'github/owner/repo',
           customReports: [],
         }],
-        version: "1_1"
+        version: 1
       })
     })
 
@@ -101,13 +101,13 @@ describe('parseConfig', () => {
           owner: 'owner', repo: 'repo', vcsType: 'github', fullname: 'github/owner/repo',
           customReports: [ customReport ]
         }],
-        version: "1_1"
+        version: 1
       })
     })
   })
 
   describe('version', () => {
-    it("should '1_1' when empty", () => {
+    it("should 1 when empty", () => {
       const config = {
         circleci: {
           repos: [ 'owner/repo' ]
@@ -115,10 +115,34 @@ describe('parseConfig', () => {
       }
 
       const actual = parseConfig(config)
-      expect(actual!.version).toEqual("1_1")
+      expect(actual!.version).toEqual(1)
     })
 
-    it("should '2' when version: 2(Number)", () => {
+    it("should 1 when version: 1(Number)", () => {
+      const config = {
+        circleci: {
+          repos: [ 'owner/repo' ],
+          version: 1,
+        },
+      }
+
+      const actual = parseConfig(config)
+      expect(actual!.version).toEqual(1)
+    })
+
+    it("should 1 when version: 1(Number)", () => {
+      const config = {
+        circleci: {
+          repos: [ 'owner/repo' ],
+          version: '1',
+        },
+      }
+
+      const actual = parseConfig(config)
+      expect(actual!.version).toEqual(1)
+    })
+
+    it("should 2 when version: 2(Number)", () => {
       const config = {
         circleci: {
           repos: [ 'owner/repo' ],
@@ -127,31 +151,31 @@ describe('parseConfig', () => {
       }
 
       const actual = parseConfig(config)
-      expect(actual!.version).toEqual("2")
+      expect(actual!.version).toEqual(2)
     })
 
-    it("should '2' when version: 2(String)", () => {
+    it("should 2 when version: 2(String)", () => {
       const config = {
         circleci: {
           repos: [ 'owner/repo' ],
-          version: "2",
+          version: '2',
         }
       }
 
       const actual = parseConfig(config)
-      expect(actual!.version).toEqual("2")
+      expect(actual!.version).toEqual(2)
     })
 
-    it("should '1_1' when unknown value", () => {
+    it("should 1 when unknown value", () => {
       const config = {
         circleci: {
-          repos: [ 'owner/repo' ]
+          repos: [ 'owner/repo' ],
+          version: "1000"
         },
-        version: "1000"
       }
 
       const actual = parseConfig(config)
-      expect(actual!.version).toEqual("1_1")
+      expect(actual!.version).toEqual(1)
     })
   })
 })

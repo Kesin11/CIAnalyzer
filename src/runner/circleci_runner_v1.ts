@@ -13,12 +13,17 @@ import { failure, Result, success } from "../result"
 import { ArgumentOptions } from "../arg_options"
 import { Logger } from "tslog"
 
+const META_VERSION = 1
+export type CircleciV1LastRunMetadata = {
+  version: number
+}
+
 export class CircleciRunnerV1 implements Runner {
   service: string = 'circleci'
   client: CircleciClient
   analyzer: CircleciAnalyzer 
   config: CircleciConfig | undefined
-  store?: LastRunStore
+  store?: LastRunStore<CircleciV1LastRunMetadata>
   githubClient: GithubClient
   logger: Logger
 
@@ -58,6 +63,7 @@ export class CircleciRunnerV1 implements Runner {
       let repoTestReports: TestReport[] = []
 
       try {
+        this.migrateLastRun(repo.fullname)
         const lastRunId = this.store.getLastRun(repo.fullname)
         const workflowRuns = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, repo.vcsType, lastRunId)
         const tagMap = await this.githubClient.fetchRepositoryTagMap(repo.owner, repo.repo)
@@ -125,5 +131,15 @@ export class CircleciRunnerV1 implements Runner {
     this.logger.info(`Done execute '${this.service}'. status: ${result.type}`)
 
     return result
+  }
+
+  migrateLastRun(repoFullname: string) {
+    const metadata = this.store?.getMeta(repoFullname)
+    if (metadata === undefined || metadata.version <= META_VERSION) {
+        this.store?.setMeta(repoFullname, { version: META_VERSION })
+    }
+    else if (metadata.version > META_VERSION) {
+      throw `${repoFullname} was executed with ${metadata.version} that is newer than ${CircleciRunnerV1.name}`
+    }
   }
 }

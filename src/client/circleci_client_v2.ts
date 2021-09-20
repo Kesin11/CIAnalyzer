@@ -9,7 +9,8 @@ import { failure, Result, success } from '../result'
 import { CircleciStatus } from './circleci_client'
 import { Overwrite } from 'utility-types'
 
-const DEBUG_PER_PAGE = 5
+const DEBUG_FETCH_LIMIT = 5
+const FETCH_LIMIT = 30
 
 type V2ApiResponse = {
   items: unknown[],
@@ -237,7 +238,7 @@ export class CircleciClientV2 {
   // https://circleci.com/docs/api/v2/#operation/listPipelines
   // https://circleci.com/docs/api/v2/#operation/listWorkflowsByPipelineId
   async fetchWorkflowRuns(owner: string, repo: string, vcsType: string, lastRunId?: number): Promise<Pipeline[]> {
-    const limit = (this.options.debug) ? DEBUG_PER_PAGE : 100
+    const limit = (this.options.debug) ? DEBUG_FETCH_LIMIT : FETCH_LIMIT
     let recentPipelines = [] as ListPipelinesForProjectResponse["items"]
     for (let length = 0, pageToken = undefined; length < limit;) {
       const res = await this.axios.get( `v2/project/${vcsType}/${owner}/${repo}/pipeline`, {
@@ -250,9 +251,10 @@ export class CircleciClientV2 {
       length = recentPipelines.length
       pageToken = data.next_page_token
     }
-    if (this.options.debug) recentPipelines = recentPipelines.slice(0, DEBUG_PER_PAGE)
+    recentPipelines = (this.options.debug)
+      ? recentPipelines.slice(0, DEBUG_FETCH_LIMIT)
+      : recentPipelines.slice(0, FETCH_LIMIT)
 
-    // TODO: v1からv2へのマイグレーション時の考慮が必要
     recentPipelines = (lastRunId)
       ? recentPipelines.filter((pipeline) => pipeline.number > lastRunId)
       : recentPipelines

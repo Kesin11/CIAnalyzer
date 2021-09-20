@@ -21,7 +21,7 @@ export class CircleciRunner implements Runner {
     let runner: CircleciRunnerV1 | CircleciRunnerV2
     const config = parseConfig(this.config)
     switch (config?.version) {
-      case "2":
+      case 2:
         runner = new CircleciRunnerV2(this.logger, this.config, this.options)
         break;
       default:
