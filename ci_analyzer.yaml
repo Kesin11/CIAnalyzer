@@ -36,7 +36,7 @@ github:
     path: ci_analyzer/last_run/github.json # (Optional) default: ci_analyzer/last_run/${service}.json
 
 circleci:
-  # baseUrl: https://circleci.com/api/v1.1 # Change it if you using CircleCI Enterprise
+  # baseUrl: https://circleci.com/api/ # Change it if you using CircleCI Enterprise
   version: 2
   repos:
     - Kesin11/CIAnalyzer # Can use abbr format

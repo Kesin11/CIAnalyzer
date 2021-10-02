@@ -375,7 +375,7 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 - [x] Collect test data
 - [x] Collect any of JSON format from build artifacts
 - [x] Support Bitrise
-- [ ] Support CircleCI API v2
+- [x] Support CircleCI API v2
 - [x] Implement better logger
 - [ ] Support to fetch past build result
 
