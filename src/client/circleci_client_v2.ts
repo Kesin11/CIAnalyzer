@@ -1,3 +1,4 @@
+import path from 'path'
 import minimatch from 'minimatch'
 import { AxiosInstance } from 'axios'
 import { minBy } from 'lodash'
@@ -198,6 +199,9 @@ export class CircleciClientV2 {
   private axios: AxiosInstance
   private baseUrl: string
   constructor(token: string, logger: Logger, private options: ArgumentOptions, baseUrl?: string) {
+    if (baseUrl && path.basename(baseUrl) !== 'api') {
+      throw `${CircleciClientV2.name} accepts only "/api/" But your baseUrl is ${baseUrl}`
+    }
     const axiosLogger = logger.getChildLogger({ name: CircleciClientV2.name })
     this.baseUrl = baseUrl ?? 'https://circleci.com/api',
     this.axios = createAxios(axiosLogger, {
