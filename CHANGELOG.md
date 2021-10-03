@@ -1,5 +1,26 @@
 # [4.3.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.2.0...v4.3.0) (2021-10-03)
 
+# Support CircleCI API v2 🎉 
+So CircleCI v1.1 does not provide API that about pipeline, previously CIAnalyzer reconstruct pipeline structure from each job.
+
+Now, CIAnalyzer uses a pipeline data structure provided by API v2. The exported data will be closer to what you can see on the CircleCI website. 
+
+## How to migrate from v1.1
+After upgrade CIAnalzyer version newer than v4.2, do not need any changes in your config YAML if you want to still use CircleCI API v1.1 .
+
+When you want to use CircleCI v2, you have to change the config as below.
+
+```yaml
+# before (use API v1.1)
+baseUrl: https://circleci.com/api/v1.1
+
+# after (use API v2)
+baseUrl: https://circleci.com/api/ # Remove suffix "v1.1" from URL
+version: 2 # Add
+```
+
+**NOTICE** The first time after you enable v2, CIAnalyzer reset the LastRun build number and will export the last 100 pipeline data. As a result, it may be exporting duplicate data that has already been exported before.
+There is no workaround to avoid this problem, sorry.
 
 ### Bug Fixes
 
@@ -15,6 +36,8 @@
 * **CircleCI:** Add CircleCI v1 and v2 lastRunStore migration ([7916cf7](https://github.com/Kesin11/CIAnalyzer/commit/7916cf7080d43e894522fb6008168e1468a9cfb1))
 * **CircleCI:** Support CircleCI v2 API ([4fbe2d3](https://github.com/Kesin11/CIAnalyzer/commit/4fbe2d39eef5d6a7a95c9b648535b0a3a340b0a4))
 
+### Documents
+* [fix setup command #352](https://github.com/Kesin11/CIAnalyzer/pull/352) by @yamatoya
 
 
 # [4.2.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.1.0...v4.2.0) (2021-08-16)
