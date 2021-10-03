@@ -111,9 +111,9 @@ export class CircleciAnalyzerV2 implements Analyzer {
     const sortedJobs = sortBy(workflow.jobs, 'job_number')
     const firstJob = first(sortedJobs)
     const createdAt = new Date(workflow.created_at) 
-    // Sometimes worklfow has not valid jobs. ex: Pipeline status is "Build error"
+    // Sometimes worklfow has invalid timestamps, so remediate it.
     const startedAt = new Date(firstJob?.started_at ?? workflow.created_at)
-    const completedAt = new Date(workflow.stopped_at)
+    const completedAt = new Date(workflow.stopped_at ?? startedAt)
     const status = this.normalizeWorkflowStatus(workflow.status)
     // workflow
     return {
