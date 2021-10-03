@@ -11,7 +11,7 @@ import { CircleciStatus } from './circleci_client'
 import { Overwrite } from 'utility-types'
 
 const DEBUG_FETCH_LIMIT = 5
-const FETCH_LIMIT = 30
+const FETCH_LIMIT = 100
 
 type V2ApiResponse = {
   items: unknown[],
