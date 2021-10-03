@@ -1,6 +1,7 @@
 # Export to BigQuery and Local
 # Save LastRun to Local file and cache with CircleCI cache
 circleci:
+  version: 2
   repos:
     - name: Kesin11/CIAnalyzer
   vcsBaseUrl:

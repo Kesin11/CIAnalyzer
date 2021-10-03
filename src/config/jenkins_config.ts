@@ -23,7 +23,7 @@ type JobYaml = string | {
 export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {
   if (!config.jenkins) return
 
-  const jenkinsConfig = config.jenkins
+  const jenkinsConfig = { ...config.jenkins }
   // overwrite jobs
   jenkinsConfig.jobs = (jenkinsConfig.jobs as JobYaml[]).map((jobYaml): JenkinsConfig['jobs'][0] => {
     if (typeof jobYaml === 'string') {

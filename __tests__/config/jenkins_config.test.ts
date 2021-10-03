@@ -10,7 +10,14 @@ describe('parseConfig', () => {
     }
 
     const actual = parseConfig(config)
-    expect(actual).toEqual(config.jenkins)
+    expect(actual).toEqual({
+      baseUrl: 'http://localhost:8080',
+      jobs: [{
+        name: 'sample-job',
+        testGlob: [],
+        customReports: []
+      }]
+    })
   })
 
   describe('when repos are object', () => {

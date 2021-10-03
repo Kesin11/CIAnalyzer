@@ -6,18 +6,21 @@ import { ArgumentOptions } from "./arg_options"
 import { NullStore } from "./store/null_store"
 import { Logger } from "tslog"
 
-type LastRun = {
+type LastRun<T> = {
   [repo: string]: {
     lastRun: number
     updatedAt: Date
+    meta?: T
   }
 }
 
-export class LastRunStore {
-  store: Store
-  lastRun: LastRun
+type Metadata = {[key: string]: unknown}
 
-  static async init(logger:Logger, options: ArgumentOptions, service: string, config?: LastRunStoreConfig) {
+export class LastRunStore<T extends Metadata = Metadata> {
+  store: Store
+  lastRun: LastRun<T>
+
+  static async init<T extends Metadata>(logger:Logger, options: ArgumentOptions, service: string, config?: LastRunStoreConfig) {
     let store
     if (options.debug) {
       store = new NullStore(logger)
@@ -35,7 +38,7 @@ export class LastRunStore {
       throw `Error: Unknown LastRunStore.backend type '${(config as any).backend}'`
     }
 
-    const self = new LastRunStore(store)
+    const self = new LastRunStore<T>(store)
     await self.readStore()
     return self
   }
@@ -57,9 +60,35 @@ export class LastRunStore {
     const stored = this.getLastRun(repo) ?? 0
     if (stored >= lastRun) return
 
+    const before = this.lastRun[repo]
     this.lastRun[repo] = {
+      ...before,
       lastRun,
       updatedAt: new Date()
+    }
+  }
+
+  resetLastRun (repo: string): void {
+    const before = this.lastRun[repo]
+
+    this.lastRun[repo] = {
+      ...before,
+      lastRun: 0,
+      updatedAt: new Date()
+    }
+  }
+
+  getMeta (repo: string): T | undefined {
+    return this.lastRun[repo]?.meta
+  }
+
+  setMeta (repo: string, metadata: T): void {
+    const before = this.lastRun[repo]
+
+    this.lastRun[repo] = {
+      ...before,
+      updatedAt: new Date(),
+      meta: metadata
     }
   }
 

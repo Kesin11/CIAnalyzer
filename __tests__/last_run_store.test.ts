@@ -52,6 +52,73 @@ describe('LastRunStore', () => {
 
       expect(lastRunStore.lastRun[repo].lastRun).toEqual(101)
     })
+
+    it('update lastRun only', async () => {
+      lastRunStore.lastRun[repo] = {
+        lastRun: 0,
+        updatedAt: new Date(),
+        meta: { version: 2 }
+      }
+      lastRunStore.setLastRun(repo, 100)
+
+      expect(lastRunStore.lastRun[repo]).toEqual({
+        lastRun: 100,
+        updatedAt: expect.anything(),
+        meta: { version: 2 }
+      })
+    })
+  })
+
+  describe('resetLastRun', () => {
+    it('should accept when current lastRun is undefined', async () => {
+      lastRunStore.resetLastRun(repo)
+
+      expect(lastRunStore.lastRun[repo].lastRun).toEqual(0)
+    })
+
+    it('should accept when current lastRun is defined', async () => {
+      lastRunStore.lastRun[repo] = {
+        lastRun: 100,
+        updatedAt: new Date()
+      }
+      lastRunStore.resetLastRun(repo)
+
+      expect(lastRunStore.lastRun[repo].lastRun).toEqual(0)
+    })
+
+    it('reset lastRun only', async () => {
+      lastRunStore.lastRun[repo] = {
+        lastRun: 100,
+        updatedAt: new Date(),
+        meta: { version: 2 }
+      }
+      lastRunStore.resetLastRun(repo)
+
+      expect(lastRunStore.lastRun[repo]).toEqual({
+        lastRun: 0,
+        updatedAt: expect.anything(),
+        meta: { version: 2 }
+      })
+    })
+  })
+
+  it('getMeta', async () => {
+    lastRunStore.lastRun[repo] = {
+      lastRun: 100,
+      updatedAt: new Date(),
+      meta: {
+        version: 2,
+      }
+    }
+
+    expect(lastRunStore.getMeta(repo)).toEqual({ version: 2 })
+  })
+
+  it('setMeta', async () => {
+    lastRunStore.setLastRun(repo, 100)
+    lastRunStore.setMeta(repo, { version: 2 })
+
+    expect(lastRunStore.lastRun[repo].meta).toEqual({ version: 2 })
   })
 
   it('save', async () => {

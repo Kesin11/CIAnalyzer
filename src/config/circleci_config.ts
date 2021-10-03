@@ -11,6 +11,7 @@ export type CircleciConfig = CommonConfig & {
   vcsBaseUrl?: {
     github?: string
   }
+  version: 1 | 2
 }
 
 type RepoYaml = string | {
@@ -22,7 +23,9 @@ type RepoYaml = string | {
 export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
   if (!config.circleci) return
 
-  const circleciConfig = config.circleci
+  const circleciConfig = { ...config.circleci }
+
+  circleciConfig.version = (String(circleciConfig.version) === "2") ? 2 : 1
 
   // overwrite repos
   circleciConfig.repos = (circleciConfig.repos as RepoYaml[]).map((repoYaml): CircleciConfig['repos'][0] => {

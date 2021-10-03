@@ -19,7 +19,7 @@ type AppYaml = string | {
 export const parseConfig = (config: YamlConfig): BitriseConfig | undefined => {
   if (!config.bitrise) return
 
-  const bitriseConfig = config.bitrise
+  const bitriseConfig = { ...config.bitrise }
 
   // overwrite repos
   bitriseConfig.apps = (bitriseConfig.apps as AppYaml[]).map((appYaml): BitriseConfig['apps'][0] => {

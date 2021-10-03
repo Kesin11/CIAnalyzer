@@ -3,6 +3,9 @@ import { ArgumentOptions } from '../../src/arg_options'
 import { CircleciClient } from '../../src/client/circleci_client'
 
 const logger = new Logger({ minLevel: 'warn' })
+const options = new ArgumentOptions({
+  "c": "./dummy.yaml"
+})
 
 const allCompletedRuns = [
   { build_nums: [2,3], last_build_num: 3, lifecycles: ['finished','finished'] },
@@ -31,6 +34,42 @@ const hasNotRunAndInprogressRuns = [
 ] as any
 
 describe('CircleciClient', () => {
+  describe('new() with baseUrl', () => {
+    it('should OK when undefined', async () => {
+      expect(() => {
+        new CircleciClient('DUMMY_TOKEN', logger, options)
+      }).toBeTruthy()
+    })
+
+    it('should OK when /api/v1.1', async () => {
+      const baseUrl = 'https://circleci.com/api/v1.1'
+      expect(() => {
+        new CircleciClient('DUMMY_TOKEN', logger, options, baseUrl)
+      }).toBeTruthy()
+    })
+
+    it('should OK when /api/v1.1/', async () => {
+      const baseUrl = 'https://circleci.com/api/v1.1/'
+      expect(() => {
+        new CircleciClient('DUMMY_TOKEN', logger, options, baseUrl)
+      }).toBeTruthy()
+    })
+
+    it('should throw when /api', async () => {
+      const baseUrl = 'https://circleci.com/api'
+      expect(() => {
+        new CircleciClient('DUMMY_TOKEN', logger, options, baseUrl)
+      }).toThrow()
+    })
+
+    it('should throw when /api/v2', async () => {
+      const baseUrl = 'https://circleci.com/api/v2'
+      expect(() => {
+        new CircleciClient('DUMMY_TOKEN', logger, options, baseUrl)
+      }).toThrow()
+    })
+  })
+
   describe('filterWorkflowRuns', () => {
     let client: CircleciClient
     const options = new ArgumentOptions({

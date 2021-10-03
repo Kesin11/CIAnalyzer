@@ -1,3 +1,4 @@
+import path from 'path'
 import minimatch from 'minimatch'
 import { AxiosInstance } from 'axios'
 import { groupBy, max, minBy } from 'lodash'
@@ -110,10 +111,12 @@ type ArtifactsResponse = {
   url: string,
 }[]
 
-
 export class CircleciClient {
   private axios: AxiosInstance
   constructor(token: string, logger: Logger, private options: ArgumentOptions, baseUrl?: string) {
+    if (baseUrl && path.basename(baseUrl) !== 'v1.1') {
+      throw `${CircleciClient.name} accepts only "/api/v1.1/" But your baseUrl is ${baseUrl}`
+    }
     const axiosLogger = logger.getChildLogger({ name: CircleciClient.name })
     this.axios = createAxios(axiosLogger, {
       baseURL: baseUrl ?? 'https://circleci.com/api/v1.1',
@@ -200,6 +203,17 @@ export class CircleciClient {
     return runs
   }
 
+  async fetchWorkflowJobs(workflowRun: WorkflowRun) {
+    return await Promise.all(workflowRun.build_nums.map((buildNum) => {
+      return this.fetchJobs(
+        workflowRun.username,
+        workflowRun.reponame,
+        workflowRun.vcs_type,
+        buildNum
+        )
+    }))
+  }
+
   // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021
   async fetchJobs(owner: string, repo: string, vcsType: string, runId: number) {
     const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}/${runId}`, {})
@@ -221,6 +235,17 @@ export class CircleciClient {
       workflow_id: `${repo}-workflow-${startTime.getTime()}`,
       workflow_name: 'workflow'
     }
+  }
+
+  async fetchWorkflowTests(workflowRun: WorkflowRun) {
+    return await Promise.all(workflowRun.build_nums.map((buildNum) => {
+      return this.fetchTests(
+        workflowRun.username,
+        workflowRun.reponame,
+        workflowRun.vcs_type,
+        buildNum
+      )
+    }))
   }
 
   // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021/tests
@@ -257,6 +282,18 @@ export class CircleciClient {
       })
     }
     return artifacts
+  }
+
+  async fetchWorkflowCustomReports(workflowRun: WorkflowRun, customReportConfigs: CustomReportConfig[]) {
+    return await Promise.all(workflowRun.build_nums.map((buildNum) => {
+      return this.fetchCustomReports(
+        workflowRun.username,
+        workflowRun.reponame,
+        workflowRun.vcs_type,
+        buildNum,
+        customReportConfigs,
+      )
+    }))
   }
 
   async fetchCustomReports(owner: string, repo: string, vcsType: string, runId: number, customReportsConfigs: CustomReportConfig[]): Promise<CustomReportArtifact> {
