@@ -275,11 +275,15 @@ export class CircleciClientV2 {
   // Filter pipelines with last build number < first running build number
   // And also ignore still running pipelines.
   private filterPipelines (pipelines: Pipeline[]): Pipeline[] {
-    // Ignore not_run workflows that are [ci-skip] commit OR skipped redundant build
-    pipelines = pipelines.filter((pipeline) => { return !pipeline.workflows.some((workflow) => workflow.status === 'not_run') })
+    // Ignore pipeline that has not any workflows.
+    // Ignore pipeline that has 'not_run' status workflows that are [ci-skip] commit OR skipped redundant build.
+    pipelines = pipelines.filter((pipeline) => {
+      return pipeline.workflows.length > 0
+        && !pipeline.workflows.some((workflow) => workflow.status === 'not_run')
+    })
 
     const inprogressPipeline = pipelines.filter((pipeline) => {
-      return pipeline.workflows.every((workflow) => workflow.status === 'running' || workflow.status === 'on_hold')
+      return pipeline.workflows.every((workflow) => workflow.status === 'running')
     })
     const firstInprogress = minBy(
       inprogressPipeline,
