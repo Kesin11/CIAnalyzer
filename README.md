@@ -377,7 +377,9 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 - [x] Support Bitrise
 - [x] Support CircleCI API v2
 - [x] Implement better logger
-- [ ] Support to fetch past build result
+- [ ] Better error message
+- [ ] Also export commit message
+- [ ] Also export executor info (CircleCI, Bitrise)
 
 # Debug options
 - Fetch only selected service
