@@ -215,7 +215,12 @@ export class CircleciClientV2 {
 
   async isHostAvailableVersion(): Promise<Result<unknown, Error>> {
     try {
-      await this.axios.get( `v2/me`, {} )
+      await this.axios.get( `v2/me`, {
+        validateStatus: (status) => {
+          return (status >= 200 && status < 300) // default
+            || status === 401 // It means endpoint of API v2 is exists.
+        }
+      })
     } catch (error) {
       return failure(new Error(`${this.baseUrl} unavailable API v2`))
     }
