@@ -3,6 +3,10 @@ pipeline {
   stages {
     stage('Run') {
       agent any
+      options {
+        timestamps()
+        ansiColor('xterm')
+      }
       environment {
         JENKINS = credentials('jenkins_user_token') // user name and password
         GITHUB_TOKEN = credentials('ci_analyzer_github_token') // secret text
