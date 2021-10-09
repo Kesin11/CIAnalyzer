@@ -35,7 +35,7 @@ export class LastRunStore<T extends Metadata = Metadata> {
       store = new GcsStore(logger, service, config.project, config.bucket, config.path)
     }
     else {
-      throw `Error: Unknown LastRunStore.backend type '${(config as any).backend}'`
+      throw new Error(`Error: Unknown LastRunStore.backend type '${(config as any).backend}'`)
     }
 
     const self = new LastRunStore<T>(store)

@@ -115,7 +115,7 @@ export class CircleciClient {
   private axios: AxiosInstance
   constructor(token: string, logger: Logger, private options: ArgumentOptions, baseUrl?: string) {
     if (baseUrl && path.basename(baseUrl) !== 'v1.1') {
-      throw `${CircleciClient.name} accepts only "/api/v1.1/" But your baseUrl is ${baseUrl}`
+      throw new Error(`${CircleciClient.name} accepts only "/api/v1.1/" But your baseUrl is ${baseUrl}`)
     }
     const axiosLogger = logger.getChildLogger({ name: CircleciClient.name })
     this.axios = createAxios(axiosLogger, {

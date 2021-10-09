@@ -20,7 +20,7 @@ export class GcsStore implements Store {
     const fp = filePath ?? path.join(defaultDir, `${service}.json`)
 
     if (!projectId || !bucket) {
-      throw "Must need 'project', 'bucket' params for GCS store"
+      throw new Error("Must need 'project' and 'bucket' params for lastRunStore in config")
     }
 
     this.logger = logger.getChildLogger({ name: GcsStore.name })

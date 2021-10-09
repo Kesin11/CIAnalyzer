@@ -200,7 +200,7 @@ export class CircleciClientV2 {
   private baseUrl: string
   constructor(token: string, logger: Logger, private options: ArgumentOptions, baseUrl?: string) {
     if (baseUrl && path.basename(baseUrl) !== 'api') {
-      throw `${CircleciClientV2.name} accepts only "/api/" But your baseUrl is ${baseUrl}`
+      throw new Error(`${CircleciClientV2.name} accepts only "/api/" But your baseUrl is ${baseUrl}`)
     }
     const axiosLogger = logger.getChildLogger({ name: CircleciClientV2.name })
     this.baseUrl = baseUrl ?? 'https://circleci.com/api',

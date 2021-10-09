@@ -138,7 +138,7 @@ export class CircleciRunnerV1 implements Runner {
         this.store?.setMeta(repoFullname, { version: META_VERSION })
     }
     else if (metadata.version > META_VERSION) {
-      throw `${repoFullname} was executed with ${metadata.version} that is newer than ${CircleciRunnerV1.name}`
+      throw new Error(`${repoFullname} was executed with ${metadata.version} that is newer than ${CircleciRunnerV1.name}`)
     }
   }
 }
