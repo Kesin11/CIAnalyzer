@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import axiosRetry from 'axios-retry'
+import path from 'path'
 import { Logger } from 'tslog'
 
 export type Artifact = {
@@ -34,6 +35,22 @@ export const createAxios = (logger: Logger, config: AxiosRequestConfig) => {
   }
 
   axiosInstance.interceptors.request.use(axiosRequestLogger)
+  axiosInstance.interceptors.response.use((response) => {
+      return response
+    }, (error) => {
+      if(axios.isAxiosError(error)) {
+        logger.error({
+          message: error.message,
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          method: error.request?.method,
+          baseUrl: error.response?.config.baseURL,
+          url: error.response?.config.url,
+          params: error.response?.config.params
+        })
+      }
+    return Promise.reject(error)
+  })
   return axiosInstance
 }
 

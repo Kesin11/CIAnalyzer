@@ -6,6 +6,8 @@ import { failure, Result, success } from "../result";
 import { BitriseRunner } from "./bitrise_runner";
 import { ArgumentOptions } from "../arg_options";
 import { Logger } from "tslog";
+import { ApiError } from "@google-cloud/common"
+import axios from "axios";
 
 export interface Runner {
   run (): Promise<Result<unknown, Error>>
@@ -39,15 +41,37 @@ export class CompositRunner implements Runner {
       this.runners.map((runner) => runner.run())
     )
 
-    const errorResults = results.filter((result) => {
+    const errors = results.filter((result) => {
       return result.status === 'rejected' ||
         (result.status === 'fulfilled' && result.value.isFailure())
-    })
-    if (errorResults.length > 0) {
-      errorResults.forEach((error) => this.logger.error(error))
+    }).map((result) => {
+      if (result.status === 'rejected') return result.reason
+      else return result.value
+    }) as unknown[]
+    if (errors.length > 0) {
+      errors.forEach((error) => this.handlingError(error))
       return failure(new Error('Some runner throws error!!'))
     }
 
     return success('composit')
+  }
+
+  handlingError(error: unknown) {
+    if (axios.isAxiosError(error)) {
+      this.logger.error(error.message)
+      this.logger.error(error.stack)
+    }
+    else if (error instanceof ApiError) {
+      this.logger.error("Catch GCloud Error. Please check 'gcloud' auth status or your permission.")
+      this.logger.error(`${error.response?.body}`)
+      this.logger.error(error.stack)
+    }
+    else if (error instanceof Error) {
+      this.logger.error(error.message)
+      this.logger.error(error.stack)
+    }
+    else {
+      this.logger.error(error)
+    }
   }
 }

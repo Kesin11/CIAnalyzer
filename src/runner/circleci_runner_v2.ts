@@ -94,7 +94,6 @@ export class CircleciRunnerV2 implements Runner {
       catch (error) {
         const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`
         this.logger.error(errorMessage)
-        this.logger.error(error)
         result = failure(new Error(errorMessage))
         continue
       }
@@ -123,7 +122,7 @@ export class CircleciRunnerV2 implements Runner {
         this.store?.setMeta(repoFullname, { version: META_VERSION })
     }
     else if (metadata.version > META_VERSION) {
-      throw `${repoFullname} was executed with ${metadata.version} that is newer than ${CircleciRunnerV2.name}`
+      throw new Error(`${repoFullname} was executed with ${metadata.version} that is newer than ${CircleciRunnerV2.name}`)
     }
   }
 }

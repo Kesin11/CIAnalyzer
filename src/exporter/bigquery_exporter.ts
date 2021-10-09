@@ -27,7 +27,7 @@ export class BigqueryExporter implements Exporter {
 
   constructor( logger:Logger, config: BigqueryExporterConfig, configDir: string ) {
     if (!config.project || !config.dataset) {
-      throw "Must need 'project', 'dataset' parameter in exporter.bigquery config."
+      throw new Error("Must need 'project', 'dataset' parameter in exporter.bigquery config.")
     }
     this.logger = logger.getChildLogger({ name: BigqueryExporter.name })
     this.bigquery = new BigQuery({ projectId: config.project })
@@ -36,7 +36,7 @@ export class BigqueryExporter implements Exporter {
     const workflowTable = config.reports?.find((report) => report.name === 'workflow')?.table
     const testReportTable = config.reports?.find((report) => report.name === 'test_report')?.table
     if (!workflowTable || !testReportTable) {
-      throw "Must need both 'workflow' and 'test_report' table name in exporter.bigquery.reports config."
+      throw new Error("Must need both 'workflow' and 'test_report' table name in exporter.bigquery.reports config.")
     }
     this.table = {
       workflow: workflowTable,
@@ -89,7 +89,6 @@ export class BigqueryExporter implements Exporter {
         })
     } catch (error) {
       this.logger.error(`ERROR!! loading ${tmpJsonPath} to ${this.dataset}.${table}`)
-      this.logger.error(error)
       throw error
     }
 
