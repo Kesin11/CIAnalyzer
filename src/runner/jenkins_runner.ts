@@ -82,7 +82,6 @@ export class JenkinsRunner implements Runner {
       catch (error) {
         const errorMessage = `Some error raised in '${job.name}', so it skipped.`
         this.logger.error(errorMessage)
-        this.logger.error(error)
         result = failure(new Error(errorMessage))
         continue
       }

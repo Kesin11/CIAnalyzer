@@ -89,7 +89,6 @@ export class BigqueryExporter implements Exporter {
         })
     } catch (error) {
       this.logger.error(`ERROR!! loading ${tmpJsonPath} to ${this.dataset}.${table}`)
-      this.logger.error(error)
       throw error
     }
 

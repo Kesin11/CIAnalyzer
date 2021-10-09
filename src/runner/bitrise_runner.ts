@@ -82,7 +82,6 @@ export class BitriseRunner implements Runner {
       catch (error) {
         const errorMessage = `Some error raised in '${configApp.fullname}', so it skipped.`
         this.logger.error(errorMessage)
-        this.logger.error(error)
         result = failure(new Error(errorMessage))
         continue
       }
