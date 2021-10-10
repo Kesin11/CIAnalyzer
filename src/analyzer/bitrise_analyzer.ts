@@ -29,7 +29,7 @@ type WorkflowReport = {
 
 type JobReport = {
   workflowRunId: string, // = workflowRunId
-  buildNumber?: number, // build_number
+  buildNumber: number | undefined, // build_number
   jobId: string, // = build slug
   jobName: string, // workflowName
   status: Status,

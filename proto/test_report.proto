@@ -1,0 +1,60 @@
+syntax = "proto3";
+package schema; // NOTE: protoc-gen-bq-sheme output dir
+import "google/protobuf/timestamp.proto";
+import "protoc-gen-bq-schema/bq_table.proto";
+import "protoc-gen-bq-schema/bq_field.proto";
+
+// USAGE: /protoc/bin/protoc --plugin="./node_modules/.bin/protoc-gen-ts_proto" --plugin="protoc-gen-bq-schema" --ts_proto_out="generated" --ts_proto_opt=outputEncodeMethods=false,outputJsonMethods=false,outputClientImpl=false -I=proto -I=protoc --bq-schema_out=generated proto/*
+
+message PbTestReport {
+  option (gen_bq_schema.bigquery_opts).table_name = "test_report";
+
+  int32 successCount = 1; // 0 | 1
+  string status = 2; // 'SUCCESS' | 'FAILURE'
+  string branch = 3; 
+  string workflowName = 4; 
+  google.protobuf.Timestamp createdAt = 5 [ (gen_bq_schema.bigquery) = {
+    description: 'bq-datetime'
+  }];
+  int32 buildNumber = 6; 
+  PbTestSuites testSuites = 7;
+  string service = 8; 
+  string workflowRunId = 9; 
+  string workflowId = 10; 
+}
+
+message PbTestSuites {
+  repeated PbTestSuite testsuite = 1;
+  int32 failures = 2; 
+  float time = 3; 
+  int32 tests = 4; 
+  string name = 5; 
+  int32 errors = 6; 
+  int32 disabled = 7; 
+}
+
+message PbTestSuite {
+  repeated PbTestCase testcase = 1;
+  int32 tests = 2; 
+  float time = 3; 
+  google.protobuf.Timestamp timestamp = 4 [ (gen_bq_schema.bigquery) = {
+    description: 'bq-datetime'
+  }];
+  int32 skipped = 5; 
+  int32 failures = 6; 
+  int32 errors = 7; 
+  string name = 8; 
+  int32 disabled = 9; 
+  string hostname = 10; 
+  string id = 11; 
+  string package = 12; 
+}
+
+message PbTestCase {
+  string status = 1; // 'SUCCESS' | 'FAILURE' | 'ERROR' | 'SKIPPED'
+  int32 successCount = 2; // 0 | 1
+  float time = 3; 
+  string name = 4; 
+  string classname = 5; 
+  int32 assertions = 6; 
+}
