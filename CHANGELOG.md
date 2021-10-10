@@ -1,3 +1,14 @@
+## [4.3.1](https://github.com/Kesin11/CIAnalyzer/compare/v4.3.0...v4.3.1) (2021-10-10)
+
+
+### Bug Fixes
+
+* **CircleCI:** Bugfix cannot use API v2 when no CIRCLECI_TOKEN ([9e539fe](https://github.com/Kesin11/CIAnalyzer/commit/9e539feb87bf759f2e251b22b5475c1742bd58de))
+* Error log shows appropriate stack trace ([ecf477c](https://github.com/Kesin11/CIAnalyzer/commit/ecf477c94864f97d56b470c06c84e9500c6e85d9))
+* Show more better error log ([c1e2f70](https://github.com/Kesin11/CIAnalyzer/commit/c1e2f70ed73d2a4827850049e484833d5b97b953))
+
+
+
 # [4.3.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.2.0...v4.3.0) (2021-10-03)
 
 # Support CircleCI API v2 🎉 
