@@ -1,0 +1,81 @@
+syntax = "proto3";
+package schema; // NOTE: protoc-gen-bq-sheme output dir
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "protoc-gen-bq-schema/bq_table.proto";
+import "protoc-gen-bq-schema/bq_field.proto";
+
+// USAGE: /protoc/bin/protoc --plugin="./node_modules/.bin/protoc-gen-ts_proto" --plugin="protoc-gen-bq-schema" --ts_proto_out="generated" --ts_proto_opt=outputEncodeMethods=false,outputJsonMethods=false,outputClientImpl=false -I=proto -I=protoc --bq-schema_out=generated proto/*
+
+message PbWorkflowReport {
+  option (gen_bq_schema.bigquery_opts).table_name = "workflow_report";
+
+  string service = 1;
+  string workflowId = 2;
+  string workflowRunId = 3;
+  int32 buildNumber = 4;
+  string workflowName = 5;
+  google.protobuf.Timestamp createdAt = 6 [ (gen_bq_schema.bigquery) = {
+    description: 'bq-datetime'
+  }];
+  string trigger = 7;
+  string status = 8; // 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
+  string repository = 9;
+  string headSha = 10;
+  string branch = 11;
+  string tag = 12;
+  google.protobuf.Timestamp startedAt = 13 [ (gen_bq_schema.bigquery) = {
+    description: 'bq-datetime'
+  }];
+  google.protobuf.Timestamp completedAt = 14 [ (gen_bq_schema.bigquery) = {
+    description: 'bq-datetime'
+  }];
+  float workflowDurationSec = 15;
+  float sumJobsDurationSec = 16;
+  float queuedDurationSec = 17;
+  int32 successCount = 18; // 0 | 1
+  repeated PbJobReport jobs = 19;
+  repeated PbJobParameter parameters = 20;
+}
+
+message PbJobReport {
+  string workflowRunId = 1;
+  google.protobuf.Int32Value buildNumber = 2;
+  string jobId = 3;
+  string jobName = 4;
+  string status = 5; // 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
+  google.protobuf.Timestamp startedAt = 6 [ (gen_bq_schema.bigquery) = {
+    description: 'bq-datetime'
+  }];
+  google.protobuf.Timestamp completedAt = 7 [ (gen_bq_schema.bigquery) = {
+    description: 'bq-datetime'
+  }];
+  float jobDurationSec = 8;
+  float sumStepsDurationSec = 9;
+  repeated PbStepReport steps = 10;
+}
+
+message PbStepReport {
+  string name = 1;
+  string status = 2; // 'SUCCESS' | 'FAILURE' | 'ABORTED' | 'OTHER'
+  int32 number = 3;
+  google.protobuf.Timestamp startedAt = 4 [ (gen_bq_schema.bigquery) = {
+    description: 'bq-datetime'
+  }];
+  google.protobuf.Timestamp completedAt = 5 [ (gen_bq_schema.bigquery) = {
+    description: 'bq-datetime'
+  }];
+  float stepDurationSec = 6;
+}
+
+message PbJobParameter {
+  string name = 1;
+  string value = 2;
+}
+
+message PbWorkflowParams {
+  string workflowId = 1;
+  string workflowRunId = 2;
+  int32 buildNumber = 3;
+  string workflowName = 4;
+}

@@ -1,205 +1,205 @@
 [
-  {
-    "mode": "NULLABLE", 
-    "name": "sumJobsDurationSec", 
-    "type": "FLOAT"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "workflowDurationSec", 
-    "type": "FLOAT"
-  }, 
-  {
-    "description": "bq-datetime", 
-    "mode": "NULLABLE", 
-    "name": "completedAt", 
-    "type": "TIMESTAMP"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "branch", 
-    "type": "STRING"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "tag", 
-    "type": "STRING"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "headSha", 
-    "type": "STRING"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "workflowId", 
-    "type": "STRING"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "workflowRunId", 
-    "type": "STRING"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "status", 
-    "type": "STRING"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "successCount", 
-    "type": "INTEGER"
-  }, 
-  {
-    "description": "bq-datetime", 
-    "mode": "NULLABLE", 
-    "name": "startedAt", 
-    "type": "TIMESTAMP"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "trigger", 
-    "type": "STRING"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "workflowName", 
-    "type": "STRING"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "repository", 
-    "type": "STRING"
-  }, 
-  {
-    "description": "bq-datetime", 
-    "mode": "NULLABLE", 
-    "name": "createdAt", 
-    "type": "TIMESTAMP"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "service", 
-    "type": "STRING"
-  }, 
-  {
-    "mode": "NULLABLE", 
-    "name": "buildNumber", 
-    "type": "INTEGER"
-  }, 
-  {
+ {
+  "name": "service",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "workflowId",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "workflowRunId",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "buildNumber",
+  "type": "INTEGER",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "workflowName",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "createdAt",
+  "type": "TIMESTAMP",
+  "mode": "NULLABLE",
+  "description": "bq-datetime"
+ },
+ {
+  "name": "trigger",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "status",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "repository",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "headSha",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "branch",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "tag",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "startedAt",
+  "type": "TIMESTAMP",
+  "mode": "NULLABLE",
+  "description": "bq-datetime"
+ },
+ {
+  "name": "completedAt",
+  "type": "TIMESTAMP",
+  "mode": "NULLABLE",
+  "description": "bq-datetime"
+ },
+ {
+  "name": "workflowDurationSec",
+  "type": "FLOAT",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "sumJobsDurationSec",
+  "type": "FLOAT",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "queuedDurationSec",
+  "type": "FLOAT",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "successCount",
+  "type": "INTEGER",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "jobs",
+  "type": "RECORD",
+  "mode": "REPEATED",
+  "fields": [
+   {
+    "name": "workflowRunId",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "buildNumber",
+    "type": "INTEGER",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "jobId",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "jobName",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "startedAt",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE",
+    "description": "bq-datetime"
+   },
+   {
+    "name": "completedAt",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE",
+    "description": "bq-datetime"
+   },
+   {
+    "name": "jobDurationSec",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "sumStepsDurationSec",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "steps",
+    "type": "RECORD",
+    "mode": "REPEATED",
     "fields": [
-      {
-        "fields": [
-          {
-            "mode": "NULLABLE", 
-            "name": "stepDurationSec", 
-            "type": "FLOAT"
-          }, 
-          {
-            "description": "bq-datetime", 
-            "mode": "NULLABLE", 
-            "name": "startedAt", 
-            "type": "TIMESTAMP"
-          }, 
-          {
-            "mode": "NULLABLE", 
-            "name": "status", 
-            "type": "STRING"
-          }, 
-          {
-            "description": "bq-datetime", 
-            "mode": "NULLABLE", 
-            "name": "completedAt", 
-            "type": "TIMESTAMP"
-          }, 
-          {
-            "mode": "NULLABLE", 
-            "name": "number", 
-            "type": "INTEGER"
-          }, 
-          {
-            "mode": "NULLABLE", 
-            "name": "name", 
-            "type": "STRING"
-          }
-        ], 
-        "mode": "REPEATED", 
-        "name": "steps", 
-        "type": "RECORD"
-      }, 
-      {
-        "mode": "NULLABLE", 
-        "name": "sumStepsDurationSec", 
-        "type": "FLOAT"
-      }, 
-      {
-        "description": "bq-datetime", 
-        "mode": "NULLABLE", 
-        "name": "completedAt", 
-        "type": "TIMESTAMP"
-      }, 
-      {
-        "mode": "NULLABLE", 
-        "name": "status", 
-        "type": "STRING"
-      }, 
-      {
-        "mode": "NULLABLE", 
-        "name": "jobDurationSec", 
-        "type": "FLOAT"
-      }, 
-      {
-        "mode": "NULLABLE", 
-        "name": "jobName", 
-        "type": "STRING"
-      }, 
-      {
-        "mode": "NULLABLE", 
-        "name": "jobId", 
-        "type": "STRING"
-      }, 
-      {
-        "mode": "NULLABLE", 
-        "name": "buildNumber", 
-        "type": "INTEGER"
-      }, 
-      {
-        "description": "bq-datetime", 
-        "mode": "NULLABLE", 
-        "name": "startedAt", 
-        "type": "TIMESTAMP"
-      }, 
-      {
-        "mode": "NULLABLE", 
-        "name": "workflowRunId", 
-        "type": "STRING"
-      }
-    ], 
-    "mode": "REPEATED", 
-    "name": "jobs", 
-    "type": "RECORD"
-  },
-  {
-    "fields": [
-      {
-        "mode": "NULLABLE", 
-        "name": "name", 
-        "type": "STRING"
-      }, 
-      {
-        "mode": "NULLABLE", 
-        "name": "value", 
-        "type": "STRING"
-      } 
-    ], 
-    "mode": "REPEATED", 
-    "name": "parameters", 
-    "type": "RECORD"
-  },
-  {
-    "mode": "NULLABLE", 
-    "name": "queuedDurationSec", 
-    "type": "FLOAT"
-  } 
+     {
+      "name": "name",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "status",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "number",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "startedAt",
+      "type": "TIMESTAMP",
+      "mode": "NULLABLE",
+      "description": "bq-datetime"
+     },
+     {
+      "name": "completedAt",
+      "type": "TIMESTAMP",
+      "mode": "NULLABLE",
+      "description": "bq-datetime"
+     },
+     {
+      "name": "stepDurationSec",
+      "type": "FLOAT",
+      "mode": "NULLABLE"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "parameters",
+  "type": "RECORD",
+  "mode": "REPEATED",
+  "fields": [
+   {
+    "name": "name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "value",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   }
+  ]
+ }
 ]

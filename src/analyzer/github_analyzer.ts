@@ -32,7 +32,7 @@ type WorkflowReport = {
 
 type JobReport = {
   workflowRunId: string, // = workflowRunId
-  buildNumber?: number, // undefined. Github Action does not provide job build number
+  buildNumber: number | undefined, // undefined. Github Action does not provide job build number
   jobId: string, // = id
   jobName: string,
   status: Status,
