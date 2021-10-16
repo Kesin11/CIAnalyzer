@@ -1,0 +1,22 @@
+protoc:
+  FROM ../+deps
+  RUN curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip \
+    && unzip protoc-3.15.8-linux-x86_64.zip -d protoc
+  RUN git -C protoc clone --depth=1 https://github.com/GoogleCloudPlatform/protoc-gen-bq-schema.git 
+  RUN curl -L -o protoc-gen-bq-schema https://github.com/GoogleCloudPlatform/protoc-gen-bq-schema/releases/download/v1.0/protoc-gen-bq-schema_linux_amd64 \
+    && chmod +x protoc-gen-bq-schema
+  COPY --dir . proto/
+  RUN mkdir -p generated && protoc/bin/protoc \
+    --plugin="./node_modules/.bin/protoc-gen-ts_proto" \
+    --plugin="protoc-gen-bq-schema" \
+    --ts_proto_out="generated" \
+    --ts_proto_opt=outputEncodeMethods=false,outputJsonMethods=false,outputClientImpl=false \
+    -I=proto \
+    -I=protoc \
+    --bq-schema_out=generated \
+    proto/*
+
+  SAVE ARTIFACT generated/*.ts pb_types/
+  RUN cp generated/schema/workflow_report.schema generated/schema/workflow_report.json \
+    && cp generated/schema/test_report.schema generated/schema/test_report.json
+  SAVE ARTIFACT generated/schema/*.json schema/

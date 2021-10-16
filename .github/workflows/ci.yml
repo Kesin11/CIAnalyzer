@@ -8,16 +8,18 @@ on:
     - 'Jenkinsfile'
 
 jobs:
-  lint:
+  check_proto:
     runs-on: ubuntu-latest
-    container:
-      image: "node:lts"
     steps:
       - uses: actions/checkout@v2
-      - run: npm ci
-      - name: Lint
-        run: npm run lint
-  
+      - uses: earthly/actions/setup-earthly@v1
+        with:
+          version: latest
+      - name: Generate files from proto
+        run: earthly --strict +proto
+      - name: Check uncommited generated files are exists
+        run: git diff --name-only --exit-code
+
   build_and_test:
     runs-on: ubuntu-latest
     container:

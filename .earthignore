@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+
+# Generate when development
+dist
+output/
+junit
+.ci_analyzer/
+
+# Use only development
+.git/
+sample/
+.circleci/
+.github/
