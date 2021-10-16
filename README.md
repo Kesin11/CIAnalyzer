@@ -397,10 +397,25 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
   - `export CI_ANALYZER_DEBUG=1`
 
 # Development
-## Install
+## Install and test
 ```bash
 npm ci
 npm run build
+npm run test
+```
+
+## Generate pb_types and bigquery_schema from .proto files
+Install [Earthly](https://earthly.dev/) first and then execute these commands.
+
+```
+npm run proto
+```
+
+## Docker build
+Install [Earthly](https://earthly.dev/) first and then execute these commands.
+
+```
+npm run docker
 ```
 
 ## Execute CIAnalyzer using nodejs
