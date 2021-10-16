@@ -30,7 +30,9 @@
     "test:watch": "jest --watch",
     "coverage": "codecov",
     "release:prepare": "shipjs prepare",
-    "release:trigger": "shipjs trigger"
+    "release:trigger": "shipjs trigger",
+    "proto": "earthly --strict +proto",
+    "docker": "earthly --strict +docker"
   },
   "dependencies": {
     "@google-cloud/bigquery": "5.9.0",
