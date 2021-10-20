@@ -1,5 +1,5 @@
 # TypeScript build
-FROM node:14-alpine AS ts-builder
+FROM node:17-alpine AS ts-builder
 LABEL org.opencontainers.image.source https://github.com/Kesin11/CIAnalyzer
 LABEL org.opencontainers.image.authors kesin1202000@gmail.com
 WORKDIR /build
@@ -11,14 +11,14 @@ COPY . .
 RUN npm run clean && npm run build
 
 # Install production packages
-FROM node:14-alpine AS prod-builder
+FROM node:17-alpine AS prod-builder
 WORKDIR /build
 
 COPY package*.json ./
 RUN npm ci --production
 
 # Runtime image
-FROM node:14-alpine
+FROM node:17-alpine
 WORKDIR /ci_analyzer
 
 # Resolve nodejs pid=1 problem
