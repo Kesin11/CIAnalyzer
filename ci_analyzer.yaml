@@ -62,7 +62,7 @@ jenkins:
     - name: ci_analyzer
       tests:
         - 'junit/junit.xml' # Test report JUnit XML path in artifact
-      custom_reports:
+      customReports:
         - name: { CUSTOM_REPORT_NAME }
           paths:
             - 'custom.json'
