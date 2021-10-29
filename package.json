@@ -42,7 +42,7 @@
     "@octokit/rest": "18.12.0",
     "adm-zip": "0.5.9",
     "axios": "0.24.0",
-    "axios-retry": "3.2.3",
+    "axios-retry": "3.2.4",
     "dayjs": "1.10.7",
     "js-yaml": "4.1.0",
     "junit2json": "2.0.5",
