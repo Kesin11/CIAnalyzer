@@ -60,4 +60,4 @@ docker:
   ENTRYPOINT [ "/sbin/tini", "--", "node", "/ci_analyzer/dist/index.js" ]
   WORKDIR /app
 
-  SAVE IMAGE --push ghcr.io/kesin11/ci_analyzer
+  SAVE IMAGE --push ghcr.io/kesin11/ci_analyzer:latest
