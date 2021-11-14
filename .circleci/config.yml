@@ -48,11 +48,11 @@ jobs:
           - ~/.npm
   docker_build:
     docker:
-      - image: circleci/node:lts
+      - image: earthly/earthly
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker build -t ci_analyzer .
+      - run: earthly --strict +docker
 
 workflows:
   version: 2
