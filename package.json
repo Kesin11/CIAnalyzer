@@ -31,8 +31,8 @@
     "coverage": "codecov",
     "release:prepare": "shipjs prepare",
     "release:trigger": "shipjs trigger",
-    "proto": "earthly --strict +proto",
-    "docker": "earthly --strict +docker"
+    "proto": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +proto",
+    "docker": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker"
   },
   "dependencies": {
     "@google-cloud/bigquery": "5.9.1",

@@ -16,7 +16,7 @@ jobs:
         with:
           version: latest
       - name: Generate files from proto
-        run: earthly --strict +proto
+        run: npm run proto
       - name: Check uncommited generated files are exists
         run: git diff --name-only --exit-code
 
@@ -68,4 +68,4 @@ jobs:
         with:
           version: latest
       - name: Docker build
-        run: earthly --strict +docker
+        run: npm run docker
