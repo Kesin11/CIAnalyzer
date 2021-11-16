@@ -13,6 +13,7 @@ deps:
   COPY package.json package-lock.json .
   RUN npm i -g npm@v7
   RUN npm ci
+  SAVE IMAGE --cache-hint
 
 build:
   FROM +deps
@@ -20,6 +21,7 @@ build:
   COPY ./proto+protoc/pb_types src/pb_types
   RUN npm run build:clean
   SAVE ARTIFACT dist AS LOCAL ./dist
+  SAVE IMAGE --cache-hint
 
 proto:
   BUILD ./proto+protoc
@@ -27,6 +29,7 @@ proto:
   COPY ./proto+protoc/schema /tmp/schema
   SAVE ARTIFACT /tmp/pb_types/* AS LOCAL ./src/pb_types/
   SAVE ARTIFACT /tmp/schema/* AS LOCAL ./bigquery_schema/
+  SAVE IMAGE --cache-hint
 
 test:
   FROM +deps
@@ -60,4 +63,4 @@ docker:
   ENTRYPOINT [ "/sbin/tini", "--", "node", "/ci_analyzer/dist/index.js" ]
   WORKDIR /app
 
-  SAVE IMAGE --push ghcr.io/kesin11/ci_analyzer:latest
+  SAVE IMAGE --push ghcr.io/kesin11/ci_analyzer_earthly:latest
