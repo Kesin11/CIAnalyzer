@@ -36,6 +36,8 @@ message PbWorkflowReport {
   int32 successCount = 18; // 0 | 1
   repeated PbJobReport jobs = 19;
   repeated PbJobParameter parameters = 20;
+  string commitMessage = 21;
+  string actor = 22;
 }
 
 message PbJobReport {

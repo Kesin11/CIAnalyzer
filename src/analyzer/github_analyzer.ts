@@ -28,6 +28,8 @@ type WorkflowReport = {
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
   parameters: [] // GithubAnalyzer does not support build parameters yet
   queuedDurationSec: number // createdAt - startedAt
+  commitMessage: string
+  actor: string // Kenta Kase
 }
 
 type JobReport = {
@@ -128,6 +130,8 @@ export class GithubAnalyzer implements Analyzer {
       successCount: (status === 'SUCCESS') ? 1 : 0,
       parameters: [],
       queuedDurationSec: diffSec(createdAt, startedAt),
+      commitMessage: workflow.head_commit?.message ?? '',
+      actor: workflow.head_commit?.author?.name ?? '',
     }
   }
 

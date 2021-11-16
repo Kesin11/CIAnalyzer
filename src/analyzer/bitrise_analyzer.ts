@@ -25,6 +25,8 @@ type WorkflowReport = {
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
   parameters: [] // BitriseAnalyzer does not support build parameters yet
   queuedDurationSec: number // createdAt - startedAt
+  commitMessage: string,
+  actor: string, // manual-Kesin11
 }
 
 type JobReport = {
@@ -87,7 +89,7 @@ export class BitriseAnalyzer implements Analyzer {
       buildNumber,
       workflowName,
       createdAt: new Date(build.triggered_at),
-      trigger: build.triggered_by,
+      trigger: build.triggered_by ?? '',
       status,
       repository: app.repo,
       headSha: build.commit_hash ?? '',
@@ -111,7 +113,9 @@ export class BitriseAnalyzer implements Analyzer {
       sumJobsDurationSec: sumStepsDurationSec,
       successCount: (status === 'SUCCESS') ? 1 : 0,
       parameters: [],
-      queuedDurationSec: diffSec(createdAt, startedAt)
+      queuedDurationSec: diffSec(createdAt, startedAt),
+      commitMessage: build.commit_message ?? '',
+      actor: build.triggered_by ?? '',
     }
   }
 
