@@ -1,3 +1,12 @@
+## [4.3.2](https://github.com/Kesin11/CIAnalyzer/compare/v4.3.1...v4.3.2) (2021-12-04)
+
+
+### Bug Fixes
+
+* npm audit fix ([af48460](https://github.com/Kesin11/CIAnalyzer/commit/af48460ff9ca58720525b612bdbb6caafc86414c))
+
+
+
 ## [4.3.1](https://github.com/Kesin11/CIAnalyzer/compare/v4.3.0...v4.3.1) (2021-10-10)
 
 
