@@ -26,6 +26,8 @@ type WorkflowReport = {
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
   parameters: [] // CircleciAnalyzer does not support output build parameters yet
   queuedDurationSec: number // createdAt - min(jobs start_time)
+  commitMessage: '' // CircleCIAnalyzer(v1) does not support
+  actor: '' // CircleCIAnalyzer(v1) does not support
 }
 
 export type JobReport = {
@@ -137,6 +139,8 @@ export class CircleciAnalyzer implements Analyzer {
       successCount: (status === 'SUCCESS') ? 1 : 0,
       parameters: [],
       queuedDurationSec: diffSec(createdAt, min(jobs.map((job) => new Date(job.start_time)))!),
+      commitMessage: '',
+      actor: '',
     }
   }
 

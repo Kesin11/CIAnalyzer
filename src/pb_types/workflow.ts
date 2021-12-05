@@ -24,6 +24,8 @@ export interface PbWorkflowReport {
   successCount: number;
   jobs: PbJobReport[];
   parameters: PbJobParameter[];
+  commitMessage: string;
+  actor: string;
 }
 
 export interface PbJobReport {

@@ -24,7 +24,9 @@ type WorkflowReport = {
   sumJobsDurationSec: number // = sum(jobs sumStepsDurationSec)
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
   parameters: JobParameter[]
-  queuedDurationSec: number
+  queuedDurationSec: number,
+  commitMessage: '' // JenkinsAnalyzer does not support
+  actor: '' // JenkinsAnalyzer does not support
 }
 
 type JobReport = {
@@ -121,6 +123,8 @@ export class JenkinsAnalyzer implements Analyzer {
       successCount: (status === 'SUCCESS') ? 1 : 0,
       parameters: this.detectParameters(build),
       queuedDurationSec: secRound(this.estimateQueuedDuration(build) / 1000),
+      commitMessage: '',
+      actor: '',
     }
   }
 

@@ -39,6 +39,10 @@ Workflow is a data about job that executed in CI. The items included in the work
 - Branch
 - Tag
 - Queued time
+- Commit
+- Actor
+
+See full schema: [workflow.proto](./proto/workflow.proto)
 
 ## Test report
 Test report is a data about test. If you output test result as JUnit format XML and store to archive, CIAnalyzer can collect from it.
@@ -50,6 +54,8 @@ Test report is a data about test. If you output test result as JUnit format XML 
 - Number of test
 - Failure test num
 - Branch
+
+See full schema: [test_report.proto](./proto/test_report.proto)
 
 # Supported services
 - CI services
@@ -377,9 +383,9 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 - [x] Support Bitrise
 - [x] Support CircleCI API v2
 - [x] Implement better logger
-- [ ] Better error message
-- [ ] Also export commit message
-- [ ] Also export executor info (CircleCI, Bitrise)
+- [x] Better error message
+- [x] Export commit message
+- [ ] Export executor info (CircleCI, Bitrise)
 
 # Debug options
 - Fetch only selected service

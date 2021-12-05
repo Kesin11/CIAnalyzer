@@ -55,7 +55,7 @@ export type BuildResponse = {
   commit_message: string | null // null,
   tag: string | null // null,
   triggered_workflow: string // "primary",
-  triggered_by: string // "manual-Kesin11",
+  triggered_by: string | null // "manual-Kesin11",
   machine_type_id: string // "standard",
   stack_identifier: string // "osx-vs4mac-stable",
   original_build_params: {

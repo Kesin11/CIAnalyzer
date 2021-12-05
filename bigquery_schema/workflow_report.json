@@ -201,5 +201,15 @@
     "mode": "NULLABLE"
    }
   ]
+ },
+ {
+  "name": "commitMessage",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "actor",
+  "type": "STRING",
+  "mode": "NULLABLE"
  }
 ]

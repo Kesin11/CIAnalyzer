@@ -26,6 +26,8 @@ type WorkflowReport = {
   successCount: 0 | 1 // = 'SUCCESS': 1, others: 0
   parameters: [] // CircleciAnalyzerV2 does not support output build parameters yet
   queuedDurationSec: number // createdAt - startedAt
+  commitMessage: string,
+  actor: string, // Kesin11
 }
 
 type JobReport = {
@@ -137,6 +139,8 @@ export class CircleciAnalyzerV2 implements Analyzer {
       successCount: (status === 'SUCCESS') ? 1 : 0,
       parameters: [],
       queuedDurationSec: diffSec(createdAt, startedAt), // firstJob.started_at - workflow.created_at
+      commitMessage: pipeline.vcs.commit?.subject ?? '',
+      actor: pipeline.trigger.actor.login,
     }
   }
 
