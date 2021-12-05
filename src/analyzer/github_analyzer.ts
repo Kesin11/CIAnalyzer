@@ -30,6 +30,7 @@ type WorkflowReport = {
   queuedDurationSec: number // createdAt - startedAt
   commitMessage: string
   actor: string // Kenta Kase
+  url: string // https://github.com/{org}/{repo}/actions/runs/{runId}
 }
 
 type JobReport = {
@@ -43,6 +44,7 @@ type JobReport = {
   jobDurationSec: number, // = completedAt - startedAt
   sumStepsDurationSec: number // = sum(steps duration)
   steps: StepReport[],
+  url: string // https://github.com/{org}/{repo}/runs/{jobId}?check_suite_focus=true
 }
 
 type StepReport = {
@@ -101,6 +103,7 @@ export class GithubAnalyzer implements Analyzer {
         jobDurationSec: diffSec(startedAt, completedAt),
         sumStepsDurationSec: sumBy(stepReports, 'stepDurationSec'),
         steps: stepReports,
+        url: job.html_url ?? '',
       }
     })
 
@@ -132,6 +135,7 @@ export class GithubAnalyzer implements Analyzer {
       queuedDurationSec: diffSec(createdAt, startedAt),
       commitMessage: workflow.head_commit?.message ?? '',
       actor: workflow.head_commit?.author?.name ?? '',
+      url: workflow.html_url,
     }
   }
 

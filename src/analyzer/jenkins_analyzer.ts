@@ -1,3 +1,4 @@
+import { URL } from 'url'
 import { Status, Analyzer, secRound, TestReport, WorkflowParams, convertToTestReports } from "./analyzer"
 import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, TimeInQueueAction } from "../client/jenkins_client"
 import { sumBy, first } from "lodash"
@@ -27,6 +28,7 @@ type WorkflowReport = {
   queuedDurationSec: number,
   commitMessage: '' // JenkinsAnalyzer does not support
   actor: '' // JenkinsAnalyzer does not support
+  url: string // {baseUrl}/job/{$jobName}/{$buildNumber}
 }
 
 type JobReport = {
@@ -40,6 +42,7 @@ type JobReport = {
   jobDurationSec: number, // = durationMillis
   sumStepsDurationSec: number // = sum(steps duration)
   steps: StepReport[],
+  url: '' // Jenkins does not provide each stage url
 }
 
 type StepReport = {
@@ -57,7 +60,10 @@ type JobParameter = {
 }
 
 export class JenkinsAnalyzer implements Analyzer {
-  constructor() { }
+  htmlBaseUrl: string
+  constructor(baseUrl: string) {
+    this.htmlBaseUrl = baseUrl
+  }
 
   createWorkflowParams(jobName: string, runId: string): WorkflowParams {
     return {
@@ -97,10 +103,12 @@ export class JenkinsAnalyzer implements Analyzer {
         jobDurationSec: stage.durationMillis / 1000,
         sumStepsDurationSec: secRound(sumBy(stepReports, 'stepDurationSec')),
         steps: stepReports,
+        url: '',
       }
     })
 
     const status = this.normalizeStatus(run.status)
+    const url = new URL(`job/${workflowName}/${buildNumber}`, this.htmlBaseUrl)
     // workflow
     return {
       service: 'jenkins',
@@ -125,6 +133,7 @@ export class JenkinsAnalyzer implements Analyzer {
       queuedDurationSec: secRound(this.estimateQueuedDuration(build) / 1000),
       commitMessage: '',
       actor: '',
+      url: url.toString(),
     }
   }
 

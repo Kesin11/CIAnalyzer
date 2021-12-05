@@ -26,6 +26,7 @@ export interface PbWorkflowReport {
   parameters: PbJobParameter[];
   commitMessage: string;
   actor: string;
+  url: string;
 }
 
 export interface PbJobReport {
@@ -40,6 +41,7 @@ export interface PbJobReport {
   jobDurationSec: number;
   sumStepsDurationSec: number;
   steps: PbStepReport[];
+  url: string;
 }
 
 export interface PbStepReport {

@@ -27,6 +27,7 @@ type WorkflowReport = {
   queuedDurationSec: number // createdAt - startedAt
   commitMessage: string,
   actor: string, // manual-Kesin11
+  url: string, // https://app.bitrise.io/build/{buildSlug}
 }
 
 type JobReport = {
@@ -40,6 +41,7 @@ type JobReport = {
   jobDurationSec: number, // = completedAt - startedAt
   sumStepsDurationSec: number // = sum(steps duration)
   steps: StepReport[],
+  url: string, // https://app.bitrise.io/build/{buildSlug}
 }
 
 type StepReport = {
@@ -82,6 +84,7 @@ export class BitriseAnalyzer implements Analyzer {
     const status = this.normalizeStatus(build.status)
     const steps = this.createStepReports(startedAt, buildLog)
     const sumStepsDurationSec = secRound(sumBy(steps, 'stepDurationSec'))
+    const url = `https://app.bitrise.io/build/${build.slug}`
     return {
       service: 'bitrise',
       workflowId,
@@ -105,7 +108,8 @@ export class BitriseAnalyzer implements Analyzer {
         completedAt: completedAt,
         jobDurationSec: diffSec(startedAt, completedAt),
         sumStepsDurationSec,
-        steps: steps
+        steps: steps,
+        url,
       }],
       startedAt,
       completedAt,
@@ -116,6 +120,7 @@ export class BitriseAnalyzer implements Analyzer {
       queuedDurationSec: diffSec(createdAt, startedAt),
       commitMessage: build.commit_message ?? '',
       actor: build.triggered_by ?? '',
+      url,
     }
   }
 
