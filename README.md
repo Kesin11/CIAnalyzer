@@ -41,6 +41,7 @@ Workflow is a data about job that executed in CI. The items included in the work
 - Queued time
 - Commit
 - Actor
+- Workflow URL
 
 See full schema: [workflow.proto](./proto/workflow.proto)
 
