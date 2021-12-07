@@ -182,6 +182,11 @@
       "mode": "NULLABLE"
      }
     ]
+   },
+   {
+    "name": "url",
+    "type": "STRING",
+    "mode": "NULLABLE"
    }
   ]
  },
@@ -209,6 +214,11 @@
  },
  {
   "name": "actor",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "url",
   "type": "STRING",
   "mode": "NULLABLE"
  }

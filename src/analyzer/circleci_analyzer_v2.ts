@@ -1,3 +1,4 @@
+import { URL } from 'url'
 import { sumBy, sortBy, first } from "lodash"
 import { Status, diffSec, Analyzer, secRound, TestReport, WorkflowParams, convertToReportTestSuites } from "./analyzer"
 import { JobTest } from "../client/circleci_client_v2"
@@ -28,6 +29,7 @@ type WorkflowReport = {
   queuedDurationSec: number // createdAt - startedAt
   commitMessage: string,
   actor: string, // Kesin11
+  url: '', // CircleCI does not provide Pipeline html url
 }
 
 type JobReport = {
@@ -41,6 +43,7 @@ type JobReport = {
   jobDurationSec: number, // = completedAt - startedAt
   sumStepsDurationSec: number // = sum(steps duration)
   steps: StepReport[],
+  url: string // https://app.circleci.com/pipelines/{vcs}/{org}/{repo}/{pipelineNumber}/workflows/{workflowId}
 }
 
 type StepReport = {
@@ -53,7 +56,13 @@ type StepReport = {
 }
 
 export class CircleciAnalyzerV2 implements Analyzer {
-  constructor() { }
+  htmlBaseUrl: string
+  constructor(baseUrl?: string) {
+    // Remove pathname: '/api/' and add subdomain: 'app.'
+    const url = new URL(baseUrl ?? 'https://circleci.com')
+    url.hostname = `app.${url.hostname}`
+    this.htmlBaseUrl = url.origin
+  }
 
   createWorkflowParams(workflowName: string, repository: string, buildNumber: number): WorkflowParams {
     return {
@@ -95,6 +104,7 @@ export class CircleciAnalyzerV2 implements Analyzer {
 
       const startedAt = new Date(job.started_at)
       const completedAt = new Date(job.stopped_at ?? job.started_at)
+      const url = new URL(`pipelines/${workflow.project_slug}/${workflow.pipeline_number}/workflows/${workflow.id}`, this.htmlBaseUrl)
       // job
       return {
         workflowRunId,
@@ -107,6 +117,7 @@ export class CircleciAnalyzerV2 implements Analyzer {
         jobDurationSec: diffSec(startedAt, completedAt),
         sumStepsDurationSec: secRound(sumBy(stepReports, 'stepDurationSec')),
         steps: stepReports,
+        url: url.toString(),
       }
     })
 
@@ -141,6 +152,7 @@ export class CircleciAnalyzerV2 implements Analyzer {
       queuedDurationSec: diffSec(createdAt, startedAt), // firstJob.started_at - workflow.created_at
       commitMessage: pipeline.vcs.commit?.subject ?? '',
       actor: pipeline.trigger.actor.login,
+      url: '',
     }
   }
 

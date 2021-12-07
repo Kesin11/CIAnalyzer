@@ -15,7 +15,7 @@ import { Logger } from "tslog"
 export class JenkinsRunner implements Runner {
   service: string = 'jenkins'
   client?: JenkinsClient
-  analyzer: JenkinsAnalyzer 
+  analyzer?: JenkinsAnalyzer 
   config?: JenkinsConfig
   store?: LastRunStore
   logger: Logger
@@ -23,11 +23,11 @@ export class JenkinsRunner implements Runner {
   constructor(logger: Logger, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     this.config = parseConfig(yamlConfig)
     this.logger = logger.getChildLogger({ name: JenkinsRunner.name, instanceName: this.service })
-    this.analyzer = new JenkinsAnalyzer()
 
     if (!this.config) return
     const JENKINS_USER = process.env['JENKINS_USER']
     const JENKINS_TOKEN = process.env['JENKINS_TOKEN']
+    this.analyzer = new JenkinsAnalyzer(this.config.baseUrl)
     this.client = new JenkinsClient(this.config.baseUrl, this.logger, JENKINS_USER, JENKINS_TOKEN)
   }
 
@@ -42,6 +42,7 @@ export class JenkinsRunner implements Runner {
     let result: Result<unknown, Error> = success(this.service)
     if (!this.config) return failure(new Error('this.config must not be undefined'))
     if (!this.client) return failure(new Error('this.client must not be undefined'))
+    if (!this.analyzer) return failure(new Error('this.analyzer must not be undefined'))
     this.store = await LastRunStore.init(this.logger, this.options, this.service, this.config.lastRunStore)
 
     const jobs = await this.getJobs()

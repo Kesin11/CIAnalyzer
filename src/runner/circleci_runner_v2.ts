@@ -32,7 +32,7 @@ export class CircleciRunnerV2 implements Runner {
     this.config = parseConfig(yamlConfig)
     this.logger = logger.getChildLogger({ name: CircleciRunnerV2.name, instanceName: this.service })
     this.client = new CircleciClientV2(CIRCLECI_TOKEN, this.logger, options, this.config?.baseUrl)
-    this.analyzer = new CircleciAnalyzerV2()
+    this.analyzer = new CircleciAnalyzerV2(this.config?.baseUrl)
 
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
     this.githubClient = new GithubClient(GITHUB_TOKEN, options, this.config?.vcsBaseUrl?.github)

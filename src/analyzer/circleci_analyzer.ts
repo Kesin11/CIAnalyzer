@@ -28,6 +28,7 @@ type WorkflowReport = {
   queuedDurationSec: number // createdAt - min(jobs start_time)
   commitMessage: '' // CircleCIAnalyzer(v1) does not support
   actor: '' // CircleCIAnalyzer(v1) does not support
+  url: '' // CircleCIAnalyzer(v1) does not support
 }
 
 export type JobReport = {
@@ -41,6 +42,7 @@ export type JobReport = {
   jobDurationSec: number, // = completedAt - startedAt
   sumStepsDurationSec: number // = sum(steps duration)
   steps: StepReport[],
+  url: '' // CircleCIAnalyzer(v1) does not support
 }
 
 type StepReport = {
@@ -110,6 +112,7 @@ export class CircleciAnalyzer implements Analyzer {
         jobDurationSec: diffSec(startedAt, completedAt),
         sumStepsDurationSec: secRound(sumBy(stepReports, 'stepDurationSec')),
         steps: stepReports,
+        url: '',
       }
     })
 
@@ -141,6 +144,7 @@ export class CircleciAnalyzer implements Analyzer {
       queuedDurationSec: diffSec(createdAt, min(jobs.map((job) => new Date(job.start_time)))!),
       commitMessage: '',
       actor: '',
+      url: '',
     }
   }
 

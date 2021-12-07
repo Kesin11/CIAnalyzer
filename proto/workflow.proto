@@ -38,6 +38,7 @@ message PbWorkflowReport {
   repeated PbJobParameter parameters = 20;
   string commitMessage = 21;
   string actor = 22;
+  string url = 23;
 }
 
 message PbJobReport {
@@ -55,6 +56,7 @@ message PbJobReport {
   float jobDurationSec = 8;
   float sumStepsDurationSec = 9;
   repeated PbStepReport steps = 10;
+  string url = 11;
 }
 
 message PbStepReport {
