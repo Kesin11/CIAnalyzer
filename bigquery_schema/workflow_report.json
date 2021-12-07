@@ -187,6 +187,21 @@
     "name": "url",
     "type": "STRING",
     "mode": "NULLABLE"
+   },
+   {
+    "name": "executorClass",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "executorType",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "executorName",
+    "type": "STRING",
+    "mode": "NULLABLE"
    }
   ]
  },

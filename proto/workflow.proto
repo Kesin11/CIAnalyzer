@@ -57,6 +57,9 @@ message PbJobReport {
   float sumStepsDurationSec = 9;
   repeated PbStepReport steps = 10;
   string url = 11;
+  string executorClass = 12;
+  string executorType = 13;
+  string executorName = 14;
 }
 
 message PbStepReport {

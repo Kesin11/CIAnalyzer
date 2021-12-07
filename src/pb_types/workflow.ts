@@ -42,6 +42,9 @@ export interface PbJobReport {
   sumStepsDurationSec: number;
   steps: PbStepReport[];
   url: string;
+  executorClass: string;
+  executorType: string;
+  executorName: string;
 }
 
 export interface PbStepReport {
