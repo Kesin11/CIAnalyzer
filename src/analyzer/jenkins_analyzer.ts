@@ -43,6 +43,9 @@ type JobReport = {
   sumStepsDurationSec: number // = sum(steps duration)
   steps: StepReport[],
   url: '' // Jenkins does not provide each stage url
+  executorClass: '', // JenkinsAnalyzer does not support
+  executorType: '', // JenkinsAnalyzer does not support
+  executorName: '' // JenkinsAnalyzer doen not support
 }
 
 type StepReport = {
@@ -104,6 +107,9 @@ export class JenkinsAnalyzer implements Analyzer {
         sumStepsDurationSec: secRound(sumBy(stepReports, 'stepDurationSec')),
         steps: stepReports,
         url: '',
+        executorClass: '',
+        executorType: '',
+        executorName: '',
       }
     })
 

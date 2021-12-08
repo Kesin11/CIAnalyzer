@@ -45,6 +45,9 @@ type JobReport = {
   sumStepsDurationSec: number // = sum(steps duration)
   steps: StepReport[],
   url: string // https://github.com/{org}/{repo}/runs/{jobId}?check_suite_focus=true
+  executorClass: '', // Github Actions does not provide about class of executor
+  executorType: '', // Github Actions does not provde about type of executor
+  executorName: string // self-hosted runner name
 }
 
 type StepReport = {
@@ -104,6 +107,9 @@ export class GithubAnalyzer implements Analyzer {
         sumStepsDurationSec: sumBy(stepReports, 'stepDurationSec'),
         steps: stepReports,
         url: job.html_url ?? '',
+        executorClass: '',
+        executorType: '',
+        executorName: job.runner_name ?? '',
       }
     })
 

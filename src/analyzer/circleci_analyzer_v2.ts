@@ -44,6 +44,9 @@ type JobReport = {
   sumStepsDurationSec: number // = sum(steps duration)
   steps: StepReport[],
   url: string // https://app.circleci.com/pipelines/{vcs}/{org}/{repo}/{pipelineNumber}/workflows/{workflowId}
+  executorClass: string, // medium
+  executorType: string, // docker
+  executorName: '' // CircleCI does not support self-hosted runner
 }
 
 type StepReport = {
@@ -118,6 +121,9 @@ export class CircleciAnalyzerV2 implements Analyzer {
         sumStepsDurationSec: secRound(sumBy(stepReports, 'stepDurationSec')),
         steps: stepReports,
         url: url.toString(),
+        executorClass: job.detail.executor.resource_class,
+        executorType: job.detail.executor.type,
+        executorName: '',
       }
     })
 

@@ -43,6 +43,9 @@ export type JobReport = {
   sumStepsDurationSec: number // = sum(steps duration)
   steps: StepReport[],
   url: '' // CircleCIAnalyzer(v1) does not support
+  executorClass: '' // CircleCIAnalyzer(v1) does not support
+  executorType: '' // CircleCIAnalyzer(v1) does not support
+  executorName: '' // CircleCIAnalyzer(v1) does not support
 }
 
 type StepReport = {
@@ -113,6 +116,9 @@ export class CircleciAnalyzer implements Analyzer {
         sumStepsDurationSec: secRound(sumBy(stepReports, 'stepDurationSec')),
         steps: stepReports,
         url: '',
+        executorClass: '',
+        executorType: '',
+        executorName: '',
       }
     })
 

@@ -42,6 +42,9 @@ type JobReport = {
   sumStepsDurationSec: number // = sum(steps duration)
   steps: StepReport[],
   url: string, // https://app.bitrise.io/build/{buildSlug}
+  executorClass: string, // "standard"
+  executorType: string, // osx-vs4mac-stable
+  executorName: '' // Bitrise does not support self-hosted runner
 }
 
 type StepReport = {
@@ -110,6 +113,9 @@ export class BitriseAnalyzer implements Analyzer {
         sumStepsDurationSec,
         steps: steps,
         url,
+        executorClass: build.machine_type_id,
+        executorType: build.stack_identifier,
+        executorName: '',
       }],
       startedAt,
       completedAt,
