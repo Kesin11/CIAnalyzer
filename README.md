@@ -42,6 +42,7 @@ Workflow is a data about job that executed in CI. The items included in the work
 - Commit
 - Actor
 - Workflow URL
+- Executor data
 
 See full schema: [workflow.proto](./proto/workflow.proto)
 
@@ -386,7 +387,7 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 - [x] Implement better logger
 - [x] Better error message
 - [x] Export commit message
-- [ ] Export executor info (CircleCI, Bitrise)
+- [x] Export executor data (CircleCI, Bitrise)
 
 # Debug options
 - Fetch only selected service
