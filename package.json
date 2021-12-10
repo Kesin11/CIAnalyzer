@@ -63,7 +63,7 @@
     "jest": "27.4.3",
     "jest-junit": "13.0.0",
     "rimraf": "3.0.2",
-    "shipjs": "0.24.0",
+    "shipjs": "0.24.1",
     "ts-jest": "27.0.7",
     "ts-proto": "1.92.1",
     "ts-protoc-gen": "0.15.0",
