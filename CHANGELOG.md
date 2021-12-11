@@ -1,5 +1,18 @@
 # [4.4.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.3.2...v4.4.0) (2021-12-11)
 
+## Add new columns
+workflow
+
+- commitMessage
+- actor
+- url
+
+job
+
+- url
+- executorClass
+- executorType
+- executorName
 
 ### Features
 
