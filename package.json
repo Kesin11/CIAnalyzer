@@ -1,6 +1,6 @@
 {
   "name": "ci_analyzer",
-  "version": "4.3.2",
+  "version": "4.4.0",
   "description": "Export multiple CI service build data for analyzing.",
   "repository": {
     "type": "git",
