@@ -1,3 +1,14 @@
+# [4.4.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.3.2...v4.4.0) (2021-12-11)
+
+
+### Features
+
+* Add commitMessage and actor columns ([d3fc824](https://github.com/Kesin11/CIAnalyzer/commit/d3fc824469918bbbdf79759a34ccd2ffbea70bba))
+* Add exporting job executor info ([0fea4f1](https://github.com/Kesin11/CIAnalyzer/commit/0fea4f1370b9d4b7bfc5cb035b1ec1e2942bc720))
+* Add url columns ([fecbe29](https://github.com/Kesin11/CIAnalyzer/commit/fecbe2983947c537f853e4c38030a56b1312819c))
+
+
+
 ## [4.3.2](https://github.com/Kesin11/CIAnalyzer/compare/v4.3.1...v4.3.2) (2021-12-04)
 
 
