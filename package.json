@@ -60,7 +60,7 @@
     "@types/node": "16.11.19",
     "@types/yargs": "17.0.8",
     "codecov": "3.8.3",
-    "jest": "27.4.5",
+    "jest": "27.4.7",
     "jest-junit": "13.0.0",
     "rimraf": "3.0.2",
     "shipjs": "0.24.1",
