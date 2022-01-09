@@ -1,0 +1,33 @@
+
+name: CIAnalyzer
+on:
+  workflow_dispatch:
+  schedule:
+  - cron:  '0 * * * *'
+concurrency: cianalyzer
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/kesin11/ci_analyzer:v4
+    timeout-minutes: 20
+    steps:
+      # Checkout your repository that contains your config file.
+      - uses: actions/checkout@v2
+
+      - name: Restore service account json
+        run: echo $SERVICE_ACCOUNT > service_account.json
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - name: Run CIAnalyzer
+        run: ci_analyzer -c ./ci_analyzer.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.YOUR_GITHUB_PAT }}
+          CIRCLECI_TOKEN: ${{ secrets.YOUR_CIRCLECI_TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS: service_account.json
+      - uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: local_exporter output file
+          path: output

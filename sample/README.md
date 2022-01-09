@@ -25,3 +25,13 @@ Jenkins can choose cleaning workspace before every build or not. So If you choos
 But in some cases it does not work well. If you allow to run a job with multiple nodes, it is difficult to share LastRun files across each node. 
 
 To resolve this problem, using a GCS backend is recommended. It read/write LastRun files from/to GCS. As a result, LastRun files are shared with each build and each node.
+
+## GitHub Actions
+[GitHub Actions workflow](./github_cron.yml)
+
+Sample config:
+
+- Export to BigQuery and Local file.
+- Store LastRun files to GCS.
+
+It is the almost same configuration as Jenkins sample. Instead of using Jenkins credentials, restore GCP service account key from Github Actions secret and set it to `GOOGLE_APPLICATION_CREDENTIALS` env.
