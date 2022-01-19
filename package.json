@@ -40,6 +40,7 @@
     "@octokit/plugin-retry": "3.0.9",
     "@octokit/plugin-throttling": "3.5.2",
     "@octokit/rest": "18.12.0",
+    "@types/minimatch": "3.0.5",
     "adm-zip": "0.5.9",
     "axios": "0.24.0",
     "axios-retry": "3.2.4",
