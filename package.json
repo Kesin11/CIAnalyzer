@@ -46,7 +46,7 @@
     "axios-retry": "3.2.4",
     "dayjs": "1.10.7",
     "js-yaml": "4.1.0",
-    "junit2json": "2.0.5",
+    "junit2json": "2.0.6",
     "lodash": "4.17.21",
     "minimatch": "3.0.4",
     "tslog": "3.3.1",
