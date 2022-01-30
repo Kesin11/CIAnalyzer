@@ -1,32 +1,36 @@
 import { Logger } from 'tslog'
+import { ArgumentOptions } from '../../src/arg_options'
 import { JenkinsClient } from '../../src/client/jenkins_client'
 
 const logger = new Logger({ minLevel: "warn" })
+const options = new ArgumentOptions({
+  "c": "./dummy.yaml"
+})
 
 describe('JenkinsClient', () => {
   const baseUrl = 'http://localhost:8080'
   describe('new', () => {
     it('should not throw error when both user and token are undefined', async () => {
-      const client = new JenkinsClient(baseUrl, logger)
+      const client = new JenkinsClient(baseUrl, logger, options)
 
       expect(client).toBeTruthy()
     })
 
     it('should not throw error when both user and token are valid', async () => {
-      const client = new JenkinsClient(baseUrl, logger, 'user', 'token')
+      const client = new JenkinsClient(baseUrl, logger, options, 'user', 'token')
 
       expect(client).toBeTruthy()
     })
 
     it('should throw error when only user is undeinfed', async () => {
       expect(() => {
-        const client = new JenkinsClient(baseUrl, logger, undefined, 'token')
+        const client = new JenkinsClient(baseUrl, logger, options, undefined, 'token')
       }).toThrow()
     })
 
     it('should throw error when only token is undeinfed', async () => {
       expect(() => {
-        const client = new JenkinsClient(baseUrl, logger, 'usre', undefined)
+        const client = new JenkinsClient(baseUrl, logger, options, 'usre', undefined)
       }).toThrow()
     })
   })
@@ -50,28 +54,28 @@ describe('JenkinsClient', () => {
 
     let client: JenkinsClient
     beforeEach(() => {
-      client = new JenkinsClient(baseUrl, logger)
+      client = new JenkinsClient(baseUrl, logger, options)
     })
 
     it('when lastRunId is undef and has not in_pregress runs', async () => {
       const lastRunId = undefined
       const actual = client.filterJobRuns(allCompletedRuns, lastRunId)
 
-      expect(actual.map((run) => run.id)).toEqual(['2','3','4','5','6'])
+      expect(actual.map((run) => run.id)).toEqual(['2', '3', '4', '5', '6'])
     })
 
     it('when defined lastRunId and has not in_pregress runs', async () => {
       const lastRunId = 2
       const actual = client.filterJobRuns(allCompletedRuns, lastRunId)
 
-      expect(actual.map((run) => run.id)).toEqual(['3','4','5','6'])
+      expect(actual.map((run) => run.id)).toEqual(['3', '4', '5', '6'])
     })
 
     it('when lastRunId is undef and has in_pregress runs', async () => {
       const lastRunId = undefined
       const actual = client.filterJobRuns(hasInprogressRuns, lastRunId)
 
-      expect(actual.map((run) => run.id)).toEqual(['2','3'])
+      expect(actual.map((run) => run.id)).toEqual(['2', '3'])
     })
 
     it('when defined lastRunId and has in_pregress runs', async () => {

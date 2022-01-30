@@ -28,7 +28,7 @@ export class JenkinsRunner implements Runner {
     const JENKINS_USER = process.env['JENKINS_USER']
     const JENKINS_TOKEN = process.env['JENKINS_TOKEN']
     this.analyzer = new JenkinsAnalyzer(this.config.baseUrl)
-    this.client = new JenkinsClient(this.config.baseUrl, this.logger, JENKINS_USER, JENKINS_TOKEN)
+    this.client = new JenkinsClient(this.config.baseUrl, this.logger, options, JENKINS_USER, JENKINS_TOKEN)
   }
 
   private setRepoLastRun(jobname: string, reports: WorkflowReport[]) {

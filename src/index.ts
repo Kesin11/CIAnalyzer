@@ -16,6 +16,7 @@ const main = async () => {
       'debug': { type: 'boolean', default: false, describe: 'Enable debug mode' },
       'only-services': { type: 'string', array: true, describe: 'Exec only selected services. ex: --only-services circleci github' },
       'only-exporters': { type: 'string', array: true, describe: 'Export data using only selected exporters. ex: --only-exporters local' },
+      'keepalive': { type: 'boolean', default: true, describe: 'Enable http/https keepalive' },
     })
     .strict()
     .argv

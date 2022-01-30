@@ -204,7 +204,7 @@ export class CircleciClientV2 {
     }
     const axiosLogger = logger.getChildLogger({ name: CircleciClientV2.name })
     this.baseUrl = baseUrl ?? 'https://circleci.com/api',
-    this.axios = createAxios(axiosLogger, {
+    this.axios = createAxios(axiosLogger, options, {
       baseURL: this.baseUrl,
       auth: {
         username: token,

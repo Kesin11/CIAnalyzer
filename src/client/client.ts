@@ -1,7 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import axiosRetry from 'axios-retry'
-import path from 'path'
+import http from 'http'
+import https from 'https'
 import { Logger } from 'tslog'
+import { ArgumentOptions } from '../arg_options'
 
 export type Artifact = {
   path: string
@@ -10,10 +12,12 @@ export type Artifact = {
 
 export type CustomReportArtifact = Map<string, Artifact[]>
 
-export const createAxios = (logger: Logger, config: AxiosRequestConfig) => {
+export const createAxios = (logger: Logger, options: ArgumentOptions, config: AxiosRequestConfig) => {
   const axiosInstance = axios.create({
     // Default parameters
     timeout: 5000,
+    httpAgent: (options.keepAlive) ? new http.Agent({ keepAlive: true }) : undefined,
+    httpsAgent:(options.keepAlive) ? new https.Agent({ keepAlive: true }) : undefined,
 
     // Overwrite parameters
     ...config
