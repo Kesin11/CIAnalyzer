@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import axiosRetry from 'axios-retry'
+import { ConcurrencyManager } from 'axios-concurrency'
 import http from 'http'
 import https from 'https'
 import { Logger } from 'tslog'
@@ -55,6 +56,11 @@ export const createAxios = (logger: Logger, options: ArgumentOptions, config: Ax
       }
     return Promise.reject(error)
   })
+
+  if (options.maxConcurrentRequests) {
+    ConcurrencyManager(axiosInstance, options.maxConcurrentRequests)
+  }
+
   return axiosInstance
 }
 
