@@ -58,7 +58,7 @@
     "@types/jest": "27.4.0",
     "@types/js-yaml": "4.0.5",
     "@types/lodash": "4.14.178",
-    "@types/node": "16.11.21",
+    "@types/node": "16.11.22",
     "@types/yargs": "17.0.8",
     "codecov": "3.8.3",
     "jest": "27.4.7",
