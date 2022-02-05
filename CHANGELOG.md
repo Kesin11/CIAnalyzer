@@ -1,3 +1,17 @@
+# [5.0.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.4.0...v5.0.0) (2022-02-05)
+
+
+### Bug Fixes
+
+* npm audit fix ([143eb82](https://github.com/Kesin11/CIAnalyzer/commit/143eb82a32b738d748272210864140144f50814d))
+
+
+### Features
+
+* Add --keepalive option ([c30e7f9](https://github.com/Kesin11/CIAnalyzer/commit/c30e7f908fe34178f88ef5ca57526447f4fafd19))
+
+
+
 # [4.4.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.3.2...v4.4.0) (2021-12-11)
 
 ## Add new columns
