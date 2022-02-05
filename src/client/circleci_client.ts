@@ -118,7 +118,7 @@ export class CircleciClient {
       throw new Error(`${CircleciClient.name} accepts only "/api/v1.1/" But your baseUrl is ${baseUrl}`)
     }
     const axiosLogger = logger.getChildLogger({ name: CircleciClient.name })
-    this.axios = createAxios(axiosLogger, {
+    this.axios = createAxios(axiosLogger, options, {
       baseURL: baseUrl ?? 'https://circleci.com/api/v1.1',
       auth: {
         username: token,
