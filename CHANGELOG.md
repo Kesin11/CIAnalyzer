@@ -1,5 +1,7 @@
 # [5.0.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.4.0...v5.0.0) (2022-02-05)
 
+### BREAKING CHANGES
+CIAnalyzer using keepalive and limit the number of concurrent requests from v5.0.0. Both behaviors are set in default, but these can disable through --keepalive and --max-concurrent-requests.
 
 ### Bug Fixes
 
@@ -9,6 +11,7 @@
 ### Features
 
 * Add --keepalive option ([c30e7f9](https://github.com/Kesin11/CIAnalyzer/commit/c30e7f908fe34178f88ef5ca57526447f4fafd19))
+* Add --max-concurrent-requests option([27bf089](https://github.com/Kesin11/CIAnalyzer/commit/27bf0895573d064e80352c6d208952eff484cfa8))
 
 
 
