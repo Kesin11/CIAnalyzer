@@ -12,7 +12,7 @@ all:
 deps:
   COPY package.json package-lock.json .
   RUN npm i -g npm@v7
-  RUN npm ci
+  RUN --mount=type=cache,target=/root/.npm npm ci
   SAVE IMAGE --cache-hint
 
 build:
