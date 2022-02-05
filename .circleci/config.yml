@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   lint:
     docker:
-      - image: circleci/node:lts
+      - image: cimg/node:lts
     steps:
       - checkout
       - run: npm ci
@@ -12,7 +12,7 @@ jobs:
           command: npm run lint
   build_and_test:
     docker:
-      - image: circleci/node:lts
+      - image: cimg/node:lts
     steps:
       # Setup
       - checkout
@@ -52,7 +52,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: earthly --strict +docker
+      - run: earthly --strict --max-remote-cache --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker
 
 workflows:
   version: 2
