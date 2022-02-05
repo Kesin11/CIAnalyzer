@@ -31,8 +31,8 @@
     "coverage": "codecov",
     "release:prepare": "npx shipjs prepare",
     "release:trigger": "npx shipjs trigger",
-    "proto": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +proto",
-    "docker": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker"
+    "proto": "earthly --strict --max-remote-cache --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +proto",
+    "docker": "earthly --strict --max-remote-cache --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker"
   },
   "dependencies": {
     "@google-cloud/bigquery": "5.10.0",

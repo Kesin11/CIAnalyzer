@@ -1,5 +1,5 @@
 # TypeScript build
-FROM node:14
+FROM node:14.19.0
 LABEL org.opencontainers.image.source=https://github.com/Kesin11/CIAnalyzer
 LABEL org.opencontainers.image.authors=kesin1202000@gmail.com
 WORKDIR /build
@@ -12,7 +12,7 @@ all:
 deps:
   COPY package.json package-lock.json .
   RUN npm i -g npm@v7
-  RUN npm ci
+  RUN --mount=type=cache,target=/root/.npm npm ci
   SAVE IMAGE --cache-hint
 
 build:
