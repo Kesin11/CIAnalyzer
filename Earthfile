@@ -1,5 +1,5 @@
 # TypeScript build
-FROM node:14.19.0
+FROM node:16.13.2
 LABEL org.opencontainers.image.source=https://github.com/Kesin11/CIAnalyzer
 LABEL org.opencontainers.image.authors=kesin1202000@gmail.com
 WORKDIR /build
@@ -11,7 +11,6 @@ all:
 
 deps:
   COPY package.json package-lock.json .
-  RUN npm i -g npm@v7
   RUN --mount=type=cache,target=/root/.npm npm ci
   SAVE IMAGE --cache-hint
 
@@ -42,7 +41,7 @@ test:
   SAVE ARTIFACT coverage AS LOCAL ./coverage
 
 docker:
-  FROM node:14-alpine
+  FROM node:16-alpine
   WORKDIR /ci_analyzer
   # Resolve nodejs pid=1 problem
   RUN apk add --no-cache tini
