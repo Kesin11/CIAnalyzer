@@ -27,7 +27,7 @@ describe('Analyzer', () => {
             inner: 'assert xxx',
           }]
         }]
-        testSuites.testsuite[0].testcase = testCase
+        testSuites.testsuite![0].testcase = testCase
 
         expect(
           convertToReportTestSuites(testSuites).testsuite[0].testcase[0]
@@ -42,7 +42,7 @@ describe('Analyzer', () => {
             inner: 'assert xxx',
           }] 
         }]
-        testSuites.testsuite[0].testcase = testCase
+        testSuites.testsuite![0].testcase = testCase
 
         expect(
           convertToReportTestSuites(testSuites).testsuite[0].testcase[0]
@@ -55,7 +55,7 @@ describe('Analyzer', () => {
           classname: 'test',
           "system-out": ['stdout']
         }]
-        testSuites.testsuite[0].testcase = testCase
+        testSuites.testsuite![0].testcase = testCase
 
         expect(
           convertToReportTestSuites(testSuites).testsuite[0].testcase[0]
@@ -70,7 +70,7 @@ describe('Analyzer', () => {
             message: 'skip reason'
           }]
         }]
-        testSuites.testsuite[0].testcase = testCase
+        testSuites.testsuite![0].testcase = testCase
 
         expect(
           convertToReportTestSuites(testSuites).testsuite[0].testcase[0]
@@ -83,7 +83,7 @@ describe('Analyzer', () => {
           classname: 'test',
           "system-err": ['stderr']
         }]
-        testSuites.testsuite[0].testcase = testCase
+        testSuites.testsuite![0].testcase = testCase
 
         expect(
           convertToReportTestSuites(testSuites).testsuite[0].testcase[0]

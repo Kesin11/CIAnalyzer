@@ -61,7 +61,7 @@ export const convertToReportTestSuites = (testSuites: TestSuites): ReportTestSui
       delete testSuite["system-out"]
       delete testSuite["system-err"]
       delete testSuite.properties
-      testSuite.testcase.forEach((testCase: TestCase) => {
+      testSuite?.testcase?.forEach((testCase: TestCase) => {
         (testCase as any).successCount = (testCase.failure || testCase.error || testCase.skipped) ? 0 : 1;
         (testCase as any).status =
           testCase.failure ? 'FAILURE'
@@ -84,6 +84,8 @@ export const convertToTestReports = async (workflowReport: WorkflowReport, junit
       const xmlString = Buffer.from(artifact.data).toString('utf8')
       try {
         const result = await parse(xmlString)
+        if (!result) continue
+
         const testSuites = ('testsuite' in result) ? result : {
           // Fill in testsuites property with testsuit values.
           testsuite: [result],
