@@ -62,7 +62,7 @@
     "@types/node": "16.11.22",
     "@types/yargs": "17.0.8",
     "codecov": "3.8.3",
-    "jest": "27.4.7",
+    "jest": "27.5.0",
     "jest-junit": "13.0.0",
     "rimraf": "3.0.2",
     "ts-jest": "27.1.3",
