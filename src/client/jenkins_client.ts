@@ -17,9 +17,14 @@ type JobResponse = {
 }
 
 export type WfapiRunResponse = {
-  self: {
-    href: string // "/job/ci_analyzer/7/wfapi/describe"
-  }
+  _links: {
+    self: {
+      href: string // "/job/ci_analyzer/7/wfapi/describe"
+    },
+    artifacts: {
+      href: string // "/job/ci_analyzer/7/wfapi/artifacts"
+    }
+  },
   id: string // '16',
   name: string // '#16',
   status: JenkinsStatus // 'SUCCESS',
