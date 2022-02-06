@@ -46,12 +46,18 @@ export const createAxios = (logger: Logger, options: ArgumentOptions, config: Ax
       if(axios.isAxiosError(error)) {
         logger.error({
           message: error.message,
-          status: error.response?.status,
-          statusText: error.response?.statusText,
-          method: error.request?.method,
-          baseUrl: error.response?.config.baseURL,
-          url: error.response?.config.url,
-          params: error.response?.config.params
+          request: {
+            method: error.request?.method ?? error.request?._currentRequest.method,
+            host: error.request?.host ?? error.request?._currentRequest.host,
+            path: error.request?.path ?? error.request?._currentRequest.path,
+          },
+          response: {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            baseUrl: error.response?.config.baseURL,
+            url: error.response?.config.url,
+            params: error.response?.config.params,
+          }
         })
       }
     return Promise.reject(error)
