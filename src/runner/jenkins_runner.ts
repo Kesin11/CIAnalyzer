@@ -118,7 +118,7 @@ export class JenkinsRunner implements Runner {
           jobName: job.name,
           resultPromise: this.client!.fetchLastBuild(job.name)
             .then((res) => success(res))
-            .catch((error) => failure(error))
+            .catch((error) => Promise.resolve(failure(error)))
         }
       })
 
@@ -129,7 +129,7 @@ export class JenkinsRunner implements Runner {
       for (const { jobName, resultPromise } of buildRespones) {
         const result = await resultPromise
         if (result.isFailure()) {
-          this.logger.debug(`Skip ${jobName}: can not fetch lastBuild.`)
+          this.logger.warn(`SKIP ${jobName}: Can not fetch lastBuild number.`)
           continue
         }
 
