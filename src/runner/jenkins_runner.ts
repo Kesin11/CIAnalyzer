@@ -59,6 +59,11 @@ export class JenkinsRunner implements Runner {
         const lastRunId = this.store.getLastRun(job.name)
         const runs = await this.client.fetchJobRuns(job.name, lastRunId)
 
+        if (runs.length < 1) {
+          this.logger.warn(`SKIP ${job.name}: it does not have any runs data for some reason`)
+          continue
+        }
+
         for (const run of runs) {
           // Fetch data
           const build = await this.client.fetchBuild(job.name, Number(run.id))

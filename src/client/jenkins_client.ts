@@ -203,13 +203,20 @@ export class JenkinsClient {
 
   async fetchJobRuns(jobName: string, lastRunId?: number) {
     const url = encodeURI(`job/${jobName}/wfapi/runs`)
-    const res = await this.axios.get(url, {
-      params: {
-        fullStages: "true"
-      }
-    })
+    let runs: WfapiRunResponse[]
+    try {
+      const res = await this.axios.get(url, {
+        params: {
+          fullStages: "true"
+        }
+      })
+      runs = res.data
+    }
+    // Sometimes wfapi/runs return 500.
+    // However if that job comes from `correctAllJobs` config option, user may not do anything.
+    // To handle this situation, catch the error and return empty array.
+    catch { return [] }
 
-    const runs = res.data as WfapiRunResponse[]
     return this.filterJobRuns(runs, lastRunId)
   }
 
