@@ -59,6 +59,11 @@ export class JenkinsRunner implements Runner {
         const lastRunId = this.store.getLastRun(job.name)
         const runs = await this.client.fetchJobRuns(job.name, lastRunId)
 
+        if (runs.length < 1) {
+          this.logger.warn(`SKIP ${job.name}: it does not have any runs data for some reason`)
+          continue
+        }
+
         for (const run of runs) {
           // Fetch data
           const build = await this.client.fetchBuild(job.name, Number(run.id))
@@ -118,7 +123,7 @@ export class JenkinsRunner implements Runner {
           jobName: job.name,
           resultPromise: this.client!.fetchLastBuild(job.name)
             .then((res) => success(res))
-            .catch((error) => failure(error))
+            .catch((error) => Promise.resolve(failure(error)))
         }
       })
 
@@ -129,7 +134,7 @@ export class JenkinsRunner implements Runner {
       for (const { jobName, resultPromise } of buildRespones) {
         const result = await resultPromise
         if (result.isFailure()) {
-          this.logger.debug(`Skip ${jobName}: can not fetch lastBuild.`)
+          this.logger.warn(`SKIP ${jobName}: Can not fetch lastBuild number.`)
           continue
         }
 
