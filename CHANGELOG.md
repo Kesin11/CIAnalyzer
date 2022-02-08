@@ -1,3 +1,16 @@
+## [5.0.1](https://github.com/Kesin11/CIAnalyzer/compare/v5.0.0...v5.0.1) (2022-02-08)
+
+
+### Bug Fixes
+
+* Bump nodejs to v16 ([f27611e](https://github.com/Kesin11/CIAnalyzer/commit/f27611eab0fa8aa4e3b44f201fca191977facbec))
+* **deps:** Bump junit2-json to v3 and fix types ([d8982cc](https://github.com/Kesin11/CIAnalyzer/commit/d8982cc6e974b0f48d3eff7b55c9143df2a9027e))
+* **jenkins:** Handle wfapi/run API error and just skip it ([786cce2](https://github.com/Kesin11/CIAnalyzer/commit/786cce2ab4546ab273613daa2cde0e3705e8ce28))
+* **jenkins:** Skip a job correctly that lastBuild API returns 404 ([1db4419](https://github.com/Kesin11/CIAnalyzer/commit/1db4419271ffc6a336d2190542c0cfa6951a9c54))
+* Show request info when timeout error ([9fe17b3](https://github.com/Kesin11/CIAnalyzer/commit/9fe17b3c79fc3d76db74fdd4ef19499853f75455))
+
+
+
 # [5.0.0](https://github.com/Kesin11/CIAnalyzer/compare/v4.4.0...v5.0.0) (2022-02-05)
 
 ### BREAKING CHANGES
