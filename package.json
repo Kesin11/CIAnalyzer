@@ -42,7 +42,7 @@
     "@octokit/rest": "18.12.0",
     "@types/minimatch": "3.0.5",
     "adm-zip": "0.5.9",
-    "axios": "0.25.0",
+    "axios": "0.26.0",
     "axios-concurrency": "1.0.4",
     "axios-retry": "3.2.4",
     "dayjs": "1.10.7",
