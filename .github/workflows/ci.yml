@@ -11,7 +11,7 @@ jobs:
   check_proto:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: earthly/actions/setup-earthly@v1
         with:
           version: latest
@@ -26,7 +26,7 @@ jobs:
       image: "node:lts"
     steps:
       # Setup
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/cache@v2
         with:
           path: ~/.npm
@@ -63,7 +63,7 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: earthly/actions/setup-earthly@v1
         with:
           version: latest
