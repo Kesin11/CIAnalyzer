@@ -1,16 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
-    ":label(renovate)",
-    ":dependencyDashboard",
+    "github>Kesin11/renovate-config:oss",
     ":prConcurrentLimit10",
-    ":timezone(Asia/Tokyo)",
-    "npm:unpublishSafe",
     ":enableVulnerabilityAlerts",
-    ":semanticCommitTypeAll(chore)",
-    ":automergeMinor",
-    "group:definitelyTyped"
+    ":automergeMinor"
   ],
   "packageRules": [
     {
@@ -20,11 +14,6 @@
         ":automergeMajor",
         "schedule:weekends"
       ]
-    },
-    {
-      "groupName": "jest packages",
-      "matchPackagePatterns": ["jest"],
-      "matchDepTypes": ["devDependencies"]
     }
   ]
 }
