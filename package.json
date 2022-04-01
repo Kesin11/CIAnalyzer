@@ -55,10 +55,10 @@
     "yargs": "17.4.0"
   },
   "devDependencies": {
-    "@types/adm-zip": "0.4.34",
+    "@types/adm-zip": "0.5.0",
     "@types/jest": "27.4.1",
     "@types/js-yaml": "4.0.5",
-    "@types/lodash": "4.14.180",
+    "@types/lodash": "4.14.181",
     "@types/node": "16.11.26",
     "@types/yargs": "17.0.10",
     "codecov": "3.8.3",
