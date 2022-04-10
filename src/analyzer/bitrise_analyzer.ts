@@ -78,7 +78,7 @@ export class BitriseAnalyzer implements Analyzer {
     }
   }
 
-  createWorkflowReport(app: App, build: BuildResponse, buildLog: BuildLogResponse): WorkflowReport {
+  createWorkflowReport(app: App, build: BuildResponse, buildLog: BuildLogResponse | null): WorkflowReport {
     const { workflowId, workflowRunId, buildNumber, workflowName }
       = this.createWorkflowParams(app, build)
     const createdAt = new Date(build.triggered_at)
@@ -175,7 +175,9 @@ export class BitriseAnalyzer implements Analyzer {
     return steps
   }
 
-  createStepReports(startedAt: Date, buildLog: BuildLogResponse): StepReport[] {
+  createStepReports(startedAt: Date, buildLog: BuildLogResponse | null): StepReport[] {
+    if (!buildLog) return []
+
     const steps = this.parseBuildLog(buildLog)
     let stepSumMilisec = 0
     return steps.map((step, index) => {
