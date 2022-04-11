@@ -1,3 +1,12 @@
+## [5.0.3](https://github.com/Kesin11/CIAnalyzer/compare/v5.0.2...v5.0.3) (2022-04-11)
+
+
+### Bug Fixes
+
+* **Bitrise:** Handle error build that aborted rolling build ([420863a](https://github.com/Kesin11/CIAnalyzer/commit/420863a17c254f58a119c515c505d3f6e4894a52))
+
+
+
 ## [5.0.2](https://github.com/Kesin11/CIAnalyzer/compare/v5.0.0...v5.0.2) (2022-02-10)
 
 Retrty release v5.0.1
