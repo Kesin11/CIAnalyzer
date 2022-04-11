@@ -158,8 +158,12 @@ export class BitriseClient {
   }
 
   // https://api-docs.bitrise.io/#/builds/build-log
-  async fetchJobLog(appSlug: string, buildSlug: string) {
-    const res = await this.axios.get( `apps/${appSlug}/builds/${buildSlug}/log`, {})
+  async fetchJobLog(appSlug: string, buildSlug: string): Promise<BuildLogResponse | null>  {
+    const res = await this.axios.get(`apps/${appSlug}/builds/${buildSlug}/log`, {
+      // NOTE: Allow 404 response build that aborted by rolling build and has not build log
+      validateStatus: (status) => (status >= 200 && status < 300) || status === 404
+    })
+    if (res.status === 404) return null
     return res.data as BuildLogResponse
   }
 
