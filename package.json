@@ -63,7 +63,7 @@
     "@types/yargs": "17.0.10",
     "codecov": "3.8.3",
     "jest": "27.5.1",
-    "jest-junit": "13.1.0",
+    "jest-junit": "13.2.0",
     "rimraf": "3.0.2",
     "ts-jest": "27.1.4",
     "ts-proto": "1.110.4",
