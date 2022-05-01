@@ -1,14 +1,32 @@
-name: Ship js trigger
+name: Release
 on:
-  pull_request:
-    types:
-      - closed
+  push:
+    branches:
+      - master
+  workflow_dispatch:
 jobs:
-  build:
+  draft_release:
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.release-drafter.outputs.tag_name }}
+    steps:
+      # Get next version
+      - uses: release-drafter/release-drafter@v5
+        id: release-drafter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release:
     name: Release
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/v')
+    if: github.event_name == 'workflow_dispatch'
+    needs: draft_release
     steps:
+      # Create version string from tag (v1.0.0 -> 1.0.0)
+      - name: Create version string
+        run: |
+          export TAG_NAME=${{ needs.draft_release.outputs.tag_name }}
+          echo "VERSION=${TAG_NAME:1}" >> $GITHUB_ENV
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -17,16 +35,17 @@ jobs:
           # see: https://github.community/t/action-does-not-trigger-another-on-push-tag-action/17148/4
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - uses: actions/setup-node@v3
+      - name: Setup git config
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+      - name: Publish
+        run: |
+          npm version $VERSION
+          git push origin master
+      # Publish github releases and create tag. Push tag trigger docker build and push workflow.
+      - uses: release-drafter/release-drafter@v5
         with:
-          registry-url: "https://registry.npmjs.org"
-      - run: |
-          if [ -f "yarn.lock" ]; then
-            yarn install
-          else
-            npm ci
-          fi
-      - run: npm run release:trigger
+          publish: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-          # SLACK_INCOMING_HOOK: ${{ secrets.SLACK_INCOMING_HOOK }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
