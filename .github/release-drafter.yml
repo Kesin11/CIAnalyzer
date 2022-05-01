@@ -1,6 +1,5 @@
 name-template: 'v$RESOLVED_VERSION'
-# Disable creating tag. tags are created and pushed by `npm version && git push` to trigger docker.yml workfflow.
-# tag-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
 categories:
   - title: 'BREAKING CHANGES'
     labels:
