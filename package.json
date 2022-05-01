@@ -42,7 +42,7 @@
     "adm-zip": "0.5.9",
     "axios": "0.27.2",
     "axios-concurrency": "1.0.4",
-    "axios-retry": "3.2.4",
+    "axios-retry": "3.2.5",
     "dayjs": "1.11.1",
     "js-yaml": "4.1.0",
     "junit2json": "3.0.2",
