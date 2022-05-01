@@ -39,13 +39,15 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-      - name: Publish
+      - name: Create git tag and push for triggering docker.yml workflow
         run: |
           npm version $VERSION
           git push origin master
+          git push origin "v${VERSION}"
       # Publish github releases and create tag. Push tag trigger docker build and push workflow.
       - uses: release-drafter/release-drafter@v5
         with:
           publish: true
+          tag: v${{ env.VERSION }}
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
