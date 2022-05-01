@@ -44,7 +44,6 @@ jobs:
           npm version $VERSION
           git push origin master
           git push origin "v${VERSION}"
-      # Publish github releases and create tag. Push tag trigger docker build and push workflow.
       - uses: release-drafter/release-drafter@v5
         with:
           publish: true
