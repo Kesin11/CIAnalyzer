@@ -52,7 +52,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: earthly --strict --max-remote-cache --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker
+      - run: earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker
 
 workflows:
   version: 2
