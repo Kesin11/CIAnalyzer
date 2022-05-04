@@ -1,3 +1,5 @@
+VERSION 0.5
+
 # TypeScript build
 FROM node:16.13.2
 LABEL org.opencontainers.image.source=https://github.com/Kesin11/CIAnalyzer
