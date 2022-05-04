@@ -21,3 +21,4 @@ protoc:
   RUN cp generated/schema/workflow_report.schema generated/schema/workflow_report.json \
     && cp generated/schema/test_report.schema generated/schema/test_report.json
   SAVE ARTIFACT generated/schema/*.json schema/
+  SAVE IMAGE --cache-hint
