@@ -6,9 +6,12 @@ dist
 output/
 junit
 .ci_analyzer/
+coverage/
 
 # Use only development
 .git/
 sample/
 .circleci/
 .github/
+renovate.json
+codecov.yml
