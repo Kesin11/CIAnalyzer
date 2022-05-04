@@ -2,11 +2,11 @@ VERSION 0.5
 protoc:
   FROM ../+deps
   RUN curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip \
-    && unzip protoc-3.15.8-linux-x86_64.zip -d protoc
-  RUN git -C protoc clone --depth=1 https://github.com/GoogleCloudPlatform/protoc-gen-bq-schema.git 
-  RUN curl -L -o protoc-gen-bq-schema https://github.com/GoogleCloudPlatform/protoc-gen-bq-schema/releases/download/v1.0/protoc-gen-bq-schema_linux_amd64 \
+    && unzip protoc-3.15.8-linux-x86_64.zip -d protoc \
+    && git -C protoc clone --depth=1 https://github.com/GoogleCloudPlatform/protoc-gen-bq-schema.git \
+    && curl -L -o protoc-gen-bq-schema https://github.com/GoogleCloudPlatform/protoc-gen-bq-schema/releases/download/v1.0/protoc-gen-bq-schema_linux_amd64 \
     && chmod +x protoc-gen-bq-schema
-  COPY --dir . proto/
+  COPY --dir ./*.proto proto/
   RUN mkdir -p generated && protoc/bin/protoc \
     --plugin="./node_modules/.bin/protoc-gen-ts_proto" \
     --plugin="protoc-gen-bq-schema" \

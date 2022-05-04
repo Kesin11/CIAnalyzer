@@ -52,8 +52,7 @@ docker:
   COPY package.json package-lock.json .
   RUN npm ci --production && rm -rf ~/.npm
 
-  COPY . .
-  COPY ./proto+protoc/pb_types src/pb_types
+  COPY README.md LICENSE ci_analyzer.yaml .
   COPY ./proto+protoc/schema bigquery_schema/
   COPY +build/dist ./dist
 
