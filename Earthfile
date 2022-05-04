@@ -1,4 +1,4 @@
-VERSION --use-cache-command 0.6
+VERSION 0.5
 
 # TypeScript build
 FROM node:16.13.2
@@ -13,8 +13,7 @@ all:
 
 deps:
   COPY package.json package-lock.json .
-  CACHE /root/.npm
-  RUN npm ci
+  RUN --mount=type=cache,target=/root/.npm npm ci
   SAVE IMAGE --cache-hint
 
 build:
