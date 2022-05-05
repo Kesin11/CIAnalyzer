@@ -15,7 +15,7 @@ jobs:
       - uses: earthly/actions/setup-earthly@v1
         with:
           version: latest
-      - uses: docker/metadata-action@v3
+      - uses: docker/metadata-action@v4
         id: docker_meta
         with:
           images: ghcr.io/kesin11/ci_analyzer
