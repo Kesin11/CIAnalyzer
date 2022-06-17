@@ -15,6 +15,10 @@ jobs:
           name: Restore last run store files
           keys:
             - cache-${CACHE_VERSION}-
+      # see: https://support.circleci.com/hc/en-us/articles/360046718853-Checkout-Code-Step-Outputs-Either-git-or-ssh-required-by-git-to-clone-through-SSH-is-not-installed-in-the-image-
+      - run:
+          name: Install openssh-client and git
+          command: apk add --update openssh-client git
       - run:
           name: Run CIAnalyzer
           command: ci_analyzer -c sample/ci_analyzer_circleci.yaml
