@@ -13,4 +13,10 @@ module.exports = {
   ],
   testEnvironment: 'node',
   clearMocks: true,
+  // https://kulshekhar.github.io/ts-jest/docs/getting-started/options/isolatedModules
+  globals: {
+    'ts-jest': {
+      isolatedModules: true,
+    },
+  },
 };
