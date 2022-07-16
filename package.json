@@ -37,7 +37,7 @@
     "@google-cloud/storage": "6.2.2",
     "@octokit/plugin-retry": "3.0.9",
     "@octokit/plugin-throttling": "3.7.0",
-    "@octokit/rest": "18.12.0",
+    "@octokit/rest": "19.0.3",
     "@types/minimatch": "3.0.5",
     "adm-zip": "0.5.9",
     "axios": "0.27.2",
