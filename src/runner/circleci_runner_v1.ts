@@ -115,7 +115,7 @@ export class CircleciRunnerV1 implements Runner {
       catch (error) {
         const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`
         this.logger.error(errorMessage)
-        result = failure(new Error(errorMessage))
+        result = failure(new Error(errorMessage, { cause: error as Error }))
         continue
       }
     }

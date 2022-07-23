@@ -224,7 +224,7 @@ export class CircleciClientV2 {
         }
       })
     } catch (error) {
-      return failure(new Error(`${this.#baseUrl} unavailable API v2`))
+      return failure(new Error(`${this.#baseUrl} unavailable API v2`, { cause: error as Error}))
     }
 
     return success(`${this.#baseUrl} available API v2`)
