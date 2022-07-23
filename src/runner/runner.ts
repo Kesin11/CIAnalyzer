@@ -2,12 +2,13 @@ import { YamlConfig } from "../config/config";
 import { GithubRunner } from "./github_runner";
 import { CircleciRunner } from "./circleci_runner";
 import { JenkinsRunner } from "./jenkins_runner";
-import { failure, Result, success } from "../result";
+import { Failure, failure, Result, success } from "../result";
 import { BitriseRunner } from "./bitrise_runner";
 import { ArgumentOptions } from "../arg_options";
 import { Logger } from "tslog";
 import { ApiError } from "@google-cloud/common"
 import axios from "axios";
+import { summarizeAxiosError } from "../error";
 
 export interface Runner {
   run (): Promise<Result<unknown, Error>>
@@ -60,8 +61,9 @@ export class CompositRunner implements Runner {
 
   handlingError(error: unknown) {
     if (axios.isAxiosError(error)) {
-      this.#logger.error(error.message)
-      this.#logger.error(error.stack)
+      this.#logger.error("Catch HTTP fetch error.")
+      this.#logger.error(summarizeAxiosError(error))
+      if (error.stack) this.#logger.error(error.stack)
     }
     else if (error instanceof ApiError) {
       this.#logger.error("Catch GCloud Error. Please check 'gcloud' auth status or your permission.")
@@ -69,8 +71,11 @@ export class CompositRunner implements Runner {
       this.#logger.error(error.stack)
     }
     else if (error instanceof Error) {
-      this.#logger.error(error.message)
-      this.#logger.error(error.stack)
+      this.#logger.error(error)
+      if (error.cause) this.handlingError(error.cause)
+    }
+    else if (error instanceof Failure) {
+      this.handlingError(error.value)
     }
     else {
       this.#logger.error(error)

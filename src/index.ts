@@ -36,7 +36,7 @@ const main = async () => {
   const result = await runner.run()
 
   if (result.isFailure()) {
-    console.error(result.value)
+    logger.prettyError(result.value, true, false, false)
     process.exitCode = 1
   }
 }
