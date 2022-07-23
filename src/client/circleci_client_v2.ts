@@ -196,16 +196,18 @@ type ArtifactsResponse = {
 type ArtifactItem = ArtifactsResponse["items"][0]
 
 export class CircleciClientV2 {
-  private axios: AxiosInstance
-  private baseUrl: string
-  constructor(token: string, logger: Logger, private options: ArgumentOptions, baseUrl?: string) {
+  #axios: AxiosInstance
+  #baseUrl: string
+  #options: ArgumentOptions
+  constructor(token: string, logger: Logger, options: ArgumentOptions, baseUrl?: string) {
     if (baseUrl && path.basename(baseUrl) !== 'api') {
       throw new Error(`${CircleciClientV2.name} accepts only "/api/" But your baseUrl is ${baseUrl}`)
     }
     const axiosLogger = logger.getChildLogger({ name: CircleciClientV2.name })
-    this.baseUrl = baseUrl ?? 'https://circleci.com/api',
-    this.axios = createAxios(axiosLogger, options, {
-      baseURL: this.baseUrl,
+    this.#baseUrl = baseUrl ?? 'https://circleci.com/api',
+    this.#options = options
+    this.#axios = createAxios(axiosLogger, options, {
+      baseURL: this.#baseUrl,
       auth: {
         username: token,
         password: '',
@@ -215,23 +217,23 @@ export class CircleciClientV2 {
 
   async isHostAvailableVersion(): Promise<Result<unknown, Error>> {
     try {
-      await this.axios.get( `v2/me`, {
+      await this.#axios.get( `v2/me`, {
         validateStatus: (status) => {
           return (status >= 200 && status < 300) // default
             || status === 401 // It means endpoint of API v2 is exists.
         }
       })
     } catch (error) {
-      return failure(new Error(`${this.baseUrl} unavailable API v2`))
+      return failure(new Error(`${this.#baseUrl} unavailable API v2`))
     }
 
-    return success(`${this.baseUrl} available API v2`)
+    return success(`${this.#baseUrl} available API v2`)
   }
 
   private async fetchV2Api<T extends V2ApiResponse>(url: string, requestParams?: {[key: string]: unknown}): Promise<T["items"]> {
       const items: T["items"] = []
       for (let pageToken = undefined; pageToken !== null;) {
-        const res = await this.axios.get(url, {
+        const res = await this.#axios.get(url, {
           params: {
             ...requestParams,
             "page-token": pageToken,
@@ -247,10 +249,10 @@ export class CircleciClientV2 {
   // https://circleci.com/docs/api/v2/#operation/listPipelines
   // https://circleci.com/docs/api/v2/#operation/listWorkflowsByPipelineId
   async fetchWorkflowRuns(owner: string, repo: string, vcsType: string, lastRunId?: number): Promise<Pipeline[]> {
-    const limit = (this.options.debug) ? DEBUG_FETCH_LIMIT : FETCH_LIMIT
+    const limit = (this.#options.debug) ? DEBUG_FETCH_LIMIT : FETCH_LIMIT
     let recentPipelines = [] as ListPipelinesForProjectResponse["items"]
     for (let length = 0, pageToken = undefined; length < limit;) {
-      const res = await this.axios.get( `v2/project/${vcsType}/${owner}/${repo}/pipeline`, {
+      const res = await this.#axios.get( `v2/project/${vcsType}/${owner}/${repo}/pipeline`, {
         params: {
           "page-token": pageToken,
         }
@@ -260,7 +262,7 @@ export class CircleciClientV2 {
       length = recentPipelines.length
       pageToken = data.next_page_token
     }
-    recentPipelines = (this.options.debug)
+    recentPipelines = (this.#options.debug)
       ? recentPipelines.slice(0, DEBUG_FETCH_LIMIT)
       : recentPipelines.slice(0, FETCH_LIMIT)
 
@@ -339,14 +341,14 @@ export class CircleciClientV2 {
 
   // https://circleci.com/docs/api/v2/#operation/getJobDetails
   private async fetchJob(jobNumber: number, projectSlug: string) {
-    const res = await this.axios.get( `v2/project/${projectSlug}/job/${jobNumber}`, {})
+    const res = await this.#axios.get( `v2/project/${projectSlug}/job/${jobNumber}`, {})
     return res.data as GetJobDetailsResponse
   }
 
 
   // https://circleci.com/docs/api/v1/#single-job
   private async fetchJobSteps(jobNumber: number, projectSlug: string) {
-    const res = await this.axios.get( `v1.1/project/${projectSlug}/${jobNumber}`, {})
+    const res = await this.#axios.get( `v1.1/project/${projectSlug}/${jobNumber}`, {})
     return res.data as v1_1SingleJobResponse
   }
 
@@ -401,7 +403,7 @@ export class CircleciClientV2 {
 
   private async fetchArtifacts(artifactItems: ArtifactItem[]): Promise<Artifact[]> {
     const pathResponses = artifactItems.map((artifactItem) => {
-      const response = this.axios.get(
+      const response = this.#axios.get(
         artifactItem.url,
         { responseType: 'arraybuffer'}
       )

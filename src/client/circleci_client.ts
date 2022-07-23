@@ -112,13 +112,15 @@ type ArtifactsResponse = {
 }[]
 
 export class CircleciClient {
-  private axios: AxiosInstance
-  constructor(token: string, logger: Logger, private options: ArgumentOptions, baseUrl?: string) {
+  #axios: AxiosInstance
+  #options: ArgumentOptions
+  constructor(token: string, logger: Logger, options: ArgumentOptions, baseUrl?: string) {
     if (baseUrl && path.basename(baseUrl) !== 'v1.1') {
       throw new Error(`${CircleciClient.name} accepts only "/api/v1.1/" But your baseUrl is ${baseUrl}`)
     }
+    this.#options = options
     const axiosLogger = logger.getChildLogger({ name: CircleciClient.name })
-    this.axios = createAxios(axiosLogger, options, {
+    this.#axios = createAxios(axiosLogger, options, {
       baseURL: baseUrl ?? 'https://circleci.com/api/v1.1',
       auth: {
         username: token,
@@ -129,10 +131,10 @@ export class CircleciClient {
 
   // https://circleci.com/api/v1.1/project/:vcs-type/:username/:project?circle-token=:token&limit=20&offset=5&filter=completed
   async fetchWorkflowRuns(owner: string, repo: string, vcsType: string, lastRunId?: number) {
-    const limit = (this.options.debug) ? DEBUG_PER_PAGE : 100
+    const limit = (this.#options.debug) ? DEBUG_PER_PAGE : 100
     let recentBuilds = [] as RecentBuildResponse[]
     for (let index = 0; index < FETCH_RECENT_BUILD_API_NUM; index++) {
-      const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}`, {
+      const res = await this.#axios.get( `project/${vcsType}/${owner}/${repo}`, {
         params: {
           // API default is 30 and max is 100
           // ref: https://circleci.com/docs/api/#recent-builds-for-a-single-project
@@ -216,7 +218,7 @@ export class CircleciClient {
 
   // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021
   async fetchJobs(owner: string, repo: string, vcsType: string, runId: number) {
-    const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}/${runId}`, {})
+    const res = await this.#axios.get( `project/${vcsType}/${owner}/${repo}/${runId}`, {})
     const build = res.data
     // Add dummy workflow data if job is not belong to workflow
     if (!build.workflows) {
@@ -250,7 +252,7 @@ export class CircleciClient {
 
   // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021/tests
   async fetchTests(owner: string, repo: string, vcsType: string, runId: number) {
-    const res = await this.axios.get( `project/${vcsType}/${owner}/${repo}/${runId}/tests`)
+    const res = await this.#axios.get( `project/${vcsType}/${owner}/${repo}/${runId}/tests`)
     return {
       ...res.data,
       run_id: runId
@@ -259,7 +261,7 @@ export class CircleciClient {
 
   // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021/artifacts
   async fetchArtifactsList(owner: string, repo: string, vcsType: string, runId: number): Promise<ArtifactsResponse> {
-    const res = await this.axios.get(
+    const res = await this.#axios.get(
       `project/${vcsType}/${owner}/${repo}/${runId}/artifacts`
     )
     return res.data
@@ -267,7 +269,7 @@ export class CircleciClient {
 
   async fetchArtifacts(artifactsResponse: ArtifactsResponse): Promise<Artifact[]> {
     const pathResponses = artifactsResponse.map((artifact) => {
-      const response = this.axios.get(
+      const response = this.#axios.get(
         artifact.url,
         { responseType: 'arraybuffer'}
       )

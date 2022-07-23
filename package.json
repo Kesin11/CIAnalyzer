@@ -15,6 +15,9 @@
     "url": "https://github.com/Kesin11/CIAnalyzer/issues"
   },
   "homepage": "https://github.com/Kesin11/CIAnalyzer#readme",
+  	"engines": {
+		"node": ">=16.0.0"
+	},
   "bin": {
     "ci_analyzer": "dist/index.js"
   },

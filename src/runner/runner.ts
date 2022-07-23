@@ -15,7 +15,9 @@ export interface Runner {
 
 export class CompositRunner implements Runner {
   runners: Runner[]
-  constructor(private logger: Logger, public config: YamlConfig, public options: ArgumentOptions) {
+  #logger: Logger
+  constructor(logger: Logger, public config: YamlConfig, public options: ArgumentOptions) {
+    this.#logger = logger
     const services = options.onlyServices
       ? Object.keys(config).filter((service) => options.onlyServices?.includes(service))
       : Object.keys(config)
@@ -58,20 +60,20 @@ export class CompositRunner implements Runner {
 
   handlingError(error: unknown) {
     if (axios.isAxiosError(error)) {
-      this.logger.error(error.message)
-      this.logger.error(error.stack)
+      this.#logger.error(error.message)
+      this.#logger.error(error.stack)
     }
     else if (error instanceof ApiError) {
-      this.logger.error("Catch GCloud Error. Please check 'gcloud' auth status or your permission.")
-      this.logger.error(`${error.response?.body}`)
-      this.logger.error(error.stack)
+      this.#logger.error("Catch GCloud Error. Please check 'gcloud' auth status or your permission.")
+      this.#logger.error(`${error.response?.body}`)
+      this.#logger.error(error.stack)
     }
     else if (error instanceof Error) {
-      this.logger.error(error.message)
-      this.logger.error(error.stack)
+      this.#logger.error(error.message)
+      this.#logger.error(error.stack)
     }
     else {
-      this.logger.error(error)
+      this.#logger.error(error)
     }
   }
 }

@@ -176,8 +176,9 @@ export type TimeInQueueAction = {
 }
 
 export class JenkinsClient {
-  private axios: AxiosInstance
-  constructor(baseUrl: string, logger: Logger, private options: ArgumentOptions, user?: string, token?: string) {
+  #axios: AxiosInstance
+  #options: ArgumentOptions
+  constructor(baseUrl: string, logger: Logger, options: ArgumentOptions, user?: string, token?: string) {
     if ((user && !token) || (!user && token)) throw new Error('Either $JENKSIN_USER or $JENKINS_TOKEN is undefined.')
 
     const auth = (user && token) ? {
@@ -185,15 +186,16 @@ export class JenkinsClient {
       password: token,
     } : undefined
 
+    this.#options = options
     const axiosLogger = logger.getChildLogger({ name: JenkinsClient.name })
-    this.axios = createAxios(axiosLogger, options, {
+    this.#axios = createAxios(axiosLogger, options, {
       baseURL: baseUrl,
       auth,
     })
   }
 
   async fetchJobs() {
-    const res = await this.axios.get("api/json")
+    const res = await this.#axios.get("api/json")
 
     const jobs = res.data.jobs as JobResponse[]
     return jobs.filter((job) => {
@@ -205,7 +207,7 @@ export class JenkinsClient {
     const url = encodeURI(`job/${jobName}/wfapi/runs`)
     let runs: WfapiRunResponse[]
     try {
-      const res = await this.axios.get(url, {
+      const res = await this.#axios.get(url, {
         params: {
           fullStages: "true"
         }
@@ -237,21 +239,21 @@ export class JenkinsClient {
 
   async fetchJobRun(jobName: string, runId: number) {
     const url = encodeURI(`job/${jobName}/${runId}/wfapi/describe`)
-    const res = await this.axios.get(url)
+    const res = await this.#axios.get(url)
 
     return res.data as WfapiRunResponse
   }
 
   async fetchBuild(jobName: string, runId: number) {
     const url = encodeURI(`job/${jobName}/${runId}/api/json`)
-    const res = await this.axios.get(url)
+    const res = await this.#axios.get(url)
 
     return res.data as BuildResponse
   }
 
   async fetchLastBuild(jobName: string) {
     const url = encodeURI(`/job/${jobName}/lastBuild/api/json`)
-    const res = await this.axios.get(url)
+    const res = await this.#axios.get(url)
 
     return res.data as BuildResponse
   }
@@ -259,7 +261,7 @@ export class JenkinsClient {
   async fetchArtifacts(jobName: string, runId: number, paths: string[]): Promise<Artifact[]> {
     const pathResponses = paths.map((path) => {
       const url = encodeURI(`job/${jobName}/${runId}/artifact/${path}`)
-      const response = this.axios.get(url, { responseType: 'arraybuffer'})
+      const response = this.#axios.get(url, { responseType: 'arraybuffer'})
       return { path, response }
     })
 

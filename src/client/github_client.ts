@@ -19,27 +19,27 @@ type RunStatus = 'queued' | 'in_progress' | 'completed'
 export type RepositoryTagMap = Map<string, string>
 
 export class GithubClient {
-  private octokit: Octokit
+  #octokit: Octokit
   constructor(token: string, private options: ArgumentOptions, baseUrl?: string) {
     const MyOctokit = Octokit.plugin(throttling, retry)
-    this.octokit = new MyOctokit({
+    this.#octokit = new MyOctokit({
       auth: token,
       baseUrl: (baseUrl) ? baseUrl : 'https://api.github.com',
       log: (options.debug) ? console : undefined,
       throttle: {
         onRateLimit: (retryAfter: number, options: any) => {
-          this.octokit.log.warn(
+          this.#octokit.log.warn(
             `Request quota exhausted for request ${options.method} ${options.url}`
           )
           // Retry twice after hitting a rate limit error, then give up
           if (options.request.retryCount <= 2) {
-            this.octokit.log.warn(`Retrying after ${retryAfter} seconds!`);
+            this.#octokit.log.warn(`Retrying after ${retryAfter} seconds!`);
             return true;
           }
         },
         onAbuseLimit: (retryAfter: number, options: any) => {
           // does not retry, only logs a warning
-          this.octokit.log.warn(
+          this.#octokit.log.warn(
             `Abuse detected for request ${options.method} ${options.url}`
           )
         },
@@ -49,7 +49,7 @@ export class GithubClient {
 
   // see: https://developer.github.com/v3/actions/workflow-runs/#list-repository-workflow-runs
   async fetchWorkflowRuns(owner: string, repo: string, workflowId: number, lastRunId?: number) {
-    const runs = await this.octokit.actions.listWorkflowRuns({
+    const runs = await this.#octokit.actions.listWorkflowRuns({
       owner,
       repo,
       workflow_id: workflowId,
@@ -77,7 +77,7 @@ export class GithubClient {
 
   // see: https://developer.github.com/v3/actions/workflows/#list-repository-workflows
   async fetchWorkflows(owner: string, repo: string) {
-    const workflows = await this.octokit.actions.listRepoWorkflows({
+    const workflows = await this.#octokit.actions.listRepoWorkflows({
       owner,
       repo,
     })
@@ -88,7 +88,7 @@ export class GithubClient {
 
   // see: https://developer.github.com/v3/actions/workflow-jobs/#list-jobs-for-a-workflow-run
   async fetchJobs(owner: string, repo: string, runId: number) {
-    const jobs = await this.octokit.actions.listJobsForWorkflowRun({
+    const jobs = await this.#octokit.actions.listJobsForWorkflowRun({
       owner,
       repo,
       run_id: runId
@@ -97,14 +97,14 @@ export class GithubClient {
   }
 
   async fetchArtifacts(owner: string, repo: string, runId: number, globs: string[]): Promise<Artifact[]> {
-    const res = await this.octokit.actions.listWorkflowRunArtifacts({
+    const res = await this.#octokit.actions.listWorkflowRunArtifacts({
       owner,
       repo,
       run_id: runId
     })
 
     const nameResponse = res.data.artifacts.map((artifact) => {
-      const response = this.octokit.actions.downloadArtifact({
+      const response = this.#octokit.actions.downloadArtifact({
         owner,
         repo,
         artifact_id: artifact.id,
@@ -157,7 +157,7 @@ export class GithubClient {
 
   async fetchRepositoryTagMap (owner: string, repo: string): Promise<RepositoryTagMap> {
     try {
-      const res = await this.octokit.repos.listTags({ owner, repo, per_page: 100 })
+      const res = await this.#octokit.repos.listTags({ owner, repo, per_page: 100 })
       const tags = res.data
       return new Map( tags.map((tag) => [tag.commit.sha, tag.name]) )
     }

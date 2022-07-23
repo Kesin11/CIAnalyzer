@@ -99,21 +99,23 @@ type ArtifactResponse = {
 }
 
 export class BitriseClient {
-  private axios: AxiosInstance
-  private artifactAxios: AxiosInstance
-  constructor(token: string, logger: Logger, private options: ArgumentOptions, baseUrl?: string) {
+  #axios: AxiosInstance
+  #artifactAxios: AxiosInstance
+  #options: ArgumentOptions
+  constructor(token: string, logger: Logger, options: ArgumentOptions, baseUrl?: string) {
     const axiosLogger = logger.getChildLogger({ name: BitriseClient.name })
-    this.axios = createAxios(axiosLogger, options, {
+    this.#options = options
+    this.#axios = createAxios(axiosLogger, options, {
       baseURL: baseUrl ?? 'https://api.bitrise.io/v0.1',
       headers: {'Authorization': token },
     })
 
-    this.artifactAxios = createAxios(axiosLogger, options, {})
+    this.#artifactAxios = createAxios(axiosLogger, options, {})
   }
 
   // https://api-docs.bitrise.io/#/application/app-list
   async fetchApps() {
-    const res = await this.axios.get( `apps`, {
+    const res = await this.#axios.get( `apps`, {
       params: {
         sort_by: 'last_build_at'
       }
@@ -132,10 +134,10 @@ export class BitriseClient {
 
   // https://api-docs.bitrise.io/#/builds/build-list
   async fetchBuilds(appSlug: string, lastRunId?: number) {
-    const res = await this.axios.get( `apps/${appSlug}/builds`, {
+    const res = await this.#axios.get( `apps/${appSlug}/builds`, {
       params: {
         sort_by: 'created_at',
-        limit: (this.options.debug) ? DEBUG_PER_PAGE : MAX_LIMIT,
+        limit: (this.#options.debug) ? DEBUG_PER_PAGE : MAX_LIMIT,
       }
     })
     let builds = res.data.data as BuildResponse[]
@@ -159,7 +161,7 @@ export class BitriseClient {
 
   // https://api-docs.bitrise.io/#/builds/build-log
   async fetchJobLog(appSlug: string, buildSlug: string): Promise<BuildLogResponse | null>  {
-    const res = await this.axios.get(`apps/${appSlug}/builds/${buildSlug}/log`, {
+    const res = await this.#axios.get(`apps/${appSlug}/builds/${buildSlug}/log`, {
       // NOTE: Allow 404 response build that aborted by rolling build and has not build log
       validateStatus: (status) => (status >= 200 && status < 300) || status === 404
     })
@@ -179,7 +181,7 @@ export class BitriseClient {
   }
 
   async fetchArtifactsList(appSlug: string, buildSlug: string): Promise<ArtifactListResponse> {
-    const res = await this.axios.get(
+    const res = await this.#axios.get(
       `/apps/${appSlug}/builds/${buildSlug}/artifacts`,
       { params: { limit: MAX_LIMIT }}
     )
@@ -189,7 +191,7 @@ export class BitriseClient {
   async fetchArtifacts(appSlug: string, buildSlug: string, artifactList: ArtifactListResponse): Promise<Artifact[]> {
     const artifactResponses: ArtifactResponse[] = []
     for (const artifact of artifactList) {
-      const res = await this.axios.get(
+      const res = await this.#axios.get(
         `/apps/${appSlug}/builds/${buildSlug}/artifacts/${artifact.slug}`
       )
       artifactResponses.push(res.data.data as ArtifactResponse)
@@ -199,7 +201,7 @@ export class BitriseClient {
     const pathResponses = artifactResponses.map((artifact) => {
       // NOTE: Bitrise store their artifacts to S3.
       // S3 does not accept 'Authorization' header, so using another axios client that is not set Bitrise Authorization header.
-      const response = this.artifactAxios.get(
+      const response = this.#artifactAxios.get(
         artifact.expiring_download_url,
         { responseType: 'arraybuffer'}
       )
