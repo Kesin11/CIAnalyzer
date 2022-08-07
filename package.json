@@ -1,6 +1,6 @@
 {
   "name": "ci_analyzer",
-  "version": "5.0.6",
+  "version": "5.0.7",
   "description": "Export multiple CI service build data for analyzing.",
   "repository": {
     "type": "git",
@@ -15,9 +15,9 @@
     "url": "https://github.com/Kesin11/CIAnalyzer/issues"
   },
   "homepage": "https://github.com/Kesin11/CIAnalyzer#readme",
-  	"engines": {
-		"node": ">=16.0.0"
-	},
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "bin": {
     "ci_analyzer": "dist/index.js"
   },
