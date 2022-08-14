@@ -6,6 +6,9 @@
     ":enableVulnerabilityAlerts",
     ":automergeMinor"
   ],
+  "dockerfile": {
+    "fileMatch": ["(^|/)Earthfile[^/]*$"]
+  },
   "packageRules": [
     {
       "matchDepTypes": ["devDependencies"],
