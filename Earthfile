@@ -1,4 +1,4 @@
-VERSION 0.5
+VERSION 0.6
 
 # TypeScript build
 FROM node:16.17.0
@@ -63,4 +63,12 @@ docker:
   ENTRYPOINT [ "/sbin/tini", "--", "node", "/ci_analyzer/dist/index.js" ]
   WORKDIR /app
 
-  SAVE IMAGE --push ghcr.io/kesin11/ci_analyzer_earthly:latest
+  SAVE IMAGE ghcr.io/kesin11/ci_analyzer:latest
+
+docker-push:
+  FROM +docker
+  ARG --required TAGS
+
+  FOR TAG IN $TAGS
+    SAVE IMAGE --push $TAG
+  END
