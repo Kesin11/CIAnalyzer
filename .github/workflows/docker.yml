@@ -19,6 +19,7 @@ jobs:
         id: docker_meta
         with:
           images: ghcr.io/kesin11/ci_analyzer
+          sep-tags: ","
           tags: |
             type=ref,event=branch
             type=semver,pattern=v{{version}}
@@ -33,11 +34,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Docker build and push latest tag
-        run: earthly --strict --push --max-remote-cache --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker
-
-      - name: Copy latest tag to other tags
-        uses: akhilerm/tag-push-action@v2.0.0
-        with:
-          src: ghcr.io/kesin11/ci_analyzer_earthly:latest
-          dst: |
-            ${{ steps.docker_meta.outputs.tags }}
+        run: |
+          TAGS=$(echo "${{ steps.docker_meta.outputs.tags }}" | tr ',' ' ')
+          earthly --strict --push --max-remote-cache \
+            --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache \
+            +docker-push \
+            --TAGS "${TAGS}"
