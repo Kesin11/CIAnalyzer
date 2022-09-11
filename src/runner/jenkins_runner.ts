@@ -15,7 +15,7 @@ import { Logger } from "tslog"
 export class JenkinsRunner implements Runner {
   service: string = 'jenkins'
   client?: JenkinsClient
-  analyzer?: JenkinsAnalyzer 
+  analyzer?: JenkinsAnalyzer
   config?: JenkinsConfig
   store?: LastRunStore
   logger: Logger
@@ -109,7 +109,7 @@ export class JenkinsRunner implements Runner {
     if (!this.config) return []
     if (!this.client) return []
 
-    const allJobs = await this.client.fetchJobs()
+    const allJobs = await this.client.fetchJobs(this.config.correctAllJobs?.isRecursively ?? false)
     const allJobMap = new Map(allJobs.map((job) => [job.name, job]))
     const configJobs = this.config.jobs.filter((job) => allJobMap.get(job.name))
 
