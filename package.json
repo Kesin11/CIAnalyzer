@@ -36,7 +36,7 @@
     "docker": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker"
   },
   "dependencies": {
-    "@google-cloud/bigquery": "6.0.2",
+    "@google-cloud/bigquery": "6.0.3",
     "@google-cloud/storage": "6.4.2",
     "@octokit/plugin-retry": "3.0.9",
     "@octokit/plugin-throttling": "4.3.0",
