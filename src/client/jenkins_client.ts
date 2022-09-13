@@ -194,8 +194,28 @@ export class JenkinsClient {
     })
   }
 
-  async fetchJobs() {
-    const res = await this.#axios.get("api/json")
+  async fetchJobs(isRecursively: boolean) {
+    const script = `
+import org.jenkinsci.plugins.workflow.job.WorkflowJob
+import groovy.json.JsonBuilder
+
+def jobs = Jenkins.instance.getAllItems(WorkflowJob.class).collect{
+  [
+    '_class': 'org.jenkinsci.plugins.workflow.job.WorkflowJob',
+    'name': it.fullName.replaceAll('/', '/job/'),
+    'url': it.absoluteUrl,
+    'color': it.getIconColor().toString().toLowerCase()
+  ]
+}
+def obj = ['jobs': jobs]
+def builder = new JsonBuilder(obj)
+
+println builder.toString()
+    `
+    const params = new URLSearchParams({ script: script })
+    const res = (isRecursively)
+      ? await this.#axios.post("scriptText", params)
+      : await this.#axios.get("api/json")
 
     const jobs = res.data.jobs as JobResponse[]
     return jobs.filter((job) => {

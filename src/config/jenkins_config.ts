@@ -5,6 +5,7 @@ export type JenkinsConfig = CommonConfig & {
   jobs: JenkinsConfigJob[]
   correctAllJobs?: {
     filterLastBuildDay?: number
+    isRecursively?: boolean
   }
 }
 
