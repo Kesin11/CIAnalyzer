@@ -69,6 +69,6 @@
     "ts-jest": "28.0.8",
     "ts-proto": "1.125.0",
     "ts-protoc-gen": "0.15.0",
-    "typescript": "4.8.2"
+    "typescript": "4.8.3"
   }
 }
