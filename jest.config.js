@@ -1,5 +1,4 @@
 module.exports = {
-  preset: 'ts-jest',
   reporters: [
     'default',
     [ 'jest-junit', {
@@ -14,9 +13,7 @@ module.exports = {
   testEnvironment: 'node',
   clearMocks: true,
   // https://kulshekhar.github.io/ts-jest/docs/getting-started/options/isolatedModules
-  globals: {
-    'ts-jest': {
-      isolatedModules: true,
-    },
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', { isolatedModules: true }]
   },
 };
