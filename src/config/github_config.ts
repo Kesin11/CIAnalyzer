@@ -1,20 +1,23 @@
-import { YamlConfig, CommonConfig, CustomReportConfig } from './config'
+import { YamlConfig, commonSchema, customReportSchema } from './config'
+import { z } from 'zod'
 
-export type GithubConfig = CommonConfig & {
-  repos: {
-    owner: string
-    repo: string
-    fullname: string
-    testGlob: string[]
-    customReports: CustomReportConfig[]
-  }[]
-}
+const githubSchema = commonSchema.merge(z.object({
+  repos: z.object({
+    owner: z.string(),
+    repo: z.string(),
+    fullname: z.string(),
+    testGlob: z.string().array(),
+    customReports: customReportSchema.array()
+  }).array()
+}))
+export type GithubConfig = z.infer<typeof githubSchema>
 
-type RepoYaml = string | {
-  name: string
-  tests?: string[]
-  customReports?: CustomReportConfig[]
-}
+const repoYamlSchema = z.union([z.string(), z.object({
+  name: z.string(),
+  tests: z.string().array().optional(),
+  customReports: customReportSchema.array().optional()
+})])
+type RepoYaml = z.infer<typeof repoYamlSchema>
 
 export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
   if (!config.github) return

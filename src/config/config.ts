@@ -53,18 +53,18 @@ const lastRunStoreSchema = z.union([
 ])
 export type LastRunStoreConfig = z.infer<typeof lastRunStoreSchema>
 
-const customReportSchema = z.object({
+export const customReportSchema = z.object({
   name: z.string(),
   paths: z.string().array()
 })
 export type CustomReportConfig = z.infer<typeof customReportSchema>
 
-const commonConfig= z.object({
+export const commonSchema = z.object({
   baseUrl: z.string().optional(),
   exporter: exporterSchema.optional(),
   lastRunStore: lastRunStoreSchema.optional()
 })
-export type CommonConfig = z.infer<typeof commonConfig>
+export type CommonConfig = z.infer<typeof commonSchema>
 
 export const loadConfig = (logger: Logger, configPath: string): YamlConfig => {
   const config = yaml.load(fs.readFileSync(configPath, 'utf8'))
