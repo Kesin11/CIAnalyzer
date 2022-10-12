@@ -1,25 +1,29 @@
-import { YamlConfig, CommonConfig, CustomReportConfig } from './config'
+import { YamlConfig, customReportSchema, commonSchema } from './config'
+import { z } from 'zod'
 
-export type JenkinsConfig = CommonConfig & {
-  baseUrl: string
-  jobs: JenkinsConfigJob[]
-  correctAllJobs?: {
-    filterLastBuildDay?: number
-    isRecursively?: boolean
-  }
-}
+const jenkinsConfigJobSchema = z.object({
+  name: z.string(),
+  testGlob: z.string().array(),
+  customReports: customReportSchema.array()
+})
+export type JenkinsConfigJob = z.infer<typeof jenkinsConfigJobSchema>
 
-export type JenkinsConfigJob = {
-  name: string
-  testGlob: string[]
-  customReports: CustomReportConfig[]
-}
+const jenkinsConfigSchema = commonSchema.merge(z.object({
+  baseUrl: z.string(),
+  jobs: jenkinsConfigJobSchema.array(),
+  correctAllJobs: z.object({
+    filterLastBuildDay: z.number().optional(),
+    isRecursively: z.boolean().optional()
+  }).optional()
+}))
+export type JenkinsConfig = z.infer<typeof jenkinsConfigSchema>
 
-type JobYaml = string | {
-  name: string
-  tests?: string[]
-  customReports?: CustomReportConfig[]
-}
+const repoYamlSchema = z.union([z.string(), z.object({
+  name: z.string(),
+  tests: z.string().array().optional(),
+  customReports: customReportSchema.array().optional()
+})])
+type JobYaml = z.infer<typeof repoYamlSchema>
 
 export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {
   if (!config.jenkins) return
