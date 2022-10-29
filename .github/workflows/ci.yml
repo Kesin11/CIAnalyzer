@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: earthly/actions/setup-earthly@v1
+      - uses: earthly/actions-setup@v1
         with:
           version: latest
       - name: Generate files from proto
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: earthly/actions/setup-earthly@v1
+      - uses: earthly/actions-setup@v1
         with:
           version: latest
       - name: Docker build
