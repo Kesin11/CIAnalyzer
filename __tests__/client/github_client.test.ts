@@ -17,6 +17,14 @@ const hasInprogressRuns = [
   { run_number: 6, status: 'completed' },
 ] as any
 
+const hasQueuedRuns = [
+  { run_number: 2, status: 'completed' },
+  { run_number: 3, status: 'completed' },
+  { run_number: 4, status: 'queued' },
+  { run_number: 5, status: 'queued' },
+  { run_number: 6, status: 'completed' },
+] as any
+
 describe('GithubClient', () => {
   describe('filterWorkflowRuns', () => {
     let client: GithubClient
@@ -51,6 +59,20 @@ describe('GithubClient', () => {
     it('when defined lastRunId and has in_pregress runs', async () => {
       const lastRunId = 2
       const actual = client.filterWorkflowRuns(hasInprogressRuns, lastRunId)
+
+      expect(actual.map((run) => run.run_number)).toEqual([3])
+    })
+
+    it('when lastRunId is undef and has queued runs', async () => {
+      const lastRunId = undefined
+      const actual = client.filterWorkflowRuns(hasQueuedRuns, lastRunId)
+
+      expect(actual.map((run) => run.run_number)).toEqual([2,3])
+    })
+
+    it('when defined lastRunId and has queued runs', async () => {
+      const lastRunId = 2
+      const actual = client.filterWorkflowRuns(hasQueuedRuns, lastRunId)
 
       expect(actual.map((run) => run.run_number)).toEqual([3])
     })
