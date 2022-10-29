@@ -66,7 +66,7 @@ export class GithubClient {
       ? runs.filter((run) => run.run_number > lastRunId)
       : runs
     const firstInprogress = minBy(
-      runs.filter((run) => run.status as RunStatus === 'in_progress'),
+      runs.filter((run) => run.status as RunStatus !== 'completed'),
       (run) => run.run_number
     )
     runs = (firstInprogress)
