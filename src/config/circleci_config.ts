@@ -1,24 +1,27 @@
-import { YamlConfig, CommonConfig, CustomReportConfig } from './config'
+import { YamlConfig, commonSchema, customReportSchema } from './config'
+import { z } from 'zod'
 
-export type CircleciConfig = CommonConfig & {
-  repos: {
-    vcsType: string
-    owner: string
-    repo: string
-    fullname: string
-    customReports: CustomReportConfig[]
-  }[]
-  vcsBaseUrl?: {
-    github?: string
-  }
-  version: 1 | 2
-}
+const circleciSchema = commonSchema.merge(z.object({
+  repos: z.object({
+    vcsType: z.string(),
+    owner: z.string(),
+    repo: z.string(),
+    fullname: z.string(),
+    customReports: customReportSchema.array()
+  }).array(),
+  vcsBaseUrl: z.object({
+    github: z.string().optional()
+  }).optional(),
+  version: z.union([z.literal(1), z.literal(2)])
+}))
+export type CircleciConfig = z.infer<typeof circleciSchema>
 
-type RepoYaml = string | {
-  name: string
-  vcs_type?: string
-  customReports?: CustomReportConfig[]
-}
+const repoYamlSchema = z.union([z.string(), z.object({
+  name: z.string(),
+  vcs_type: z.string().optional(),
+  customReports: customReportSchema.array().optional()
+})])
+type RepoYaml = z.infer<typeof repoYamlSchema>
 
 export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
   if (!config.circleci) return
