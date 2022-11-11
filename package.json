@@ -59,7 +59,7 @@
     "@types/adm-zip": "0.5.0",
     "@types/jest": "29.2.1",
     "@types/js-yaml": "4.0.5",
-    "@types/lodash": "4.14.187",
+    "@types/lodash": "4.14.188",
     "@types/node": "18.11.9",
     "@types/yargs": "17.0.13",
     "codecov": "3.8.3",
