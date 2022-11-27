@@ -1,20 +1,23 @@
-import { YamlConfig, CommonConfig, CustomReportConfig } from './config'
+import { YamlConfig, commonSchema, customReportSchema } from './config'
+import { z } from 'zod'
 
-export type BitriseConfig = CommonConfig & {
-  apps: {
-    owner: string
-    title: string
-    fullname: string
-    testGlob: string[]
-    customReports: CustomReportConfig[]
-  }[]
-}
+const bitriseSchema = commonSchema.merge(z.object({
+  apps: z.object({
+    owner: z.string(),
+    title: z.string(),
+    fullname: z.string(),
+    testGlob: z.string().array(),
+    customReports: customReportSchema.array()
+  }).array()
+}))
+export type BitriseConfig = z.infer<typeof bitriseSchema >
 
-type AppYaml = string | {
-  name: string
-  tests?: string[]
-  customReports?: CustomReportConfig[]
-}
+const appYamlSchema = z.union([z.string(), z.object({
+  name: z.string(),
+  tests: z.string().array().optional(),
+  customReports: customReportSchema.array()
+})])
+type AppYaml = z.infer<typeof appYamlSchema>
 
 export const parseConfig = (config: YamlConfig): BitriseConfig | undefined => {
   if (!config.bitrise) return
