@@ -2,14 +2,7 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 import { Logger } from 'tslog'
 import { z } from 'zod'
-
-const yamlSchema = z.object({
-  github: z.record(z.unknown()).optional(),
-  circleci: z.record(z.unknown()).optional(),
-  jenkins: z.record(z.unknown()).optional(),
-  bitrise: z.record(z.unknown()).optional(),
-})
-export type YamlConfig = z.infer<typeof yamlSchema>
+import { YamlConfig } from './validator'
 
 const localExporterSchema = z.object({
   outDir: z.string().optional(),

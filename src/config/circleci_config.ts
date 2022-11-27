@@ -1,7 +1,20 @@
-import { YamlConfig, commonSchema, customReportSchema } from './config'
+import { commonSchema, customReportSchema } from './config'
+import { YamlConfig } from "./validator"
 import { z } from 'zod'
 
-const circleciSchema = commonSchema.merge(z.object({
+export const circleciYamlSchema = commonSchema.merge(z.object({
+  repos: z.union([z.string(), z.object({
+    name: z.string(),
+    vcs_type: z.string().optional(),
+    customReports: customReportSchema.array().optional()
+  })]).array(),
+  vcsBaseUrl: z.object({
+    github: z.string().optional()
+  }).optional(),
+  version: z.union([z.literal(1), z.literal(2)])
+}))
+
+const circleciSchema = circleciYamlSchema.merge(z.object({
   repos: z.object({
     vcsType: z.string(),
     owner: z.string(),
@@ -9,47 +22,36 @@ const circleciSchema = commonSchema.merge(z.object({
     fullname: z.string(),
     customReports: customReportSchema.array()
   }).array(),
-  vcsBaseUrl: z.object({
-    github: z.string().optional()
-  }).optional(),
-  version: z.union([z.literal(1), z.literal(2)])
 }))
 export type CircleciConfig = z.infer<typeof circleciSchema>
-
-const repoYamlSchema = z.union([z.string(), z.object({
-  name: z.string(),
-  vcs_type: z.string().optional(),
-  customReports: customReportSchema.array().optional()
-})])
-type RepoYaml = z.infer<typeof repoYamlSchema>
 
 export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
   if (!config.circleci) return
 
-  const circleciConfig = { ...config.circleci }
+  // overwrite repos and version
+  const circleciConfig = {
+    ...config.circleci,
+    repos: (config.circleci.repos).map((repoYaml): CircleciConfig['repos'][0] => {
+      let owner, repo
+      if (typeof repoYaml === 'string') {
+        [owner, repo] = repoYaml.split('/')
+        const vcsType = 'github'
+        const fullname = `${vcsType}/${owner}/${repo}`
+        return { vcsType, owner, repo, fullname, customReports: [] }
+      }
 
-  circleciConfig.version = (String(circleciConfig.version) === "2") ? 2 : 1
+      [owner, repo] = repoYaml.name.split('/')
+      const vcsType = repoYaml.vcs_type ?? 'github'
+      return {
+        vcsType,
+        owner,
+        repo,
+        fullname: `${vcsType}/${owner}/${repo}`,
+        customReports: repoYaml.customReports ?? [],
+      }
+    }),
+    version: (String(config.circleci.version) === "2") ? 2 : 1
+  } as CircleciConfig
 
-  // overwrite repos
-  circleciConfig.repos = (circleciConfig.repos as RepoYaml[]).map((repoYaml): CircleciConfig['repos'][0] => {
-    let owner, repo
-    if (typeof repoYaml === 'string') {
-      [owner, repo] = repoYaml.split('/')
-      const vcsType = 'github'
-      const fullname = `${vcsType}/${owner}/${repo}`
-      return { vcsType, owner, repo, fullname, customReports: [] }
-    }
-
-    [owner, repo] = repoYaml.name.split('/')
-    const vcsType = repoYaml.vcs_type ?? 'github'
-    return {
-      vcsType,
-      owner,
-      repo,
-      fullname: `${vcsType}/${owner}/${repo}`,
-      customReports: repoYaml.customReports ?? [],
-    }
-  })
-
-  return circleciConfig as CircleciConfig
+  return circleciConfig
 }

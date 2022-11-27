@@ -1,11 +1,11 @@
 import { maxBy } from "lodash"
 import { Runner } from "./runner"
-import { YamlConfig } from "../config/config"
+import { YamlConfig } from "../config/validator"
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { JenkinsClient } from "../client/jenkins_client"
 import { JenkinsAnalyzer } from "../analyzer/jenkins_analyzer"
-import { JenkinsConfig, JenkinsConfigJob, parseConfig } from "../config/jenkins_config"
+import { JenkinsConfig, parseConfig } from "../config/jenkins_config"
 import { LastRunStore } from "../last_run_store"
 import { CustomReportCollection, createCustomReportCollection } from "../custom_report_collection"
 import { failure, Result, success } from "../result"
@@ -105,7 +105,7 @@ export class JenkinsRunner implements Runner {
     return result
   }
 
-  private async getJobs(): Promise<JenkinsConfigJob[]> {
+  private async getJobs(): Promise<JenkinsConfig["jobs"]> {
     if (!this.config) return []
     if (!this.client) return []
 
@@ -113,7 +113,7 @@ export class JenkinsRunner implements Runner {
     const allJobMap = new Map(allJobs.map((job) => [job.name, job]))
     const configJobs = this.config.jobs.filter((job) => allJobMap.get(job.name))
 
-    const otherJobs: JenkinsConfigJob[] = []
+    const otherJobs: JenkinsConfig["jobs"] = []
     if (this.config.correctAllJobs) {
       const notConfigJobs = allJobs.filter((job) => {
         return configJobs.find((configJob) => configJob.name === job.name) === undefined
