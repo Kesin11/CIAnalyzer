@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Kesin11/CIAnalyzer/master/schema.json
 # Export to BigQuery and Local
 # Save LastRun to Local file and cache with CircleCI cache
 circleci:
@@ -11,13 +12,13 @@ circleci:
       outDir: output
       format: json
     bigquery:
-      project: { GCP_PROJECT_ID }
-      dataset: { BIGQUERY_DATASET }
+      project: $GCP_PROJECT_ID
+      dataset: $BIGQUERY_DATASET
       reports:
         - name: workflow
-          table: { WORKFLOW_TABLE_NAME }
+          table: $WORKFLOW_TABLE_NAME
         - name: test_report
-          table: { TEST_REPORT_TABLE_NAME }
+          table: $TEST_REPORT_TABLE_NAME
   lastRunStore:
     backend: local
     path: ./.ci_analyzer/circleci.json
