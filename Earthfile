@@ -10,6 +10,7 @@ all:
   BUILD +build
   BUILD +test
   BUILD +docker
+  BUILD +schema
 
 deps:
   COPY package.json package-lock.json .
@@ -72,3 +73,9 @@ docker-push:
   FOR TAG IN $TAGS
     SAVE IMAGE --push $TAG
   END
+
+schema:
+  FROM +deps
+  COPY --dir src scripts ./
+  RUN npx ts-node scripts/create_schema.ts schema.json
+  SAVE ARTIFACT schema.json AS LOCAL ./
