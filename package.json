@@ -61,7 +61,7 @@
     "@types/js-yaml": "4.0.5",
     "@types/lodash": "4.14.190",
     "@types/node": "18.11.9",
-    "@types/yargs": "17.0.14",
+    "@types/yargs": "17.0.15",
     "codecov": "3.8.3",
     "jest": "29.3.1",
     "jest-junit": "15.0.0",
