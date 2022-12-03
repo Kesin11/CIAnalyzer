@@ -51,7 +51,7 @@
     "junit2json": "3.0.4",
     "lodash": "4.17.21",
     "minimatch": "5.1.1",
-    "tslog": "3.3.4",
+    "tslog": "4.4.4",
     "utility-types": "3.10.0",
     "yargs": "17.6.2"
   },
