@@ -1,0 +1,387 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/CIAnalyzer config schema",
+  "definitions": {
+    "CIAnalyzer config schema": {
+      "type": "object",
+      "properties": {
+        "github": {
+          "type": "object",
+          "properties": {
+            "baseUrl": {
+              "type": "string"
+            },
+            "exporter": {
+              "type": "object",
+              "properties": {
+                "local": {
+                  "type": "object",
+                  "properties": {
+                    "outDir": {
+                      "type": "string"
+                    },
+                    "format": {
+                      "type": "string",
+                      "enum": [
+                        "json",
+                        "json_lines"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "bigquery": {
+                  "type": "object",
+                  "properties": {
+                    "project": {
+                      "type": "string"
+                    },
+                    "dataset": {
+                      "type": "string"
+                    },
+                    "reports": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "enum": [
+                              "workflow",
+                              "test_report"
+                            ]
+                          },
+                          "table": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "table"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "customReports": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "table": {
+                            "type": "string"
+                          },
+                          "schema": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "table",
+                          "schema"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "maxBadRecords": {
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "lastRunStore": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "backend": {
+                      "type": "string",
+                      "const": "local"
+                    },
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "backend",
+                    "path"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "backend": {
+                      "type": "string",
+                      "const": "gcs"
+                    },
+                    "project": {
+                      "type": "string"
+                    },
+                    "bucket": {
+                      "type": "string"
+                    },
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "backend",
+                    "project",
+                    "bucket"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "repos": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "tests": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "customReports": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "paths": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "paths"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "customReports"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "repos"
+          ],
+          "additionalProperties": false
+        },
+        "circleci": {
+          "type": "object",
+          "properties": {
+            "baseUrl": {
+              "$ref": "#/definitions/CIAnalyzer config schema/properties/github/properties/baseUrl"
+            },
+            "exporter": {
+              "$ref": "#/definitions/CIAnalyzer config schema/properties/github/properties/exporter"
+            },
+            "lastRunStore": {
+              "$ref": "#/definitions/CIAnalyzer config schema/properties/github/properties/lastRunStore"
+            },
+            "repos": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "vcs_type": {
+                        "type": "string"
+                      },
+                      "customReports": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/CIAnalyzer config schema/properties/github/properties/repos/items/anyOf/1/properties/customReports/items"
+                        }
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            },
+            "vcsBaseUrl": {
+              "type": "object",
+              "properties": {
+                "github": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "version": {
+              "type": "number",
+              "enum": [
+                1,
+                2
+              ]
+            }
+          },
+          "required": [
+            "repos",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "jenkins": {
+          "type": "object",
+          "properties": {
+            "baseUrl": {
+              "type": "string"
+            },
+            "exporter": {
+              "$ref": "#/definitions/CIAnalyzer config schema/properties/github/properties/exporter"
+            },
+            "lastRunStore": {
+              "$ref": "#/definitions/CIAnalyzer config schema/properties/github/properties/lastRunStore"
+            },
+            "jobs": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "tests": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "customReports": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/CIAnalyzer config schema/properties/github/properties/repos/items/anyOf/1/properties/customReports/items"
+                        }
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            },
+            "correctAllJobs": {
+              "type": "object",
+              "properties": {
+                "filterLastBuildDay": {
+                  "type": "number"
+                },
+                "isRecursively": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "baseUrl",
+            "jobs"
+          ],
+          "additionalProperties": false
+        },
+        "bitrise": {
+          "type": "object",
+          "properties": {
+            "baseUrl": {
+              "$ref": "#/definitions/CIAnalyzer config schema/properties/github/properties/baseUrl"
+            },
+            "exporter": {
+              "$ref": "#/definitions/CIAnalyzer config schema/properties/github/properties/exporter"
+            },
+            "lastRunStore": {
+              "$ref": "#/definitions/CIAnalyzer config schema/properties/github/properties/lastRunStore"
+            },
+            "apps": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "tests": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "customReports": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/CIAnalyzer config schema/properties/github/properties/repos/items/anyOf/1/properties/customReports/items"
+                        }
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "customReports"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "apps"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

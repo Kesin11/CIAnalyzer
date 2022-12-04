@@ -1,59 +1,63 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
 import { Logger } from 'tslog'
+import { z } from 'zod'
+import { YamlConfig } from './validator'
 
-export type YamlConfig = {
-  github?: { [key: string]: unknown }
-  circleci?: { [key: string]: unknown }
-  jenkins?: { [key: string]: unknown }
-  bitrise?: { [key: string]: unknown }
-}
+const localExporterSchema = z.object({
+  outDir: z.string().optional(),
+  format: z.union([z.literal('json'), z.literal('json_lines')]).optional()
+})
+export type LocalExporterConfig = z.infer<typeof localExporterSchema>
 
-export type CommonConfig = {
-  baseUrl?: string
-  exporter?: ExporterConfig
-  lastRunStore?: LastRunStoreConfig
-}
+const bigqueryExporterSchema = z.object({
+  project: z.string().optional(),
+  dataset: z.string().optional(),
+  reports: z.object({
+    name: z.union([z.literal('workflow'), z.literal('test_report')]),
+    table: z.string(),
+  }).array().optional(),
+  customReports: z.object({
+    name: z.string(),
+    table: z.string(),
+    schema: z.string(),
+  }).array().optional(),
+  maxBadRecords: z.number().optional()
+})
+export type BigqueryExporterConfig = z.infer<typeof bigqueryExporterSchema>
 
-export type ExporterConfig = {
-  local: LocalExporterConfig | null
-  bigquery: BigqueryExporterConfig | null
-}
+const exporterSchema = z.object({
+  local: localExporterSchema.optional(),
+  bigquery: bigqueryExporterSchema.optional()
+})
+export type ExporterConfig = z.infer<typeof exporterSchema>
 
-export type LocalExporterConfig = {
-  outDir?: string
-  format?: 'json' | 'json_lines'
-}
+const lastRunStoreSchema = z.union([
+  z.object({
+    backend: z.literal('local'),
+    path: z.string()
+  }),
+  z.object({
+    backend: z.literal('gcs'),
+    project: z.string(),
+    bucket: z.string(),
+    path: z.string().optional()
+  })
+])
+export type LastRunStoreConfig = z.infer<typeof lastRunStoreSchema>
 
-export type BigqueryExporterConfig = {
-  project?: string
-  dataset?: string
-  reports?: {
-    name: 'workflow' | 'test_report'
-    table: string
-  }[]
-  customReports?: {
-    name: string
-    table: string
-    schema: string
-  }[]
-  maxBadRecords?: number
-}
+export const customReportSchema = z.object({
+  name: z.string(),
+  paths: z.string().array()
+})
+export type CustomReportConfig = z.infer<typeof customReportSchema>
 
-export type LastRunStoreConfig = {
-  backend: 'local'
-  path: string
-} | {
-  backend: 'gcs'
-  project: string
-  bucket: string
-  path?: string
-}
-
-export type CustomReportConfig = {
-  name: string
-  paths: string[]
-}
+export const commonSchema = z.object({
+  baseUrl: z.string().optional(),
+  exporter: exporterSchema.optional(),
+  lastRunStore: lastRunStoreSchema.optional()
+})
+export type CommonConfig = z.infer<typeof commonSchema>
 
 export const loadConfig = (logger: Logger, configPath: string): YamlConfig => {
   const config = yaml.load(fs.readFileSync(configPath, 'utf8'))

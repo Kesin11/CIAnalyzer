@@ -33,7 +33,8 @@
     "test:watch": "jest --watch",
     "coverage": "codecov",
     "proto": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +proto",
-    "docker": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker"
+    "docker": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker",
+    "schema": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +schema"
   },
   "dependencies": {
     "@google-cloud/bigquery": "6.0.3",
@@ -53,7 +54,8 @@
     "minimatch": "5.1.1",
     "tslog": "3.3.4",
     "utility-types": "3.10.0",
-    "yargs": "17.6.2"
+    "yargs": "17.6.2",
+    "zod": "3.19.1"
   },
   "devDependencies": {
     "@types/adm-zip": "0.5.0",
@@ -69,6 +71,7 @@
     "ts-jest": "29.0.3",
     "ts-proto": "1.135.0",
     "ts-protoc-gen": "0.15.0",
-    "typescript": "4.9.3"
+    "typescript": "4.9.3",
+    "zod-to-json-schema": "3.18.1"
   }
 }

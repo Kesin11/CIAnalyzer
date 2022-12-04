@@ -1,49 +1,55 @@
-import { YamlConfig, CommonConfig, CustomReportConfig } from './config'
+import { commonSchema, customReportSchema } from './config'
+import { YamlConfig } from "./validator"
+import { z } from 'zod'
 
-export type BitriseConfig = CommonConfig & {
-  apps: {
-    owner: string
-    title: string
-    fullname: string
-    testGlob: string[]
-    customReports: CustomReportConfig[]
-  }[]
-}
+export const bitriseYamlSchema = commonSchema.merge(z.object({
+  apps: z.union([z.string(), z.object({
+    name: z.string(),
+    tests: z.string().array().optional(),
+    customReports: customReportSchema.array()
+  })]).array()
+}))
 
-type AppYaml = string | {
-  name: string
-  tests?: string[]
-  customReports?: CustomReportConfig[]
-}
+const bitriseSchema = bitriseYamlSchema.merge(z.object({
+  apps: z.object({
+    owner: z.string(),
+    title: z.string(),
+    fullname: z.string(),
+    testGlob: z.string().array(),
+    customReports: customReportSchema.array()
+  }).array()
+}))
+export type BitriseConfig = z.infer<typeof bitriseSchema >
 
 export const parseConfig = (config: YamlConfig): BitriseConfig | undefined => {
   if (!config.bitrise) return
 
-  const bitriseConfig = { ...config.bitrise }
-
   // overwrite repos
-  bitriseConfig.apps = (bitriseConfig.apps as AppYaml[]).map((appYaml): BitriseConfig['apps'][0] => {
-    let owner, title
-    if (typeof appYaml === 'string') {
-      [owner, title] = appYaml.split('/')
+  const bitriseConfig = {
+    ...config.bitrise,
+    apps: (config.bitrise.apps).map((appYaml): BitriseConfig['apps'][0] => {
+      let owner, title
+      if (typeof appYaml === 'string') {
+        [owner, title] = appYaml.split('/')
+        return {
+          owner,
+          title,
+          fullname: appYaml,
+          testGlob: [],
+          customReports: []
+        }
+      }
+
+      [owner, title] = appYaml.name.split('/')
       return {
         owner,
         title,
-        fullname: appYaml,
-        testGlob: [],
-        customReports: []
+        fullname: appYaml.name,
+        testGlob: appYaml.tests ?? [],
+        customReports: appYaml.customReports ?? [],
       }
-    }
+    })
+  } as BitriseConfig
 
-    [owner, title] = appYaml.name.split('/')
-    return {
-      owner,
-      title,
-      fullname: appYaml.name,
-      testGlob: appYaml.tests ?? [],
-      customReports: appYaml.customReports ?? [],
-    }
-  })
-
-  return bitriseConfig as BitriseConfig
+  return bitriseConfig
 }

@@ -1,5 +1,7 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Kesin11/CIAnalyzer/master/schema.json
 # This is sample CIAnalyzer config yaml.
 # Copy it and change to your config.
+# Also you don't forget copy Line 1 magic comment. You can given validating and completion support from vscode-yaml extension!
 
 github:
   # baseUrl: https://api.github.com # Change it if you using GitHub Enterprise Server
@@ -8,7 +10,7 @@ github:
       tests:
         - '**/*.xml' # Test report JUnit XML path in artifact that uploaded by actions/upload-artifact
       customReports:
-        - name: { CUSTOM_REPORT_NAME } # It must be same bigquery.customReports[].name
+        - name: $CUSTOM_REPORT_NAME # It must be same bigquery.customReports[].name
           paths:
             - 'custom_report.json' # Path at inside of artifact.
     - Kesin11/Firestore-simple # Can use abbr format if don't collect test report
@@ -17,22 +19,22 @@ github:
       outDir: ./output # default: output
       format: json # default: json. 'json' and 'json_lines' are supported.
     bigquery:
-      project: { GCP_PROJECT_ID }
-      dataset: { DATASET }
+      project: $GCP_PROJECT_ID
+      dataset: $DATASET
       reports:
         - name: workflow
-          table: { WORKFLOW_TABLE }
+          table: $WORKFLOW_TABLE
         - name: test_report
-          table: { TEST_REPORT_TABLE }
+          table: $TEST_REPORT_TABLE
       customReports:
-        - name: { CUSTOM_REPORT_NAME } # It must be same repos[].customReports[].name
-          table: { CUSTOM_REPORT_TABLE }
-          schema: ./{ SCHEMA_DIR }/{ CUSTOM_REPORT_TABLE_SCHEMA }.json # It accepts absolute path or relative path from this config yaml.
+        - name: $CUSTOM_REPORT_NAME # It must be same repos[].customReports[].name
+          table: $CUSTOM_REPORT_TABLE
+          schema: ./$SCHEMA_DIR/$CUSTOM_REPORT_TABLE_SCHEMA.json # It accepts absolute path or relative path from this config yaml.
       maxBadRecords: 0 # (Optional) default: 0. If set > 0, skip bad record. This option should only be used for workaround.
   lastRunStore:
     backend: gcs # Recommend using 'gcs' backend
-    project: { GCP_PROJECT_ID }
-    bucket: { BUCKET_NAME }
+    project: $GCP_PROJECT_ID
+    bucket: $BUCKET_NAME
     path: ci_analyzer/last_run/github.json # (Optional) default: ci_analyzer/last_run/${service}.json
 
 circleci:
@@ -43,7 +45,7 @@ circleci:
     - name: Kesin11/CIAnalyzer
       vcs_type: github # github or bitbucket. default: github
       customReports:
-        - name: { CUSTOM_REPORT_NAME }
+        - name: $CUSTOM_REPORT_NAME
           paths:
             - 'custom_report.json'
   vcsBaseUrl:
@@ -64,7 +66,7 @@ jenkins:
       tests:
         - 'junit/junit.xml' # Test report JUnit XML path in artifact
       customReports:
-        - name: { CUSTOM_REPORT_NAME }
+        - name: $CUSTOM_REPORT_NAME
           paths:
             - 'custom.json'
     - ci_analyzer_pull_request
@@ -80,7 +82,7 @@ bitrise:
       tests:
         - "*_test_results.xml"
       customReports:
-        - name: { CUSTOM_REPORT_NAME }
+        - name: $CUSTOM_REPORT_NAME
           paths:
             - 'custom_*.json'
     - Kesin11/FlutterGettingStarted2 # Can use abbr format
