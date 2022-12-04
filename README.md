@@ -405,6 +405,9 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
   - `export CI_ANALYZER_DEBUG=1`
 
 # Development
+## Recommend to use GitHub Codespaces or VSCode Dev Container extensions
+This repository provide devcontainer that includes all dependencies for developing CIAnalyzer. So we recommend to use GitHub Codespaces that will build environment from .devcontainer or VSCode Dev Container extensions that also will build development environment in your machine.
+
 ## Install and test
 ```bash
 npm ci
