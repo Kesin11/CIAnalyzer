@@ -175,6 +175,12 @@ And also GCP service account needs to read and write permissions for the target 
 ## Edit config YAML
 Copy [ci_analyzer.yaml](./ci_analyzer.yaml) and edit to your preferred configuration. CIAnalyzer uses `ci_analyzer.yaml` as config file in default, but it can change with `-c` options.
 
+Also you don't forget copy Line 1 magic comment. You can given validating and completion support from [vscode-yaml](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) extension!
+
+```
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Kesin11/CIAnalyzer/master/schema.json
+```
+
 More detail for config file, please check [ci_analyzer.yaml](./ci_analyzer.yaml) and [sample files](./sample).
 
 ## Execute on CI service with cron (Recommend)

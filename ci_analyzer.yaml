@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Kesin11/CIAnalyzer/master/schema.json
 # This is sample CIAnalyzer config yaml.
 # Copy it and change to your config.
+# Also you don't forget copy Line 1 magic comment. You can given validating and completion support from vscode-yaml extension!
 
 github:
   # baseUrl: https://api.github.com # Change it if you using GitHub Enterprise Server
