@@ -14,5 +14,4 @@ sample/
 .circleci/
 .github/
 renovate.json
-codecov.yml
 .octocov.yml
