@@ -31,7 +31,6 @@
     "test": "jest",
     "test:ci": "jest --coverage --ci --runInBand",
     "test:watch": "jest --watch",
-    "coverage": "codecov",
     "proto": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +proto",
     "docker": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker",
     "schema": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +schema"
@@ -64,7 +63,6 @@
     "@types/lodash": "4.14.191",
     "@types/node": "18.11.11",
     "@types/yargs": "17.0.17",
-    "codecov": "3.8.3",
     "jest": "29.3.1",
     "jest-junit": "15.0.0",
     "rimraf": "3.0.2",

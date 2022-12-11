@@ -1,446 +1,1152 @@
-# CIAnalyzer
-[![CI](https://github.com/Kesin11/CIAnalyzer/workflows/CI/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
-[![Docker build](https://github.com/Kesin11/CIAnalyzer/workflows/Docker%20build/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
-[![Docker Pulls](https://img.shields.io/badge/docker%20pulls-ghcr.io-blue)](https://github.com/users/Kesin11/packages/container/ci_analyzer/versions)
-[![Docker Pulls](https://img.shields.io/docker/pulls/kesin/ci_analyzer)](https://hub.docker.com/r/kesin/ci_analyzer)
+<p align="center">
+<img src="https://github.com/k1LoW/octocov/raw/main/docs/logo.png" width="200" alt="octocov">
+</p>
 
-CIAnalyzer is a tool for collecting build data from CI services. You can create a dashboard to analyze your build from the collected data.
+![Coverage](https://raw.githubusercontent.com/k1LoW/octocovs/main/badges/k1LoW/octocov/coverage.svg) ![Code to Test Ratio](https://raw.githubusercontent.com/k1LoW/octocovs/main/badges/k1LoW/octocov/ratio.svg) ![Test Execution Time](https://raw.githubusercontent.com/k1LoW/octocovs/main/badges/k1LoW/octocov/time.svg) [![build](https://github.com/k1LoW/octocov/actions/workflows/ci.yml/badge.svg)](https://github.com/k1LoW/octocov/actions/workflows/ci.yml)
 
-# Motivation
-Today, many CI services provide the ability to build applications, docker images, and many other things.
-Since some of these builds can take a long time to build, you may want to analyze your build data, average build time, success rate, etc.
+`octocov` is a toolkit for collecting code metrics (code coverage, code to test ratio and test execution time).
 
-Unfortunately, few services provide a dashboard for analyzing build data. As far as I know Azure Pipeline provides a great feature called [Pipeline reports](https://docs.microsoft.com/en-us/azure/devops/pipelines/reports/pipelinereport?view=azure-devops), but it only shows data about builds that have been run in Azure Pipeline.
+Key features of `octocov` are:
 
-CIAnalyzer collects build data using each service API, then normalizes the data format and exports it. So you can create a dashboard that allows you to analyze build data across multiple CI services using your favorite BI tools.
+- **Useful both [as a CI tool](#on-github-actions) and [as a CLI tool](#on-terminal)**
+- **[Support multiple coverage report formats](#supported-coverage-report-formats).**
+- **[Support multiple code metrics](#supported-code-metrics).**
+- **[Support for even generating coverage report badge](#generate-coverage-report-badge-self).**
+- **[Have a mechanism to aggregate reports from multiple repositories](#store-report-to-central-datastore).**
 
-# Sample dashboard
-[CIAnalyzer sample dashboard (DataStudio)](https://datastudio.google.com/reporting/71454c60-96f9-47e0-8dc6-2d5f98b60609/page/11yEB)
+## Getting Started
 
-It created by DataStudio with BigQuery
-![ci_analyzer_dashboard1](https://user-images.githubusercontent.com/1324862/82752752-3d5bcd00-9dfb-11ea-9cb3-a32e81c5f3b9.png)
-![ci_analyzer_dashboard2](https://user-images.githubusercontent.com/1324862/82752755-42b91780-9dfb-11ea-91df-c3451e51772a.png)
-![cianalyzer_test_report](https://user-images.githubusercontent.com/1324862/89435621-15380500-d780-11ea-8131-5dde21beb3fa.png)
+### On GitHub Actions
 
-# Architecture
-![CIAnalyzer Architecture](https://user-images.githubusercontent.com/1324862/128656632-de08a369-4c71-4e91-9084-626396f42a03.png)
+**:octocat: GitHub Actions for octocov is [here](https://github.com/k1LoW/octocov-action) !!**
 
+First, run test with [coverage report output](#supported-coverage-report-formats).
 
-# Export data
-## Workflow
-Workflow is a data about job that executed in CI. The items included in the workflow data are as follows.
+For example, in case of Go language, add `-coverprofile=coverage.out` option as follows
 
-- Executed date
-- Duration time
-- Status(Success, Failed, Abort, etc.)
-- Build number
-- Trigger type
-- Repository
-- Branch
-- Tag
-- Queued time
-- Commit
-- Actor
-- Workflow URL
-- Executor data
-
-See full schema: [workflow.proto](./proto/workflow.proto)
-
-## Test report
-Test report is a data about test. If you output test result as JUnit format XML and store to archive, CIAnalyzer can collect from it.
-
-- Executed date
-- Duration time
-- Status(Success, Failed, Skipped, etc.)
-- Test name
-- Number of test
-- Failure test num
-- Branch
-
-See full schema: [test_report.proto](./proto/test_report.proto)
-
-# Supported services
-- CI services
-  - GitHub Actions
-  - CircleCI (also support enterprise version)
-  - Jenkins (only Pipeline job)
-    - Collecting some metrics need to install these plugins
-    - [GitHub Pull Request Builder](https://plugins.jenkins.io/ghprb/)
-    - [Metrics](https://plugins.jenkins.io/metrics/)
-  - Bitrise
-- Export
-  - BigQuery
-  - Local file (output JSON or JSON Lines)
-
-# USAGE
-```bash
-docker run \
-  --mount type=bind,src=${PWD},dst=/app/ \
-  --mount type=bind,src=${SERVICE_ACCOUNT},dst=/service_account.json \
-  -e GITHUB_TOKEN=${GITHUB_TOKEN} \
-  -e CIRCLECI_TOKEN=${CIRCLECI_TOKEN} \
-  -e JENKINS_USER=${JENKINS_USER} \
-  -e JENKINS_TOKEN=${JENKINS_TOKEN} \
-  -e BITRISE_TOKEN=${BITRISE_TOKEN} \
-  -e GOOGLE_APPLICATION_CREDENTIALS=/service_account.json \
-  ghcr.io/kesin11/ci_analyzer:v4 -c ci_analyzer.yaml
+``` console
+$ go test ./... -coverprofile=coverage.out
 ```
 
-## Container tagging scheme
-The versioning follows [Semantic Versioning](https://semver.org/):
+And generete `.octocov.yml` to your repository.
 
-> Given a version number MAJOR.MINOR.PATCH, increment the:
->
-> 1. MAJOR version when you make incompatible API changes,
-> 2. MINOR version when you add functionality in a backwards-compatible manner, and
-> 3. PATCH version when you make backwards-compatible bug fixes.
-
-Most recommend tag for user is `v{major}`. If you prefere more conservetive versioning, `v{major}.{minor}` or `v{major}.{minor}.{patch}` are recommended.
-
-|tag|when update|for|
-|----|----|----|
-|`v{major}`|Create release|User|
-|`v{major}.{minor}`|Create release|User|
-|`v{major}.{minor}.{patch}`|Create release|User|
-|`latest`|Create release|Developer|
-|`master`|Push master|Developer|
-
-
-## Setup ENV
-- Services
-  - GITHUB_TOKEN: GitHub auth token
-  - CIRCLECI_TOKEN: CircleCI API token
-  - JENKINS_USER: Username for login to your Jenkins
-  - JENKINS_TOKEN: Jenkins user API token
-  - BITRISE_TOKEN: Bitrise personal access token
-- Exporter
-  - GOOGLE_APPLICATION_CREDENTIALS: GCP service account json path
-- LastRunStore
-  - GOOGLE_APPLICATION_CREDENTIALS
-
-## Setup BigQuery (Recommend)
-If you want to use `bigquery_exporter`, you have to create dataset and table that CIAnalyzer will export data to it.
-
-```bash
-# Prepare bigquery schema json files
-git clone https://github.com/Kesin11/CIAnalyzer.git
-cd CIAnalyzer
-
-# Create dataset
-bq mk \
-  --project_id=${GCP_PROJECT_ID} \
-  --location=${LOCATION} \
-  --dataset \
-  ${DATASET}
-
-# Create tables
-bq mk \
-  --project_id=${GCP_PROJECT_ID} \
-  --location=${LOCATION} \
-  --table \
-  --time_partitioning_field=createdAt \
-  ${DATASET}.${WORKFLOW_TABLE} \
-  ./bigquery_schema/workflow_report.json
-
-bq mk \
-  --project_id=${GCP_PROJECT_ID} \
-  --location=${LOCATION} \
-  --table \
-  --time_partitioning_field=createdAt \
-  ${DATASET}.${TEST_REPORT_TABLE} \
-  ./bigquery_schema/test_report.json
+``` console
+$ octocov init
+.octocov.yml is generated
 ```
 
-And also GCP service account used for CIAnalyzer needs some BigQuery permissions. Please attach `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. More detail, check [BigQuery access control document](https://cloud.google.com/bigquery/docs/access-control).
+And set up a workflow file as follows and run octocov on GitHub Actions.
 
-## Setup GCS bucket (Recommend)
-### What is LastRunStore
-CIAnalyzer collects build data from each CI service API, but there may be duplicates of the previously collected data. To remove the duplicate, it is necessary to save the last build number of the previous run and output only the difference from the previous run.
+``` yaml
+# .github/workflows/ci.yml
+name: Test
 
-After CIAnalyzer collects build data successfully, it save each job build number and load before next time execution. This feature called LastRunStore.
+on:
+  pull_request:
 
-By default, CIAnalyzer uses a local JSON file as a backend for LastRunStore. However, the last build number needs to be shared, for example when running CIAnalyzer on Jenkins which uses multiple nodes.
-
-Resolving these problems, CIAnalyzer can use GCS as LastRunStore to read/write the last build number from any machine. It inspired by [Terraform backend](https://www.terraform.io/docs/backends/index.html).
-
-### Create GCS bucket
-If you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket before execute CIAnalyzer.
-
-```bash
-gsutil mb -b on -l ${LOCATION} gs://${BUCKET_NAME}
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        uses: actions/checkout@v3
+      -
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
+      -
+        name: Run tests with coverage report output
+        run: go test ./... -coverprofile=coverage.out
+      -
+        uses: k1LoW/octocov-action@v0
 ```
 
-And also GCP service account needs to read and write permissions for the target bucket. More detail, check [GCS access control document](https://cloud.google.com/storage/docs/access-control/iam-permissions).
+Then, octocov comment the report of the code metrics to the pull request.
 
-## Edit config YAML
-Copy [ci_analyzer.yaml](./ci_analyzer.yaml) and edit to your preferred configuration. CIAnalyzer uses `ci_analyzer.yaml` as config file in default, but it can change with `-c` options.
+![comment](docs/comment_with_diff.png)
 
-Also you don't forget copy Line 1 magic comment. You can given validating and completion support from [vscode-yaml](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) extension!
+It is also possible to add reports to [GitHub Actions Job Summaries](https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/) by editing .octocov.yml.
 
-```
-# yaml-language-server: $schema=https://raw.githubusercontent.com/Kesin11/CIAnalyzer/master/schema.json
-```
+![summary](docs/summary.png)
 
-More detail for config file, please check [ci_analyzer.yaml](./ci_analyzer.yaml) and [sample files](./sample).
+It can also be inserted into the body of a pull request.
 
-## Execute on CI service with cron (Recommend)
-CIAnalyzer is designed as a tool that runs every time, not as an agent. It's a  good idea to run it with cron on CI services such as CircleCI or Jenkins.
+![body](docs/body.png)
 
-Please check [sample](./sample/README.md), then copy it and edit to your configuration.
+> **Note** that only pull requests from the same repository can be commented on (Reporting to GitHub Actions Job Summaries is permitted). This is because the workflow token of a forked pull request does not have write permission.
 
-## Sample output JSON
+### On Terminal
 
-### Workflow report
+octocov acts as a code metrics viewer on the terminal.
 
-```json
-{
-  "service": "circleci",
-  "workflowId": "Kesin11/CIAnalyzer-ci",
-  "buildNumber": 306,
-  "workflowRunId": "Kesin11/CIAnalyzer-ci-306",
-  "workflowName": "ci",
-  "createdAt": "2020-05-21T01:08:06.800Z",
-  "trigger": "github",
-  "status": "SUCCESS",
-  "repository": "Kesin11/CIAnalyzer",
-  "headSha": "09f1d6d398c108936ff7973139fcbf1793d74f8f",
-  "branch": "master",
-  "tag": "v0.2.0",
-  "startedAt": "2020-05-21T01:08:09.632Z",
-  "completedAt": "2020-05-21T01:08:53.469Z",
-  "workflowDurationSec": 40.752,
-  "sumJobsDurationSec": 39.959,
-  "successCount": 1,
-  "parameters": [],
-  "jobs": [
-    {
-      "workflowRunId": "Kesin11/CIAnalyzer-ci-306",
-      "buildNumber": 306,
-      "jobId": "24f03e1a-1699-4237-971c-ebc6c9b19baa",
-      "jobName": "build_and_test",
-      "status": "SUCCESS",
-      "startedAt": "2020-05-21T01:08:28.347Z",
-      "completedAt": "2020-05-21T01:08:53.469Z",
-      "jobDurationSec": 25.122,
-      "sumStepsDurationSec": 24.738,
-      "steps": [
-        {
-          "name": "Spin Up Environment",
-          "status": "SUCCESS",
-          "number": 0,
-          "startedAt": "2020-05-21T01:08:28.390Z",
-          "completedAt": "2020-05-21T01:08:30.710Z",
-          "stepDurationSec": 2.32
-        },
-        {
-          "name": "Preparing Environment Variables",
-          "status": "SUCCESS",
-          "number": 99,
-          "startedAt": "2020-05-21T01:08:30.956Z",
-          "completedAt": "2020-05-21T01:08:30.984Z",
-          "stepDurationSec": 0.028
-        },
-        {
-          "name": "Checkout code",
-          "status": "SUCCESS",
-          "number": 101,
-          "startedAt": "2020-05-21T01:08:30.993Z",
-          "completedAt": "2020-05-21T01:08:31.502Z",
-          "stepDurationSec": 0.509
-        },
-        {
-          "name": "Restoring Cache",
-          "status": "SUCCESS",
-          "number": 102,
-          "startedAt": "2020-05-21T01:08:31.509Z",
-          "completedAt": "2020-05-21T01:08:32.737Z",
-          "stepDurationSec": 1.228
-        },
-        {
-          "name": "npm ci",
-          "status": "SUCCESS",
-          "number": 103,
-          "startedAt": "2020-05-21T01:08:32.747Z",
-          "completedAt": "2020-05-21T01:08:37.335Z",
-          "stepDurationSec": 4.588
-        },
-        {
-          "name": "Build",
-          "status": "SUCCESS",
-          "number": 104,
-          "startedAt": "2020-05-21T01:08:37.341Z",
-          "completedAt": "2020-05-21T01:08:43.371Z",
-          "stepDurationSec": 6.03
-        },
-        {
-          "name": "Test",
-          "status": "SUCCESS",
-          "number": 105,
-          "startedAt": "2020-05-21T01:08:43.381Z",
-          "completedAt": "2020-05-21T01:08:53.369Z",
-          "stepDurationSec": 9.988
-        },
-        {
-          "name": "Save npm cache",
-          "status": "SUCCESS",
-          "number": 106,
-          "startedAt": "2020-05-21T01:08:53.376Z",
-          "completedAt": "2020-05-21T01:08:53.423Z",
-          "stepDurationSec": 0.047
-        }
-      ]
-    }
-  ]
-}
+For example, in case of Go language, add `-coverprofile=coverage.out` option as follows
+
+``` console
+$ go test ./... -coverprofile=coverage.out
 ```
 
-### Test report
-```json
-[
-  {
-    "workflowId": "Kesin11/CIAnalyzer-CI",
-    "workflowRunId": "Kesin11/CIAnalyzer-CI-170",
-    "buildNumber": 170,
-    "workflowName": "CI",
-    "createdAt": "2020-08-09T10:20:28.000Z",
-    "branch": "feature/fix_readme_for_v2",
-    "service": "github",
-    "status": "SUCCESS",
-    "successCount": 1,
-    "testSuites": {
-      "name": "CIAnalyzer tests",
-      "tests": 56,
-      "failures": 0,
-      "time": 9.338,
-      "testsuite": [
-        {
-          "name": "__tests__/analyzer/analyzer.test.ts",
-          "errors": 0,
-          "failures": 0,
-          "skipped": 0,
-          "timestamp": "2020-08-09T10:22:18",
-          "time": 3.688,
-          "tests": 17,
-          "testcase": [
-            {
-              "classname": "Analyzer convertToReportTestSuites Omit some properties",
-              "name": "testcase.error",
-              "time": 0.003,
-              "successCount": 1,
-              "status": "SUCCESS"
-            },
-            {
-              "classname": "Analyzer convertToReportTestSuites Omit some properties",
-              "name": "testcase.failure",
-              "time": 0,
-              "successCount": 1,
-              "status": "SUCCESS"
-            },
-    ...
+And run `octocov ls-files` , `octocov view [FILE...]` and `octocov diff [REPORT_A] [REPORT_B]`
+
+![term](docs/term.svg)
+
+## Usage example
+
+### Comment report to pull request
+
+By setting `comment:`, [comment the reports to pull request](https://github.com/k1LoW/octocov/pull/30#issuecomment-860188829).
+
+![comment](docs/comment.png)
+
+``` yaml
+# .octocov.yml
+comment:
+  hideFooterLink: false # hide octocov link
 ```
 
-# Collect and export any JSON from build artifacts
-You can export any data related to build with `CustomReport`. CIAanalyzer can collect JSON file that has any structure from CI build artifacts. If you want to collect some data and export it to BigQuery(or others), just create JSON that includes your preferred data and store it to CI build artifacts.
+octocov checks for **"Code Coverage"** by default. If it is running on GitHub Actions, it will also measure **"Test Execution Time"**.
 
-## 1. Create schema file for your CustomReport table
-Create BigQuery schema JSON like this [sample schema json](./bigquery_schema/custom_sample.json) and save it to any path you want.
+If you want to measure **"Code to Test Ratio"**, set `codeToTestRatio:`.
 
-These columns are must need in your schema:
-
-|name|type|
-|----|----|
-|workflowId|STRING|
-|workflowRunId|STRING|
-|createdAt|TIMESTAMP|
-
-## 2. Create BigQuery table
-As introduced before in "Setup BigQuery", create BigQuery table using `bq mk` command like this.
-
-```
-bq mk
-  --project_id=${YOUR_GCP_PROJECT_ID} \
-  --location=${LOCATION} \
-  --table \
-  --time_partitioning_field=createdAt \
-  ${DATASET}.${TABLE} \
-  /path/to/your/custom_report_schema.json
+``` yaml
+comment:
+codeToTestRatio:
+  code:
+    - '**/*.go'
+    - '!**/*_test.go'
+  test:
+    - '**/*_test.go'
 ```
 
-## 3. Add CustomReport config
-Add your CustomReport JSON path (import target) at each repo(job)'s artifacts and BigQuery table info (export target) to your config YAML.
+By setting `report:` ( `report.path:`  or `report.datastores` ) and `diff:` ( `diff.path:`  or `diff.datastores` ) additionally, it is possible to show differences from previous reports as well.
 
-See sample [ci_analyzer.yaml](./ci_analyzer.yaml).
-
-
-`bigquery.customReports[].schema` is BigQuery schema JSON created at step1. It accepts absolute path or relative path from your config YAML.
-
-**NOTICE**: When you run CIAnalyzer using docker, `bigquery.customReports[].schema` is a path that **inside of CIAnalyzer docker container**. So it's very confusing and recommends it to mount custom schema JSON at the same path as your ci_analyzer.yaml in the next step.
-
-## 4. Mount custom schema JSON at `docker run` (Only using docker)
-To load your custom schema JSON from CIAnalyzer that runs inside of container, you have to also mount your JSON with additional `docker run --mount` options if you need.
-
-```
---mount type=bind,src=${CUSTOM_SCHEMA_DIR_PATH},dst=/app/custom_schema
+``` yaml
+comment:
+report:
+  datastores:
+    - artifact://${GITHUB_REPOSITORY}
+diff:
+  datastores:
+    - artifact://${GITHUB_REPOSITORY}
 ```
 
-See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
+![img](docs/comment_with_diff.png)
 
-# Roadmap
-- [x] Collect test data
-- [x] Collect any of JSON format from build artifacts
-- [x] Support Bitrise
-- [x] Support CircleCI API v2
-- [x] Implement better logger
-- [x] Better error message
-- [x] Export commit message
-- [x] Export executor data (CircleCI, Bitrise)
+### Check for acceptable score
 
-# Debug options
-- Fetch only selected service
-  - `--only-services`
-  - ex: `--only-services github circleci`
-- Using only selected exporters
-  - `--only-exporters`
-  - ex: `--only-exporters local`
-- Enable debug mode
-  - `--debug`
-  - Limit fetching build results only 10 by each services
-  - Export result to local only
-  - Don't loading and storing last build number
-- Enable debug log
-  - `export CI_ANALYZER_DEBUG=1`
+By setting `coverage.acceptable:`, the condition of acceptable coverage is specified.
 
-# Development
-## Recommend to use GitHub Codespaces or VSCode Dev Container extensions
-This repository provide devcontainer that includes all dependencies for developing CIAnalyzer. So we recommend to use GitHub Codespaces that will build environment from .devcontainer or VSCode Dev Container extensions that also will build development environment in your machine.
+If this condition is not met, the command will exit with exit status `1`.
 
-## Install and test
-```bash
-npm ci
-npm run build
-npm run test
+``` yaml
+# .octocov.yml
+coverage:
+  acceptable: 60%
 ```
 
-## Generate pb_types and bigquery_schema from .proto files
-Install [Earthly](https://earthly.dev/) first and then execute these commands.
-
-```
-npm run proto
+``` console
+$ octocov
+Error: code coverage is 54.9%. the condition in the `coverage.acceptable:` section is not met (`60%`)
 ```
 
-## Docker build
-Install [Earthly](https://earthly.dev/) first and then execute these commands.
+By setting `codeToTestRatio.acceptable:`, the condition of acceptable "Code to Test Ratio" is specified.
+
+If this condition is not met, the command will exit with exit status `1`.
+
+``` yaml
+# .octocov.yml
+codeToTestRatio:
+  acceptable: 1:1.2
+  code:
+    - '**/*.go'
+    - '!**/*_test.go'
+  test:
+    - '**/*_test.go'
+```
+
+``` console
+$ octocov
+Error: code to test ratio is 1:1.1, the condition in the `codeToTestRatio.acceptable:` section is not met (`1:1.2`)
+```
+
+By setting `testExecutionTime.acceptable:`, the condition of acceptable "Test Execution Time" is specified **(on GitHub Actions only)** .
+
+If this condition is not met, the command will exit with exit status `1`.
+
+``` yaml
+# .octocov.yml
+testExecutionTime:
+  acceptable: 1 min
+```
+
+``` console
+$ octocov
+Error: test execution time is 1m15s, the condition in the `testExecutionTime.acceptable:` section is not met (`1 min`)
+```
+
+### Generate report badges self.
+
+By setting `*.badge.path:`, generate badges self.
+
+``` yaml
+# .octocov.yml
+coverage:
+  badge:
+    path: docs/coverage.svg
+```
+
+``` yaml
+# .octocov.yml
+codeToTestRatio:
+  badge:
+    path: docs/ratio.svg
+```
+
+``` yaml
+# .octocov.yml
+testExecutionTime:
+  badge:
+    path: docs/time.svg
+```
+
+You can display the coverage badge without external communication by setting a link to this badge image in README.md, etc.
+
+``` markdown
+# mytool
+
+![coverage](docs/coverage.svg) ![coverage](docs/ratio.svg) ![coverage](docs/time.svg)
+```
+
+![coverage](docs/coverage.svg) ![coverage](docs/ratio.svg) ![coverage](docs/time.svg)
+
+### Push report badges self.
+
+By setting `push:`, git push report badges self.
+
+``` yaml
+# .octocov.yml
+coverage:
+  badge:
+    path: docs/coverage.svg
+push:
+```
+
+### Store report to datastores
+
+By setting `report:`, store the reports to datastores and local path.
+
+``` yaml
+# .octocov.yml
+report:
+  datastores:
+    - github://owner/coverages/reports
+    - s3://bucket/reports
+```
+
+``` yaml
+# .octocov.yml
+report:
+  path: path/to/report.json
+```
+
+#### Supported datastores
+
+- GitHub repository
+- GitHub Actions Artifacts
+- Amazon S3
+- Google Cloud Storage (GCS)
+- BigQuery
+- Local
+
+### Central mode
+
+By enabling `central:`, `octocov` acts as a central repository for collecting reports ( [example](example/central/README.md) ).
+
+``` yaml
+# .octocov.yml for central mode
+central:
+  root: .                                  # root directory or index file path of collected coverage reports pages. default: .
+  reports:
+    datastores:
+      - bq://my-project/my-dataset/reports # datastore paths (URLs) where reports are stored. default: local://reports
+  badges:
+    datastores:
+      - local://badges                     # directory where badges are generated.
+  push:                                    # enable self git push
+```
+
+#### Supported datastores
+
+- GitHub repository
+- GitHub Actions Artifacts
+- Amazon S3
+- Google Cloud Storage (GCS)
+- BigQuery
+- Local
+
+### View code coverage report of file
+
+`octocov ls-files` command can be used to list files logged in code coverage report.
+
+`octocov view` (alias: `octocov cat`) command can be used to view the file coverage report.
+
+![term](docs/term.svg)
+
+## Configuration
+
+### `repository:`
+
+The name of the repository.
+
+It should be in the format `owner/repo`.
+
+By default, the value of the environment variable `GITHUB_REPOSITORY` is set.
+
+In case of monorepo, code metrics can be reported to datastore separately by specifying `owner/repo/project-a` or `owner/repo@project-a`.
+
+``` yaml
+repository: k1LoW/octocov
+```
+
+### `coverage:`
+
+Configuration for code coverage.
+
+### `coverage.path:`
+
+`coverage.path:` has been deprecated. Please use `coverage.paths:` instead.
+
+### `coverage.paths:`
+
+The path to the coverage report file.
+
+If no path is specified, the default path for each coverage format will be scanned.
+
+``` yaml
+coverage:
+  paths:
+    - tests/coverage.xml
+```
+
+### `coverage.acceptable:`
+
+acceptable coverage condition.
+
+``` yaml
+coverage:
+  acceptable: 60%
+```
+
+``` yaml
+coverage:
+  acceptable: current >= 60% && diff >= 0.5%
+```
+
+The variables that can be used are as follows.
+
+| value | description |
+| --- | --- |
+| `current` | Current code metrics value |
+| `prev` | Previous value. This value is taken from `diff.datastores:`. |
+| `diff` | The result of `current - prev` |
+
+It is also possible to omit the expression as follows
+
+| Omitted expression | Expanded expression |
+| --- | --- |
+| `60%` | `current >= 60%` |
+| `> 60%` | `current > 60%` |
+
+### `coverage.badge:`
+
+Set this if want to generate the badge self.
+
+### `coverage.badge.path:`
+
+The path to the badge.
+
+``` yaml
+coverage:
+  badge:
+    path: docs/coverage.svg
+```
+
+### `codeToTestRatio:`
+
+Configuration for code to test ratio.
+
+### `codeToTestRatio.code:` `codeToTestRatio.test:`
+
+Files to count.
+
+``` yaml
+codeToTestRatio:
+  code:                  # files to count as "Code"
+    - '**/*.go'
+    - '!**/*_test.go'
+  test:                  # files to count as "Test"
+    - '**/*_test.go'
+```
+
+### `codeToTestRatio.acceptable:`
+
+acceptable ratio condition.
+
+``` yaml
+codeToTestRatio:
+  acceptable: 1:1.2
+```
+
+``` yaml
+codeToTestRatio:
+  acceptable: current >= 1.2 && diff >= 0.0
+```
+
+The variables that can be used are as follows.
+
+| value | description |
+| --- | --- |
+| `current` | Current code metrics value |
+| `prev` | Previous value. This value is taken from `diff.datastores:`. |
+| `diff` | The result of `current - prev` |
+
+It is also possible to omit the expression as follows
+
+| Omitted expression | Expanded expression |
+| --- | --- |
+| `1:1.2` | `current >= 1.2` |
+| `> 1:1.2` | `current > 1.2` |
+
+### `codeToTestRatio.badge:`
+
+Set this if want to generate the badge self.
+
+### `codeToTestRatio.badge.path:`
+
+The path to the badge.
+
+``` yaml
+codeToTestRatio:
+  badge:
+    path: docs/ratio.svg
+```
+
+### `testExecutionTime:`
+
+Configuration for test execution time.
+
+### `testExecutionTime.acceptable`
+
+acceptable time condition.
+
+``` yaml
+testExecutionTime:
+  acceptable: 1min
+```
+
+``` yaml
+testExecutionTime:
+  acceptable: current <= 1min && diff <= 1sec
+```
+
+The variables that can be used are as follows.
+
+| value | description |
+| --- | --- |
+| `current` | Current code metrics value |
+| `prev` | Previous value. This value is taken from `diff.datastores:`. |
+| `diff` | The result of `current - prev` |
+
+It is also possible to omit the expression as follows
+
+| Omitted expression | Expanded expression |
+| --- | --- |
+| `1min` | `current <= 1min` |
+| `< 1min` | `current < 1min` |
+
+### `testExecutionTime.steps`
+
+The name of the step to measure the execution time.
+
+``` yaml
+testExecutionTime:
+  steps:
+    - Run test
+    - Run slow test
+```
+
+If not specified, the step where the coverage report file is generated is used as the measurement target.
+
+### `testExecutionTime.badge`
+
+Set this if want to generate the badge self.
+
+### `testExecutionTime.badge.path`
+
+The path to the badge.
+
+``` yaml
+testExecutionTime:
+  badge:
+    path: docs/time.svg
+```
+
+### `push:`
+
+Configuration for `git push` files self.
+
+### `push.if:`
+
+Conditions for pushing files.
+
+``` yaml
+# .octocov.yml
+push:
+  if: is_default_branch
+```
+
+The variables available in the `if` section are [here](https://github.com/k1LoW/octocov#if).
+
+### `push.message:`
+
+message for commit.
+
+``` yaml
+# .octocov.yml
+push:
+  message: Update by octocov [skip ci]
+```
+
+### `comment:`
+
+Set this if want to comment report to pull request
+
+### `comment.hideFooterLink:`
+
+Hide footer [octocov](https://github.com/k1LoW/octocov) link.
+
+``` yaml
+comment:
+  hideFooterLink: true
+```
+
+### `comment.deletePrevious:`
+
+Delete previous code metrics report comments instead of hiding them
+
+``` yaml
+comment:
+  deletePrevious: true
+```
+
+### `comment.if:`
+
+Conditions for commenting report.
+
+``` yaml
+# .octocov.yml
+comment:
+  if: is_pull_request
+```
+
+The variables available in the `if` section are [here](https://github.com/k1LoW/octocov#if).
+
+### `summary:`
+
+Set this if want to add report to [job summary page](https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary).
+
+### `summary.hideFooterLink:`
+
+Hide footer [octocov](https://github.com/k1LoW/octocov) link.
+
+``` yaml
+summary:
+  hideFooterLink: true
+```
+
+### `summary.if:`
+
+Conditions for adding report to job summary page.
+
+``` yaml
+# .octocov.yml
+summary:
+  if: true
+```
+
+The variables available in the `if` section are [here](https://github.com/k1LoW/octocov#if).
+
+### `body:`
+
+Set this if want to insert report to body of pull request.
+
+### `body.hideFooterLink:`
+
+Hide footer [octocov](https://github.com/k1LoW/octocov) link.
+
+``` yaml
+body:
+  hideFooterLink: true
+```
+
+### `body.if:`
+
+Conditions for inserting report body of pull request.
+
+``` yaml
+# .octocov.yml
+body:
+  if: is_pull_request
+```
+
+The variables available in the `if` section are [here](https://github.com/k1LoW/octocov#if).
+
+### `diff:`
+
+Configuration for comparing reports.
+
+### `diff.path:`
+
+Path of the report to compare.
+
+``` yaml
+diff:
+  path: path/to/coverage.yml
+```
+
+``` yaml
+diff:
+  path: path/to/report.json
+```
+
+### `diff.datastores:`
+
+Datastores where the report to be compared is stored.
+
+``` yaml
+diff:
+  datastores:
+    - local://.octocov       # Use .octocov/owner/repo/report.json
+    - s3://my-bucket/reports # Use s3://my-bucket/reports/owner/repo/report.json
+```
+
+### `diff.if:`
+
+Conditions for comparing reports
+
+``` yaml
+# .octocov.yml
+report:
+  if: is_pull_request
+  path: path/to/report.json
+```
+
+The variables available in the `if` section are [here](https://github.com/k1LoW/octocov#if).
+
+### `report:`
+
+Configuration for reporting to datastores.
+
+### `report.path:`
+
+Path to save the report.
+
+``` yaml
+report:
+  path: path/to/report.json
+```
+
+### `report.datastores:`
+
+Datastores where the reports are stored.
+
+``` yaml
+report:
+  datastores:
+    - github://owner/coverages/reports
+    - s3://bucket/reports
+```
+
+#### GitHub repository
+
+Use `github://` scheme.
 
 ```
-npm run docker
+github://[owner]/[repo]@[branch]/[prefix]
 ```
 
-## Execute CIAnalyzer using nodejs
-```bash
-npm run start
-# or
-node dist/index.js -c your_custom_config.yaml
+**Required environment variables:**
+
+- `GITHUB_TOKEN` or `OCTOCOV_GITHUB_TOKEN`
+- `GITHUB_REPOSITORY` or `OCTOCOV_GITHUB_REPOSITORY`
+- `GITHUB_API_URL` or `OCTOCOV_GITHUB_API_URL` (optional)
+
+#### GitHub Actions Artifacts
+
+Use `artifact://` or `artifacts://` scheme.
+
+```
+artifact://[owner]/[repo]/[artifactName]
 ```
 
-# LICENSE
-MIT
+- `artifact://[owner]/[repo]/[artifactName]`
+- `artifact://[owner]/[repo]` ( default artifactName: `octocov-report` )
+
+
+> **Note** that reporting to the artifact can only be sent from the GitHub Actions of the same repository.
+
+**Required environment variables:**
+
+- `GITHUB_TOKEN` or `OCTOCOV_GITHUB_TOKEN`
+- `GITHUB_REPOSITORY` or `OCTOCOV_GITHUB_REPOSITORY`
+- `GITHUB_API_URL` or `OCTOCOV_GITHUB_API_URL` (optional)
+
+#### Amazon S3
+
+Use `s3://` scheme.
+
+```
+s3://[bucket]/[prefix]
+```
+
+**Required permission:**
+
+- `s3:PutObject`
+
+**Required environment variables:**
+
+- `AWS_ACCESS_KEY_ID` or `OCTOCOV_AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY` or `OCTOCOV_AWS_SECRET_ACCESS_KEY`
+- `AWS_SESSION_TOKEN` or `OCTOCOV_AWS_SESSION_TOKEN` (optional)
+
+#### Google Cloud Storage
+
+Use `gs://` scheme.
+
+```
+gs://[bucket]/[prefix]
+```
+
+**Required permission:**
+
+- `storage.objects.create`
+- `storage.objects.delete`
+
+**Required environment variables:**
+
+- `GOOGLE_APPLICATION_CREDENTIALS` or `GOOGLE_APPLICATION_CREDENTIALS_JSON` or `OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS` or `OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS_JSON`
+
+#### BigQuery
+
+Use `bq://` scheme.
+
+```
+bq://[project ID]/[dataset ID]/[table]
+```
+
+**Required permission:**
+
+- `bigquery.datasets.get`
+- `bigquery.tables.get`
+- `bigquery.tables.updateData`
+
+**Required environment variables:**
+
+- `GOOGLE_APPLICATION_CREDENTIALS` or `GOOGLE_APPLICATION_CREDENTIALS_JSON` or `OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS` or `OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS_JSON`
+
+**Datastore schema:**
+
+[Datastore schema](docs/bq/schema/README.md)
+
+If you want to create a table, execute the following command ( require `bigquery.datasets.create` ).
+
+``` console
+$ octocov migrate-bq-table
+```
+
+#### Mackerel
+
+> **Note**: Only works with `report.datastores` or `central.reReport.datastores`
+
+Use `mackerel://` or `mkr://` scheme.
+
+```
+mackerel://[Service Name]
+```
+
+**Required permission:**
+
+- `read`
+- `write`
+
+**Required environment variables:**
+
+- `MACKEREL_API_KEY` or `OCTOCOV_MACKEREL_API_KEY`
+
+#### Local
+
+Use `local://` or `file://` scheme.
+
+```
+local://[path]
+```
+
+**Example:**
+
+If the absolute path of `.octocov.yml` is `/path/to/.octocov.yml`
+
+- `local://reports` ... `/path/to/reports` directory
+- `local://./reports` ... `/path/to/reports` directory
+- `local://../reports` ... `/path/reports` directory
+- `local:///reports` ... `/reports` directory.
+
+### `report.if:`
+
+Conditions for storing a report.
+
+``` yaml
+# .octocov.yml
+report:
+  if: env.GITHUB_REF == 'refs/heads/main'
+  datastores:
+    - github://owner/coverages/reports
+```
+
+The variables available in the `if` section are [here](https://github.com/k1LoW/octocov#if).
+
+### `*.if:`
+
+> **Note**: It supports [antonmedv/expr](https://github.com/antonmedv/expr) expressions.
+
+The variables available in the `if` section are as follows
+
+| Variable name | Type | Description |
+| --- | --- | --- |
+| `year` | `int` | Year of current time (UTC) |
+| `month` | `int` | Month of current time (UTC) |
+| `day` | `int` | Day of current time (UTC) |
+| `hour` | `int` | Hour of current time (UTC) |
+| `weekday` | `int` | Weekday of current time (UTC) (Sunday = 0, ...) |
+| `github.event_name` | `string` | Event name of GitHub Actions ( ex. `issues`, `pull_request` )|
+| `github.event` | `object` | Detailed data for each event of GitHub Actions (ex. `github.event.action`, `github.event.label.name` ) |
+| `env.<env_name>` | `string` | The value of a specific environment variable |
+| `is_pull_request` | `boolean` | Whether the job is related to an pull request (ex. a job fired by `on.push` will be true if it is related to a pull request) |
+| `is_draft` | `boolean` | Whether the job is related to a draft pull request |
+| `labels` | `array` | Labels that are set for the pull request |
+| `is_default_branch` | `boolean` | Whether the job is related to default branch of repository |
+
+### `central:`
+
+> **Note**: When central mode is enabled, other functions are automatically turned off.
+
+### `central.root:`
+
+The root directory or index file ( [index file example](example/central/README.md) ) path of collected coverage reports pages. default: `.`
+
+``` yaml
+central:
+  root: path/to
+```
+
+### `central.reports:`
+
+### `central.reports.datastores:`
+
+Datastore paths (URLs) where reports are stored. default: `local://reports`
+
+``` yaml
+central:
+  reports:
+    datastores:
+      - local://reports
+      - gs://my-gcs-bucket/reports
+```
+
+#### Use GitHub Actions Artifacts as datastore
+
+When using [GitHub Actions Artifacts](https://docs.github.com/en/rest/actions/artifacts) as a datastore, perform badge generation via on.schedule.
+
+![github](docs/artifacts.svg)
+
+``` yaml
+# .octocov.yml
+report:
+  datastores:
+    - artifact://${GITHUB_REPOSITORY}
+```
+
+``` yaml
+# .octocov.yml for central repo
+central:
+  reports:
+    datastores:
+      - artifact://owner/repo
+      - artifact://owner/other-repo
+      - artifact://owner/another-repo
+      [...]
+  push:
+```
+
+[Code metrics and badges of my open source projects using octocov central mode is here](https://github.com/k1LoW/octocovs).
+
+[Template repositoty is here](https://github.com/k1LoW/octocovs-template).
+
+#### Use GitHub repository as datastore
+
+When using the central repository as a datastore, perform badge generation via on.push.
+
+![github](docs/github.svg)
+
+``` yaml
+# .octocov.yml
+report:
+  datastores:
+    - github://owner/central-repo/reports
+```
+
+``` yaml
+# .octocov.yml for central repo
+central:
+  reports:
+    datastores:
+      - github://owner/central-repo/reports
+  push:
+```
+
+or
+
+``` yaml
+# .octocov.yml for central repo
+central:
+  reports:
+    datastores:
+      - local://reports
+  push:
+```
+
+#### Use Amazon S3 bucket as datastore
+
+When using the S3 bucket as a datastore, perform badge generation via on.schedule.
+
+![s3](docs/s3.svg)
+
+``` yaml
+# .octocov.yml
+report:
+  datastores:
+    - s3://my-s3-bucket/reports
+```
+
+``` yaml
+# .octocov.yml for central repo
+central:
+  reports:
+    datastores:
+      - s3://my-s3-bucket/reports
+  push:
+```
+
+**Required permission (Central Repo):**
+
+- `s3:GetObject`
+- `s3:ListObject`
+
+**Required environment variables (Central Repo):**
+
+- `AWS_ACCESS_KEY_ID` or `OCTOCOV_AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY` or `OCTOCOV_AWS_SECRET_ACCESS_KEY`
+- `AWS_SESSION_TOKEN` or `OCTOCOV_AWS_SESSION_TOKEN` (optional)
+
+#### Use GCS bucket as datastore
+
+![gcs](docs/gcs.svg)
+
+When using the GCS bucket as a datastore, perform badge generation via on.schedule.
+
+``` yaml
+# .octocov.yml
+report:
+  datastores:
+    - gs://my-gcs-bucket/reports
+```
+
+``` yaml
+# .octocov.yml for central repo
+central:
+  reports:
+    datastores:
+      - gs://my-gcs-bucket/reports
+  push:
+```
+
+**Required permission (Central Repo):**
+
+- `storage.objects.get`
+- `storage.objects.list`
+- `storage.buckets.get`
+
+**Required environment variables (Central Repo):**
+
+- `GOOGLE_APPLICATION_CREDENTIALS` or `GOOGLE_APPLICATION_CREDENTIALS_JSON` or `OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS` or `OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS_JSON`
+
+#### Use BigQuery table as datastore
+
+![gcs](docs/bq.svg)
+
+When using the BigQuery table as a datastore, perform badge generation via on.schedule.
+
+``` yaml
+# .octocov.yml
+report:
+  datastores:
+    - bq://my-project/my-dataset/reports
+```
+
+``` yaml
+# .octocov.yml for central repo
+central:
+  reports:
+    datastores:
+      - bq://my-project/my-dataset/reports
+  push:
+```
+
+**Required permission (Central Repo):**
+
+- `bigquery.jobs.create`
+- `bigquery.tables.getData`
+
+**Required environment variables (Central Repo):**
+
+- `GOOGLE_APPLICATION_CREDENTIALS` or `GOOGLE_APPLICATION_CREDENTIALS_JSON` or `OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS` or `OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS_JSON`
+
+### `central.badges:`
+
+### `central.badges.datastores:`
+
+Datastore paths (URLs) where badges are generated. default: `local://badges`
+
+``` yaml
+central:
+  badges:
+    datastores:
+      - local://badges
+      - s3://my-s3-buckets/badges
+```
+
+### `central.push:`
+
+Configuration for `git push` index file and badges self.
+
+### `central.if:`
+
+Conditions for central mode.
+
+``` yaml
+# .octocov.yml
+central:
+  if: env.GITHUB_REF == 'refs/heads/main'
+  reports:
+    datastores:
+      - s3://my-s3-bucket/reports
+```
+
+The variables available in the `if` section are [here](https://github.com/k1LoW/octocov#if).
+
+### `central.reReport:`
+
+Store collected reports in yet another datastores.
+
+### `central.reReport.if:`
+
+Conditions for re storing reports.
+
+### `central.reReport.datastores:`
+
+Datastores where the reports are re-stored.
+
+## Supported coverage report formats
+
+octocov supports multiple coverage report formats.
+
+And octocov searches for the default path for each format.
+
+If you want to specify the path of the report file, set `coverage.path`
+
+``` yaml
+coverage:
+  paths:
+    - /path/to/coverage.txt
+```
+
+### Go coverage
+
+**Default path:** `coverage.out`
+
+### LCOV
+
+**Default path:** `coverage/lcov.info`
+
+Support `SF` `DA` only
+
+### SimpleCov
+
+**Default path:** `coverage/.resultset.json`
+
+### Clover
+
+**Default path:** `coverage.xml`
+
+### Cobertura
+
+**Default path:** `coverage.xml`
+
+### JaCoCo
+
+**Default path:** `build/reports/jacoco/test/jacocoTestReport.xml`
+
+## Supported code metrics
+
+- **Code Coverage**
+- **Code to Test Ratio**
+- **Test Execution Time** (on GitHub Actions only)
+
+## Install
+
+**deb:**
+
+``` console
+$ export OCTOCOV_VERSION=X.X.X
+$ curl -o octocov.deb -L https://github.com/k1LoW/octocov/releases/download/v$OCTOCOV_VERSION/octocov_$OCTOCOV_VERSION-1_amd64.deb
+$ dpkg -i octocov.deb
+```
+
+**RPM:**
+
+``` console
+$ export OCTOCOV_VERSION=X.X.X
+$ yum install https://github.com/k1LoW/octocov/releases/download/v$OCTOCOV_VERSION/octocov_$OCTOCOV_VERSION-1_amd64.rpm
+```
+
+**apk:**
+
+``` console
+$ export OCTOCOV_VERSION=X.X.X
+$ curl -o octocov.apk -L https://github.com/k1LoW/octocov/releases/download/v$OCTOCOV_VERSION/octocov_$OCTOCOV_VERSION-1_amd64.apk
+$ apk add octocov.apk
+```
+
+**homebrew tap:**
+
+```console
+$ brew install k1LoW/tap/octocov
+```
+
+**manually:**
+
+Download binary from [releases page](https://github.com/k1LoW/octocov/releases)
+
+**docker:**
+
+```console
+$ docker pull ghcr.io/k1low/octocov:latest
+```
