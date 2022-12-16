@@ -67,7 +67,7 @@
     "jest-junit": "15.0.0",
     "rimraf": "3.0.2",
     "ts-jest": "29.0.3",
-    "ts-proto": "1.135.0",
+    "ts-proto": "1.135.3",
     "ts-protoc-gen": "0.15.0",
     "typescript": "4.9.4",
     "zod-to-json-schema": "3.19.3"
