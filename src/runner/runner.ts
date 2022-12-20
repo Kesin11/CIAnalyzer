@@ -63,7 +63,6 @@ export class CompositRunner implements Runner {
     if (axios.isAxiosError(error)) {
       this.#logger.error("Catch HTTP fetch error.")
       this.#logger.error(summarizeAxiosError(error))
-      if (error.stack) this.#logger.error(error.stack)
     }
     else if (error instanceof ApiError) {
       this.#logger.error("Catch GCloud Error. Please check 'gcloud' auth status or your permission.")
