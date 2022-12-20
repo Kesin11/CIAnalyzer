@@ -7,10 +7,10 @@ const defaultDir = path.join('.ci_analyzer', 'last_run')
 
 export class LocalStore implements Store {
   filePath: string
-  logger: Logger
+  logger: Logger<unknown>
 
-  constructor(logger: Logger, service: string, configDir: string, filePath?: string) {
-    this.logger = logger.getChildLogger({ name: LocalStore.name })
+  constructor(logger: Logger<unknown>, service: string, configDir: string, filePath?: string) {
+    this.logger = logger.getSubLogger({ name: LocalStore.name })
 
     const _filePath = filePath ?? path.join(defaultDir, `${service}.json`)
     this.filePath = (path.isAbsolute(_filePath))

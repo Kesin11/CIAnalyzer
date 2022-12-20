@@ -20,7 +20,7 @@ export class LastRunStore<T extends Metadata = Metadata> {
   store: Store
   lastRun: LastRun<T>
 
-  static async init<T extends Metadata>(logger:Logger, options: ArgumentOptions, service: string, config?: LastRunStoreConfig) {
+  static async init<T extends Metadata>(logger: Logger<unknown>, options: ArgumentOptions, service: string, config?: LastRunStoreConfig) {
     let store
     if (options.debug) {
       store = new NullStore(logger)

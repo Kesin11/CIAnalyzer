@@ -20,12 +20,12 @@ export class GithubRunner implements Runner {
   analyzer: GithubAnalyzer 
   config: GithubConfig | undefined
   store?: LastRunStore
-  logger: Logger
+  logger: Logger<unknown>
 
-  constructor(logger: Logger, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
+  constructor(logger: Logger<unknown>, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
-    this.logger = logger.getChildLogger({ name: GithubRunner.name, instanceName: this.service })
+    this.logger = logger.getSubLogger({ name: `${GithubRunner.name}` })
     this.client = new GithubClient(GITHUB_TOKEN, options, this.config?.baseUrl)
     this.analyzer = new GithubAnalyzer()
   }

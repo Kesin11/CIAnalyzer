@@ -23,13 +23,13 @@ export class BigqueryExporter implements Exporter {
   }
   customReportTableInfo: Map<string, { table: string, schemaPath: string }>
   maxBadRecords: number
-  logger: Logger
+  logger: Logger<unknown>
 
-  constructor( logger:Logger, config: BigqueryExporterConfig, configDir: string ) {
+  constructor( logger: Logger<unknown>, config: BigqueryExporterConfig, configDir: string ) {
     if (!config.project || !config.dataset) {
       throw new Error("Must need 'project', 'dataset' parameter in exporter.bigquery config.")
     }
-    this.logger = logger.getChildLogger({ name: BigqueryExporter.name })
+    this.logger = logger.getSubLogger({ name: BigqueryExporter.name })
     this.bigquery = new BigQuery({ projectId: config.project })
     this.dataset = config.dataset
 

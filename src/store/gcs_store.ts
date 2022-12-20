@@ -8,10 +8,10 @@ const defaultDir = path.join('ci_analyzer', 'last_run')
 export class GcsStore implements Store {
   file: File
   gcsPath: string
-  logger: Logger
+  logger: Logger<unknown>
 
   constructor(
-    logger: Logger,
+    logger: Logger<unknown>,
     service: string,
     projectId?: string,
     bucket?: string,
@@ -23,7 +23,7 @@ export class GcsStore implements Store {
       throw new Error("Must need 'project' and 'bucket' params for lastRunStore in config")
     }
 
-    this.logger = logger.getChildLogger({ name: GcsStore.name })
+    this.logger = logger.getSubLogger({ name: GcsStore.name })
 
     const storage = new Storage({ projectId })
     this.file = storage.bucket(bucket).file(fp)

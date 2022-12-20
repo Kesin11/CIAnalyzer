@@ -10,7 +10,7 @@ export class ArgumentOptions {
   configPath: string
   configDir: string
   onlyExporters?: string[]
-  logLevel: "debug" | "info"
+  logLevel: 2 | 3 // tslog log level: "debug" | "info"
   keepAlive: boolean
   maxConcurrentRequests?: number
 
@@ -20,7 +20,7 @@ export class ArgumentOptions {
     this.debug = argv['debug'] || process.env['CI_ANALYZER_DEBUG'] ? true : false
     this.configDir = path.dirname(this.configPath)
     this.onlyExporters = argv['only-exporters'] as string[]
-    this.logLevel = (argv['v'] as number > 0) ? 'debug' : 'info'
+    this.logLevel = (argv['v'] as number > 0) ? 2 : 3
     this.keepAlive = argv['keepalive'] as boolean
     this.maxConcurrentRequests = (argv['max-concurrent-requests'] as number > 0)
       ? argv['max-concurrent-requests'] as number

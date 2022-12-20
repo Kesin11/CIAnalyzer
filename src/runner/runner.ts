@@ -16,8 +16,8 @@ export interface Runner {
 
 export class CompositRunner implements Runner {
   runners: Runner[]
-  #logger: Logger
-  constructor(logger: Logger, public config: YamlConfig, public options: ArgumentOptions) {
+  #logger: Logger<unknown>
+  constructor(logger: Logger<unknown>, public config: YamlConfig, public options: ArgumentOptions) {
     this.#logger = logger
     const services = options.onlyServices
       ? Object.keys(config).filter((service) => options.onlyServices?.includes(service))

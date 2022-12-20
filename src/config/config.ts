@@ -59,7 +59,7 @@ export const commonSchema = z.object({
 })
 export type CommonConfig = z.infer<typeof commonSchema>
 
-export const loadConfig = (logger: Logger, configPath: string): YamlConfig => {
+export const loadConfig = (logger: Logger<unknown>, configPath: string): YamlConfig => {
   const config = yaml.load(fs.readFileSync(configPath, 'utf8'))
   if (!config || typeof config !== "object") throw new Error(`Failed to load ${configPath} or config is not object`)
 

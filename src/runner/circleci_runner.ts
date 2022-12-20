@@ -9,9 +9,9 @@ import { Result } from "../result"
 
 export class CircleciRunner implements Runner {
   config: YamlConfig
-  logger: Logger
+  logger: Logger<unknown>
   options: ArgumentOptions
-  constructor(logger: Logger, yamlConfig: YamlConfig, options: ArgumentOptions) {
+  constructor(logger: Logger<unknown>, yamlConfig: YamlConfig, options: ArgumentOptions) {
     this.logger = logger
     this.config = yamlConfig
     this.options = options

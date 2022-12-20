@@ -6,6 +6,7 @@ import { loadConfig } from './config/config'
 import { CompositRunner } from './runner/runner'
 
 const defaultConfigPath = './ci_analyzer.yaml'
+const baseLoggerForStyles = new Logger()
 
 const main = async () => {
   const argv = await yargs
@@ -23,12 +24,12 @@ const main = async () => {
     .argv
   const argOptions = new ArgumentOptions(argv)
   const logger = new Logger({
-    overwriteConsole: true,
     minLevel: argOptions.logLevel,
-    displayInstanceName: true,
-    displayDateTime: false,
-    displayFunctionName: false,
-    displayFilePath: "hidden",
+    prettyLogTemplate: "{{logLevelName}}\t{{name}}",
+    prettyLogStyles: {
+      ...baseLoggerForStyles.settings.prettyLogStyles,
+      name: "black"
+    }
   })
 
   const yamlConfig = loadConfig(logger, argOptions.configPath)
@@ -36,7 +37,7 @@ const main = async () => {
   const result = await runner.run()
 
   if (result.isFailure()) {
-    logger.prettyError(result.value, true, false, false)
+    logger.error(result.value)
     process.exitCode = 1
   }
 }
