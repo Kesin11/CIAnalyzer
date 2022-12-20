@@ -13,7 +13,7 @@ const configDir = path.join(__dirname, '..', '..')
 const fixtureSchemaPath = {
   custom: './__tests__/fixture/custom_table.json'
 }
-const logger = new Logger({ minLevel: 'warn' })
+const logger = new Logger({ type: "hidden" })
 
 describe('BigqueryExporter', () => {
   const workflowTable = 'workflow'

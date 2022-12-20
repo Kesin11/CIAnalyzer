@@ -2,7 +2,7 @@ import { Logger } from 'tslog'
 import { ArgumentOptions } from '../../src/arg_options'
 import { CircleciClientV2 } from '../../src/client/circleci_client_v2'
 
-const logger = new Logger({ minLevel: 'warn' })
+const logger = new Logger({ type: "hidden" })
 const options = new ArgumentOptions({
   "c": "./dummy.yaml"
 })
