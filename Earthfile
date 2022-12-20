@@ -1,7 +1,7 @@
 VERSION 0.6
 
 # TypeScript build
-FROM node:16.19.0
+FROM node:18.12.1
 LABEL org.opencontainers.image.source=https://github.com/Kesin11/CIAnalyzer
 LABEL org.opencontainers.image.authors=kesin1202000@gmail.com
 WORKDIR /build
@@ -44,7 +44,7 @@ test:
   SAVE ARTIFACT coverage AS LOCAL ./coverage
 
 docker:
-  FROM node:16-alpine
+  FROM node:18-alpine
   WORKDIR /ci_analyzer
   # Resolve nodejs pid=1 problem
   RUN apk add --no-cache tini
