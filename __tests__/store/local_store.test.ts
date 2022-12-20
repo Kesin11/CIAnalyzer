@@ -6,7 +6,7 @@ import crypto from 'crypto'
 import { Logger } from 'tslog'
 
 const createRandomStr = () => crypto.randomBytes(8).toString('hex')
-const logger = new Logger({ minLevel: 'warn' })
+const logger = new Logger({ type: "hidden" })
 
 describe('LocalStore', () => {
   const repo = 'owner/repo'

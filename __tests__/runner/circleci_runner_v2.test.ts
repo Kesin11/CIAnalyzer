@@ -4,7 +4,7 @@ import { ArgumentOptions } from '../../src/arg_options'
 import { LastRunStore } from '../../src/last_run_store'
 import { NullStore } from '../../src/store/null_store'
 
-const logger = new Logger({ minLevel: 'warn' })
+const logger = new Logger({ type: "hidden" })
 const argOptions = new ArgumentOptions({
   c: 'cianalyzer.yml',
   v: 0,

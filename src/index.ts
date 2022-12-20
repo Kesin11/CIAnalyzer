@@ -25,10 +25,10 @@ const main = async () => {
   const argOptions = new ArgumentOptions(argv)
   const logger = new Logger({
     minLevel: argOptions.logLevel,
-    prettyLogTemplate: "{{logLevelName}}\t{{name}}",
+    prettyLogTemplate: "{{logLevelName}}\t[{{name}}]",
     prettyLogStyles: {
       ...baseLoggerForStyles.settings.prettyLogStyles,
-      name: "black"
+      name: "whiteBright"
     }
   })
 

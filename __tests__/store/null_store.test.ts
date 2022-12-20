@@ -1,7 +1,7 @@
 import { Logger } from 'tslog'
 import { NullStore } from '../../src/store/null_store'
 
-const logger = new Logger({ minLevel: 'warn' })
+const logger = new Logger({ type: "hidden" })
 
 describe('LocalStore', () => {
   let store: NullStore

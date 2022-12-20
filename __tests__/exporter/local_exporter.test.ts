@@ -7,7 +7,7 @@ const mockFsPromises = {
   mkdir: jest.fn(),
   writeFile: jest.fn(),
 }
-const logger = new Logger({ minLevel: 'warn' })
+const logger = new Logger({ type: "hidden" })
 
 describe('LocalExporter', () => {
   describe('new', () => {
