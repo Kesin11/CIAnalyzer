@@ -2,10 +2,10 @@ import { Logger } from 'tslog'
 import { Store, AnyObject } from './store'
 
 export class NullStore implements Store {
-  #logger: Logger
+  #logger: Logger<unknown>
 
-  constructor(logger: Logger) {
-    this.#logger = logger.getChildLogger({ name: NullStore.name })
+  constructor(logger: Logger<unknown>) {
+    this.#logger = logger.getSubLogger({ name: NullStore.name })
   }
 
   async read<T extends AnyObject>(): Promise<T> {

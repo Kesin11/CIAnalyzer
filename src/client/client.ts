@@ -14,7 +14,7 @@ export type Artifact = {
 
 export type CustomReportArtifact = Map<string, Artifact[]>
 
-export const createAxios = (logger: Logger, options: ArgumentOptions, config: AxiosRequestConfig) => {
+export const createAxios = (logger: Logger<unknown>, options: ArgumentOptions, config: AxiosRequestConfig) => {
   const axiosInstance = axios.create({
     // Default parameters
     timeout: 5000,

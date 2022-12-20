@@ -18,11 +18,11 @@ export class JenkinsRunner implements Runner {
   analyzer?: JenkinsAnalyzer
   config?: JenkinsConfig
   store?: LastRunStore
-  logger: Logger
+  logger: Logger<unknown>
 
-  constructor(logger: Logger, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
+  constructor(logger: Logger<unknown>, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     this.config = parseConfig(yamlConfig)
-    this.logger = logger.getChildLogger({ name: JenkinsRunner.name, instanceName: this.service })
+    this.logger = logger.getSubLogger({ name: `${JenkinsRunner.name}` })
 
     if (!this.config) return
     const JENKINS_USER = process.env['JENKINS_USER']

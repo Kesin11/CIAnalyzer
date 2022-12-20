@@ -178,7 +178,7 @@ export type TimeInQueueAction = {
 export class JenkinsClient {
   #axios: AxiosInstance
   #options: ArgumentOptions
-  constructor(baseUrl: string, logger: Logger, options: ArgumentOptions, user?: string, token?: string) {
+  constructor(baseUrl: string, logger: Logger<unknown>, options: ArgumentOptions, user?: string, token?: string) {
     if ((user && !token) || (!user && token)) throw new Error('Either $JENKSIN_USER or $JENKINS_TOKEN is undefined.')
 
     const auth = (user && token) ? {
@@ -187,7 +187,7 @@ export class JenkinsClient {
     } : undefined
 
     this.#options = options
-    const axiosLogger = logger.getChildLogger({ name: JenkinsClient.name })
+    const axiosLogger = logger.getSubLogger({ name: JenkinsClient.name })
     this.#axios = createAxios(axiosLogger, options, {
       baseURL: baseUrl,
       auth,

@@ -18,12 +18,12 @@ export class BitriseRunner implements Runner {
   analyzer: BitriseAnalyzer
   config: BitriseConfig | undefined
   store?: LastRunStore
-  logger: Logger
+  logger: Logger<unknown>
 
-  constructor(logger: Logger, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
+  constructor(logger: Logger<unknown>, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const BITRISE_TOKEN = process.env['BITRISE_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
-    this.logger = logger.getChildLogger({ name: BitriseRunner.name, instanceName: this.service })
+    this.logger = logger.getSubLogger({ name: `${BitriseRunner.name}` })
     this.client = new BitriseClient(BITRISE_TOKEN, this.logger, options)
     this.analyzer = new BitriseAnalyzer()
   }

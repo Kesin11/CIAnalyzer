@@ -25,12 +25,12 @@ export class CircleciRunnerV1 implements Runner {
   config: CircleciConfig | undefined
   store?: LastRunStore<CircleciV1LastRunMetadata>
   githubClient: GithubClient
-  logger: Logger
+  logger: Logger<unknown>
 
-  constructor(logger: Logger, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
+  constructor(logger: Logger<unknown>, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
     const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
-    this.logger = logger.getChildLogger({ name: CircleciRunnerV1.name, instanceName: this.service })
+    this.logger = logger.getSubLogger({ name: `${CircleciRunnerV1.name}` })
     this.client = new CircleciClient(CIRCLECI_TOKEN, this.logger, options, this.config?.baseUrl)
     this.analyzer = new CircleciAnalyzer()
 

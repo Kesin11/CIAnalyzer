@@ -14,10 +14,10 @@ export class LocalExporter implements Exporter {
   outDir: string
   formatter: (report: unknown[]) => string
   fsPromises = fs.promises
-  logger: Logger
+  logger: Logger<unknown>
 
   constructor(
-    logger: Logger,
+    logger: Logger<unknown>,
     service: string,
     configDir: string,
     config: LocalExporterConfig,
@@ -29,7 +29,7 @@ export class LocalExporter implements Exporter {
       : path.resolve(configDir, _outDir)
     const format = config?.format ?? 'json'
     this.formatter = (format === 'json') ? this.formatJson : this.formatJsonLines
-    this.logger = logger.getChildLogger({ name: LocalExporter.name })
+    this.logger = logger.getSubLogger({ name: LocalExporter.name })
   }
 
   private async exportReports(type: string, reports: unknown[]) {

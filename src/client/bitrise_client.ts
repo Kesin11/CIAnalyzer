@@ -102,8 +102,8 @@ export class BitriseClient {
   #axios: AxiosInstance
   #artifactAxios: AxiosInstance
   #options: ArgumentOptions
-  constructor(token: string, logger: Logger, options: ArgumentOptions, baseUrl?: string) {
-    const axiosLogger = logger.getChildLogger({ name: BitriseClient.name })
+  constructor(token: string, logger: Logger<unknown>, options: ArgumentOptions, baseUrl?: string) {
+    const axiosLogger = logger.getSubLogger({ name: BitriseClient.name })
     this.#options = options
     this.#axios = createAxios(axiosLogger, options, {
       baseURL: baseUrl ?? 'https://api.bitrise.io/v0.1',

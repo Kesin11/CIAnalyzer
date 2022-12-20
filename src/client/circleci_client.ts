@@ -114,12 +114,12 @@ type ArtifactsResponse = {
 export class CircleciClient {
   #axios: AxiosInstance
   #options: ArgumentOptions
-  constructor(token: string, logger: Logger, options: ArgumentOptions, baseUrl?: string) {
+  constructor(token: string, logger: Logger<unknown>, options: ArgumentOptions, baseUrl?: string) {
     if (baseUrl && path.basename(baseUrl) !== 'v1.1') {
       throw new Error(`${CircleciClient.name} accepts only "/api/v1.1/" But your baseUrl is ${baseUrl}`)
     }
     this.#options = options
-    const axiosLogger = logger.getChildLogger({ name: CircleciClient.name })
+    const axiosLogger = logger.getSubLogger({ name: CircleciClient.name })
     this.#axios = createAxios(axiosLogger, options, {
       baseURL: baseUrl ?? 'https://circleci.com/api/v1.1',
       auth: {
