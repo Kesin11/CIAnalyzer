@@ -15,6 +15,7 @@ jobs:
       - uses: earthly/actions-setup@v1.0.2
         with:
           version: latest
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate files
         run: |
           npm run proto
@@ -67,5 +68,6 @@ jobs:
       - uses: earthly/actions-setup@v1.0.2
         with:
           version: latest
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker build
         run: npm run docker
