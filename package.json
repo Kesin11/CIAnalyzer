@@ -50,7 +50,7 @@
     "js-yaml": "4.1.0",
     "junit2json": "3.0.5",
     "lodash": "4.17.21",
-    "minimatch": "5.1.6",
+    "minimatch": "6.1.5",
     "tslog": "4.7.1",
     "utility-types": "3.10.0",
     "yargs": "17.6.2",
