@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@google-cloud/bigquery": "6.0.3",
-    "@google-cloud/storage": "6.9.0",
+    "@google-cloud/storage": "6.9.1",
     "@octokit/plugin-retry": "4.0.4",
     "@octokit/plugin-throttling": "4.3.2",
     "@octokit/rest": "19.0.7",
