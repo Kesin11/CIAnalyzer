@@ -1,4 +1,4 @@
-VERSION 0.6
+VERSION 0.7
 
 # TypeScript build
 FROM node:18.13.0
@@ -31,7 +31,6 @@ proto:
   COPY ./proto+protoc/schema /tmp/schema
   SAVE ARTIFACT /tmp/pb_types/* AS LOCAL ./src/pb_types/
   SAVE ARTIFACT /tmp/schema/* AS LOCAL ./bigquery_schema/
-  SAVE IMAGE --cache-hint
 
 test:
   FROM +deps
