@@ -1,4 +1,4 @@
-VERSION 0.5
+VERSION 0.7
 protoc:
   FROM ../+deps
   RUN curl -sSLO https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip \
@@ -21,4 +21,3 @@ protoc:
   RUN cp generated/schema/workflow_report.schema generated/schema/workflow_report.json \
     && cp generated/schema/test_report.schema generated/schema/test_report.json
   SAVE ARTIFACT generated/schema/*.json schema/
-  SAVE IMAGE --cache-hint
