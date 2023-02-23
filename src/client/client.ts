@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios'
+import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import axiosRetry from 'axios-retry'
 import { ConcurrencyManager } from 'axios-concurrency'
 import http from 'http'
@@ -29,7 +29,7 @@ export const createAxios = (logger: Logger<unknown>, options: ArgumentOptions, c
     retryDelay: axiosRetry.exponentialDelay
   })
 
-  const axiosRequestLogger = (req: AxiosRequestConfig) => {
+  const axiosRequestLogger = (req: InternalAxiosRequestConfig) => {
     logger.debug(`${req.method?.toUpperCase()} ${req.url}`)
     logger.debug('request', {
       method: req.method?.toUpperCase(),
