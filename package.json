@@ -52,7 +52,7 @@
     "minimatch": "7.0.0",
     "tslog": "4.7.4",
     "utility-types": "3.10.0",
-    "yargs": "17.7.0",
+    "yargs": "17.7.1",
     "zod": "3.20.6"
   },
   "devDependencies": {
