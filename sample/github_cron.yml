@@ -10,7 +10,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/kesin11/ci_analyzer:v4
+      image: ghcr.io/kesin11/ci_analyzer:v5
     timeout-minutes: 20
     steps:
       # Checkout your repository that contains your config file.

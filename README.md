@@ -83,7 +83,7 @@ docker run \
   -e JENKINS_TOKEN=${JENKINS_TOKEN} \
   -e BITRISE_TOKEN=${BITRISE_TOKEN} \
   -e GOOGLE_APPLICATION_CREDENTIALS=/service_account.json \
-  ghcr.io/kesin11/ci_analyzer:v4 -c ci_analyzer.yaml
+  ghcr.io/kesin11/ci_analyzer:v5 -c ci_analyzer.yaml
 ```
 
 ## Container tagging scheme
