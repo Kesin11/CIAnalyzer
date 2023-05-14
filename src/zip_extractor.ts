@@ -3,7 +3,7 @@ import os from 'os'
 import path from 'path'
 import AdmZip from 'adm-zip'
 import crypto from 'crypto'
-import minimatch from 'minimatch'
+import { minimatch } from 'minimatch'
 
 const createRandomStr = () => crypto.randomBytes(8).toString('hex')
 
