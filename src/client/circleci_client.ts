@@ -1,5 +1,5 @@
 import path from 'path'
-import minimatch from 'minimatch'
+import { minimatch } from 'minimatch'
 import { AxiosInstance } from 'axios'
 import { groupBy, max, minBy } from 'lodash'
 import { Artifact, CustomReportArtifact, createAxios } from './client'
