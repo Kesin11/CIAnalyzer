@@ -1,4 +1,7 @@
+import { Logger } from 'tslog'
 import { parseConfig } from '../../src/config/jenkins_config'
+
+const logger = new Logger({ type: "hidden" })
 
 describe('parseConfig', () => {
   it('when repos are string', () => {
@@ -9,7 +12,7 @@ describe('parseConfig', () => {
       }
     }
 
-    const actual = parseConfig(config)
+    const actual = parseConfig(config, logger)
     expect(actual).toEqual({
       baseUrl: 'http://localhost:8080',
       jobs: [{
@@ -31,7 +34,7 @@ describe('parseConfig', () => {
         }
       }
 
-      const actual = parseConfig(config)
+      const actual = parseConfig(config, logger)
       expect(actual).toEqual({
         baseUrl: 'http://localhost:8080',
         jobs: [{
@@ -53,7 +56,7 @@ describe('parseConfig', () => {
         }
       }
 
-      const actual = parseConfig(config)
+      const actual = parseConfig(config, logger)
       expect(actual).toEqual({
         baseUrl: 'http://localhost:8080',
         jobs: [{
@@ -77,7 +80,7 @@ describe('parseConfig', () => {
         }
       }
 
-      const actual = parseConfig(config)
+      const actual = parseConfig(config, logger)
       expect(actual).toEqual({
         baseUrl: 'http://localhost:8080',
         jobs: [{
@@ -87,6 +90,44 @@ describe('parseConfig', () => {
             { name: 'custom', paths: ['**/custom.xml']}
           ]
         }]
+      })
+    })
+  })
+
+  describe('with deprecated keys that need to migrate', () => {
+    const commonConfig = {
+      baseUrl: 'http://localhost:8080',
+      jobs: [{
+        name: 'sample-job',
+      }],
+    }
+    const commonActual = {
+      baseUrl: 'http://localhost:8080',
+      jobs: [{
+        name: 'sample-job',
+        testGlob: [],
+        customReports: []
+      }],
+    }
+
+    it('correctAllJobs', () => {
+      const config = {
+        jenkins: {
+          ...commonConfig,
+          correctAllJobs: {
+            filterLastBuildDay: 1,
+            isRecursively: true,
+          }
+        }
+      }
+
+      const actual = parseConfig(config, logger)
+      expect(actual).toEqual({
+        ...commonActual, 
+        collectAllJobs: {
+          filterLastBuildDay: 1,
+          isRecursively: true,
+        }
       })
     })
   })

@@ -1,6 +1,7 @@
 import { customReportSchema, commonSchema } from './config'
 import { YamlConfig } from "./validator"
 import { z } from 'zod'
+import { Logger } from 'tslog'
 
 export const jenkinsYamlSchema = commonSchema.merge(z.object({
   baseUrl: z.string(),
@@ -9,11 +10,17 @@ export const jenkinsYamlSchema = commonSchema.merge(z.object({
     tests: z.string().array().optional(),
     customReports: customReportSchema.array().optional()
   })]).array(),
+  // NOTE: It is deprecated key and will be removed
   correctAllJobs: z.object({
+    filterLastBuildDay: z.number().optional(),
+    isRecursively: z.boolean().optional()
+  }).optional(),
+  collectAllJobs: z.object({
     filterLastBuildDay: z.number().optional(),
     isRecursively: z.boolean().optional()
   }).optional()
 }))
+type JenkinsYaml = z.infer<typeof jenkinsYamlSchema>
 
 const jenkinsConfigSchema = jenkinsYamlSchema.merge(z.object({
   jobs: z.object({
@@ -21,10 +28,12 @@ const jenkinsConfigSchema = jenkinsYamlSchema.merge(z.object({
     testGlob: z.string().array(),
     customReports: customReportSchema.array()
   }).array()
-}))
+})).omit({ // Omit deprecated keys
+  correctAllJobs: true
+})
 export type JenkinsConfig = z.infer<typeof jenkinsConfigSchema>
 
-export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {
+export const parseConfig = (config: YamlConfig, logger: Logger<unknown>): JenkinsConfig | undefined => {
   if (!config.jenkins) return
 
   // overwrite jobs
@@ -41,7 +50,19 @@ export const parseConfig = (config: YamlConfig): JenkinsConfig | undefined => {
         customReports: jobYaml.customReports ?? []
       }
     })
-  } as JenkinsConfig
+  }
 
-  return jenkinsConfig
+  return migrateConfig(jenkinsConfig, logger)
+}
+
+const migrateConfig = (config: JenkinsYaml , logger: Logger<unknown>): JenkinsConfig => {
+  const migrated = structuredClone(config)
+
+  if (config.correctAllJobs) {
+    logger.warn('`correctAllJobs` is deprecated. Please use collectAllJobs instead.')
+    migrated.collectAllJobs = config.correctAllJobs
+    delete migrated.correctAllJobs
+  }
+
+  return migrated as JenkinsConfig
 }

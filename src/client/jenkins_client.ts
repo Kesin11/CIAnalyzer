@@ -235,7 +235,7 @@ println builder.toString()
       runs = res.data
     }
     // Sometimes wfapi/runs return 500.
-    // However if that job comes from `correctAllJobs` config option, user may not do anything.
+    // However if that job comes from `collectAllJobs` config option, user may not do anything.
     // To handle this situation, catch the error and return empty array.
     catch { return [] }
 
