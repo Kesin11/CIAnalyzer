@@ -58,7 +58,7 @@ circleci:
 
 jenkins:
   baseUrl: http://localhost:8080 # Your jenkins url
-  correctAllJobs: # Enable correct all pipeline jobs
+  collectAllJobs: # Enable collect all pipeline jobs
     filterLastBuildDay: 30 # Filter by last build day. default: 30
     isRecursively: false # Also collect jobs under folders. default: false
   jobs: # Job names in your Jenkins

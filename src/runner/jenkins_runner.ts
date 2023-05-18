@@ -21,8 +21,8 @@ export class JenkinsRunner implements Runner {
   logger: Logger<unknown>
 
   constructor(logger: Logger<unknown>, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
-    this.config = parseConfig(yamlConfig)
     this.logger = logger.getSubLogger({ name: `${JenkinsRunner.name}` })
+    this.config = parseConfig(yamlConfig, this.logger)
 
     if (!this.config) return
     const JENKINS_USER = process.env['JENKINS_USER']
@@ -109,12 +109,12 @@ export class JenkinsRunner implements Runner {
     if (!this.config) return []
     if (!this.client) return []
 
-    const allJobs = await this.client.fetchJobs(this.config.correctAllJobs?.isRecursively ?? false)
+    const allJobs = await this.client.fetchJobs(this.config.collectAllJobs?.isRecursively ?? false)
     const allJobMap = new Map(allJobs.map((job) => [job.name, job]))
     const configJobs = this.config.jobs.filter((job) => allJobMap.get(job.name))
 
     const otherJobs: JenkinsConfig["jobs"] = []
-    if (this.config.correctAllJobs) {
+    if (this.config.collectAllJobs) {
       const notConfigJobs = allJobs.filter((job) => {
         return configJobs.find((configJob) => configJob.name === job.name) === undefined
       })
@@ -127,7 +127,7 @@ export class JenkinsRunner implements Runner {
         }
       })
 
-      const stallDays = this.config.correctAllJobs.filterLastBuildDay ?? 30
+      const stallDays = this.config.collectAllJobs.filterLastBuildDay ?? 30
       const now = Date.now()
       const thresholdTimestamp = now - stallDays * 24 * 60 * 60 * 1000
 

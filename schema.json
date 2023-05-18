@@ -318,6 +318,18 @@
                 }
               },
               "additionalProperties": false
+            },
+            "collectAllJobs": {
+              "type": "object",
+              "properties": {
+                "filterLastBuildDay": {
+                  "type": "number"
+                },
+                "isRecursively": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
             }
           },
           "required": [
