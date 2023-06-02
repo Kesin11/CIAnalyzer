@@ -27,17 +27,17 @@ export class GithubClient {
       baseUrl: (baseUrl) ? baseUrl : 'https://api.github.com',
       log: (options.debug) ? console : undefined,
       throttle: {
-        onRateLimit: (retryAfter: number, options: any) => {
+        onRateLimit: (retryAfter, options: any, _octokit, retryCount) => {
           this.#octokit.log.warn(
             `Request quota exhausted for request ${options.method} ${options.url}`
           )
           // Retry twice after hitting a rate limit error, then give up
-          if (options.request.retryCount <= 2) {
+          if (retryCount <= 2) {
             this.#octokit.log.warn(`Retrying after ${retryAfter} seconds!`);
             return true;
           }
         },
-        onAbuseLimit: (retryAfter: number, options: any) => {
+        onSecondaryRateLimit: (_retryAfter, options: any, _octokit, _retryCount) => {
           // does not retry, only logs a warning
           this.#octokit.log.warn(
             `Abuse detected for request ${options.method} ${options.url}`
