@@ -45,7 +45,7 @@
     "axios": "1.4.0",
     "axios-concurrency": "1.0.4",
     "axios-retry": "3.5.0",
-    "dayjs": "1.11.7",
+    "dayjs": "1.11.8",
     "js-yaml": "4.1.0",
     "junit2json": "3.1.1",
     "lodash": "4.17.21",
