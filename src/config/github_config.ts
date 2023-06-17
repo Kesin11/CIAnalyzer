@@ -6,7 +6,7 @@ export const githubYamlSchema = commonSchema.merge(z.object({
   repos: z.union([z.string(), z.object({
     name: z.string(),
     tests: z.string().array().optional(),
-    customReports: customReportSchema.array()
+    customReports: customReportSchema.array().optional()
   })]).array()
 }))
 
