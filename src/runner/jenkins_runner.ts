@@ -1,6 +1,6 @@
 import { maxBy } from "lodash"
 import { Runner } from "./runner"
-import { YamlConfig } from "../config/validator"
+import { ValidatedYamlConfig } from "../config/validator"
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { JenkinsClient } from "../client/jenkins_client"
@@ -20,7 +20,7 @@ export class JenkinsRunner implements Runner {
   store?: LastRunStore
   logger: Logger<unknown>
 
-  constructor(logger: Logger<unknown>, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
+  constructor(logger: Logger<unknown>, public yamlConfig: ValidatedYamlConfig, public options: ArgumentOptions) {
     this.logger = logger.getSubLogger({ name: `${JenkinsRunner.name}` })
     this.config = parseConfig(yamlConfig, this.logger)
 

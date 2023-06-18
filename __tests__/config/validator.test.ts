@@ -1,5 +1,5 @@
 import { Logger } from 'tslog'
-import { ValidatedYamlConfig, validateConfig } from '../../src/config/validator'
+import { ValidatedYamlConfig, validateConfig } from '../../src/config/config'
 
 const logger = new Logger({ type: "hidden" })
 

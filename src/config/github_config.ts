@@ -1,5 +1,5 @@
 import { commonSchema, customReportSchema } from './config'
-import { YamlConfig } from "./validator"
+import { ValidatedYamlConfig } from "./validator"
 import { z } from 'zod'
 
 export const githubYamlSchema = commonSchema.merge(z.object({
@@ -21,7 +21,7 @@ const githubSchema = githubYamlSchema.merge(z.object({
 }))
 export type GithubConfig = z.infer<typeof githubSchema>
 
-export const parseConfig = (config: YamlConfig): GithubConfig | undefined => {
+export const parseConfig = (config: ValidatedYamlConfig): GithubConfig | undefined => {
   if (!config.github) return
 
   // overwrite repos

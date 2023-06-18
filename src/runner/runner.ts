@@ -1,4 +1,4 @@
-import { YamlConfig } from "../config/validator";
+import { ValidatedYamlConfig } from "../config/validator";
 import { GithubRunner } from "./github_runner";
 import { CircleciRunner } from "./circleci_runner";
 import { JenkinsRunner } from "./jenkins_runner";
@@ -17,7 +17,7 @@ export interface Runner {
 export class CompositRunner implements Runner {
   runners: Runner[]
   #logger: Logger<unknown>
-  constructor(logger: Logger<unknown>, public config: YamlConfig, public options: ArgumentOptions) {
+  constructor(logger: Logger<unknown>, public config: ValidatedYamlConfig, public options: ArgumentOptions) {
     this.#logger = logger
     const services = options.onlyServices
       ? Object.keys(config).filter((service) => options.onlyServices?.includes(service))

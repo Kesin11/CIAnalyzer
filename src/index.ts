@@ -4,6 +4,7 @@ import yargs from 'yargs'
 import { ArgumentOptions } from './arg_options'
 import { loadConfig } from './config/config'
 import { CompositRunner } from './runner/runner'
+import { validateConfig } from './config/validator'
 
 const defaultConfigPath = './ci_analyzer.yaml'
 const baseLoggerForStyles = new Logger()
@@ -33,7 +34,8 @@ const main = async () => {
   })
 
   const yamlConfig = loadConfig(logger, argOptions.configPath)
-  const runner = new CompositRunner(logger, yamlConfig, argOptions)
+  const validatedYamlConfig = validateConfig(logger, yamlConfig)
+  const runner = new CompositRunner(logger, validatedYamlConfig, argOptions)
   const result = await runner.run()
 
   if (result.isFailure()) {

@@ -1,5 +1,5 @@
 import { customReportSchema, commonSchema } from './config'
-import { YamlConfig } from "./validator"
+import { ValidatedYamlConfig } from "./validator"
 import { z } from 'zod'
 import { Logger } from 'tslog'
 
@@ -33,7 +33,7 @@ const jenkinsConfigSchema = jenkinsYamlSchema.merge(z.object({
 })
 export type JenkinsConfig = z.infer<typeof jenkinsConfigSchema>
 
-export const parseConfig = (config: YamlConfig, logger: Logger<unknown>): JenkinsConfig | undefined => {
+export const parseConfig = (config: ValidatedYamlConfig, logger: Logger<unknown>): JenkinsConfig | undefined => {
   if (!config.jenkins) return
 
   // overwrite jobs

@@ -11,7 +11,7 @@ export const yamlSchema = z.object({
   jenkins: jenkinsYamlSchema.strict(),
   bitrise: bitriseYamlSchema.strict(),
 }).partial()
-export type YamlConfig = z.infer<typeof yamlSchema>;
+export type YamlConfig = z.infer<typeof yamlSchema>; // TODO: exportやめる？
 export type ValidatedYamlConfig = YamlConfig & {
   _configValidated: true
 }

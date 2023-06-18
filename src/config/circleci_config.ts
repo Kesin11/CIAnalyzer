@@ -1,5 +1,5 @@
 import { commonSchema, customReportSchema } from './config'
-import { YamlConfig } from "./validator"
+import { ValidatedYamlConfig } from "./validator"
 import { z } from 'zod'
 
 export const circleciYamlSchema = commonSchema.merge(z.object({
@@ -25,7 +25,7 @@ const circleciSchema = circleciYamlSchema.merge(z.object({
 }))
 export type CircleciConfig = z.infer<typeof circleciSchema>
 
-export const parseConfig = (config: YamlConfig): CircleciConfig | undefined => {
+export const parseConfig = (config: ValidatedYamlConfig): CircleciConfig | undefined => {
   if (!config.circleci) return
 
   // overwrite repos and version
