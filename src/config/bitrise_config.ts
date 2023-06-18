@@ -1,12 +1,12 @@
-import { commonSchema, customReportSchema } from './config'
-import { YamlConfig } from "./validator"
+import { commonSchema, customReportSchema } from './schema'
+import { ValidatedYamlConfig } from "./config"
 import { z } from 'zod'
 
 export const bitriseYamlSchema = commonSchema.merge(z.object({
   apps: z.union([z.string(), z.object({
     name: z.string(),
     tests: z.string().array().optional(),
-    customReports: customReportSchema.array()
+    customReports: customReportSchema.array().optional()
   })]).array()
 }))
 
@@ -21,7 +21,7 @@ const bitriseSchema = bitriseYamlSchema.merge(z.object({
 }))
 export type BitriseConfig = z.infer<typeof bitriseSchema >
 
-export const parseConfig = (config: YamlConfig): BitriseConfig | undefined => {
+export const parseConfig = (config: ValidatedYamlConfig): BitriseConfig | undefined => {
   if (!config.bitrise) return
 
   // overwrite repos

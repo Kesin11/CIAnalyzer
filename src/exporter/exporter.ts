@@ -1,6 +1,6 @@
 import { LocalExporter } from "./local_exporter";
 import { WorkflowReport, TestReport } from "../analyzer/analyzer";
-import { ExporterConfig, LocalExporterConfig, BigqueryExporterConfig } from "../config/config";
+import { ExporterConfig, LocalExporterConfig, BigqueryExporterConfig } from "../config/schema";
 import { BigqueryExporter } from "./bigquery_exporter";
 import { CustomReportCollection } from "../custom_report_collection";
 import { ArgumentOptions } from "../arg_options";

@@ -5,7 +5,7 @@ import { BitriseAnalyzer } from "../analyzer/bitrise_analyzer"
 import { ArgumentOptions } from "../arg_options"
 import { BitriseClient } from "../client/bitrise_client"
 import { BitriseConfig, parseConfig } from "../config/bitrise_config"
-import { YamlConfig } from "../config/validator"
+import { ValidatedYamlConfig } from "../config/config"
 import { createCustomReportCollection, CustomReportCollection } from "../custom_report_collection"
 import { CompositExporter } from "../exporter/exporter"
 import { LastRunStore } from "../last_run_store"
@@ -20,7 +20,7 @@ export class BitriseRunner implements Runner {
   store?: LastRunStore
   logger: Logger<unknown>
 
-  constructor(logger: Logger<unknown>, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
+  constructor(logger: Logger<unknown>, public yamlConfig: ValidatedYamlConfig, public options: ArgumentOptions) {
     const BITRISE_TOKEN = process.env['BITRISE_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
     this.logger = logger.getSubLogger({ name: `${BitriseRunner.name}` })

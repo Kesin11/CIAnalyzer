@@ -1,6 +1,6 @@
 import { max } from "lodash"
 import { Runner } from "./runner"
-import { YamlConfig } from "../config/validator"
+import { ValidatedYamlConfig } from "../config/config"
 import { CircleciConfig, parseConfig } from "../config/circleci_config"
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
@@ -27,7 +27,7 @@ export class CircleciRunnerV2 implements Runner {
   githubClient: GithubClient
   logger: Logger<unknown>
 
-  constructor(logger: Logger<unknown>, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
+  constructor(logger: Logger<unknown>, public yamlConfig: ValidatedYamlConfig, public options: ArgumentOptions) {
     const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
     this.logger = logger.getSubLogger({ name: `${CircleciRunnerV2.name}` })

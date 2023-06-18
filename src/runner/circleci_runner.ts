@@ -1,5 +1,5 @@
 import { Runner } from "./runner"
-import { YamlConfig } from "../config/validator"
+import { ValidatedYamlConfig } from "../config/config"
 import { ArgumentOptions } from "../arg_options"
 import { Logger } from "tslog"
 import { CircleciRunnerV1 } from "./circleci_runner_v1"
@@ -8,10 +8,10 @@ import { parseConfig } from "../config/circleci_config"
 import { Result } from "../result"
 
 export class CircleciRunner implements Runner {
-  config: YamlConfig
+  config: ValidatedYamlConfig
   logger: Logger<unknown>
   options: ArgumentOptions
-  constructor(logger: Logger<unknown>, yamlConfig: YamlConfig, options: ArgumentOptions) {
+  constructor(logger: Logger<unknown>, yamlConfig: ValidatedYamlConfig, options: ArgumentOptions) {
     this.logger = logger
     this.config = yamlConfig
     this.options = options

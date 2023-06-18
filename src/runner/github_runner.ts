@@ -1,6 +1,6 @@
 import { groupBy, maxBy } from "lodash"
 import { Runner } from "./runner"
-import { YamlConfig } from "../config/validator"
+import { ValidatedYamlConfig } from "../config/config"
 import { GithubClient, WorkflowItem } from "../client/github_client"
 import { GithubAnalyzer, WorkflowRunsItem } from "../analyzer/github_analyzer"
 import { GithubConfig, parseConfig } from "../config/github_config"
@@ -22,7 +22,7 @@ export class GithubRunner implements Runner {
   store?: LastRunStore
   logger: Logger<unknown>
 
-  constructor(logger: Logger<unknown>, public yamlConfig: YamlConfig, public options: ArgumentOptions) {
+  constructor(logger: Logger<unknown>, public yamlConfig: ValidatedYamlConfig, public options: ArgumentOptions) {
     const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
     this.config = parseConfig(yamlConfig)
     this.logger = logger.getSubLogger({ name: `${GithubRunner.name}` })

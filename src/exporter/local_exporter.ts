@@ -3,7 +3,7 @@ import fs from "fs"
 import dayjs from 'dayjs'
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { Exporter } from "./exporter"
-import { LocalExporterConfig } from "../config/config"
+import { LocalExporterConfig } from "../config/schema"
 import { CustomReportCollection } from "../custom_report_collection"
 import { Logger } from "tslog"
 

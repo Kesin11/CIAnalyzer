@@ -181,8 +181,7 @@
                       }
                     },
                     "required": [
-                      "name",
-                      "customReports"
+                      "name"
                     ],
                     "additionalProperties": false
                   }
@@ -377,8 +376,7 @@
                       }
                     },
                     "required": [
-                      "name",
-                      "customReports"
+                      "name"
                     ],
                     "additionalProperties": false
                   }

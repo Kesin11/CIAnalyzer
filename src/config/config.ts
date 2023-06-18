@@ -2,62 +2,29 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 import { Logger } from 'tslog'
 import { z } from 'zod'
-import { YamlConfig } from './validator'
+import zodToJsonSchema from "zod-to-json-schema"
+import { bitriseYamlSchema } from './bitrise_config'
+import { circleciYamlSchema } from './circleci_config'
+import { githubYamlSchema } from './github_config'
+import { jenkinsYamlSchema } from './jenkins_config'
 
-const localExporterSchema = z.object({
-  outDir: z.string().optional(),
-  format: z.union([z.literal('json'), z.literal('json_lines')]).optional()
-})
-export type LocalExporterConfig = z.infer<typeof localExporterSchema>
+const yamlSchema = z.object({
+  github: githubYamlSchema.strict(),
+  circleci: circleciYamlSchema.strict(),
+  jenkins: jenkinsYamlSchema.strict(),
+  bitrise: bitriseYamlSchema.strict(),
+}).partial()
 
-const bigqueryExporterSchema = z.object({
-  project: z.string().optional(),
-  dataset: z.string().optional(),
-  reports: z.object({
-    name: z.union([z.literal('workflow'), z.literal('test_report')]),
-    table: z.string(),
-  }).array().optional(),
-  customReports: z.object({
-    name: z.string(),
-    table: z.string(),
-    schema: z.string(),
-  }).array().optional(),
-  maxBadRecords: z.number().optional()
-})
-export type BigqueryExporterConfig = z.infer<typeof bigqueryExporterSchema>
+// Don't export raw YamlConfig type to prevent accidental use
+type YamlConfig = z.infer<typeof yamlSchema>;
+// If other modules want to use the config, they should use ValidatedYamlConfig
+export type ValidatedYamlConfig = YamlConfig & {
+  _configValidated: true
+}
 
-const exporterSchema = z.object({
-  local: localExporterSchema.optional(),
-  bigquery: bigqueryExporterSchema.optional()
-})
-export type ExporterConfig = z.infer<typeof exporterSchema>
-
-const lastRunStoreSchema = z.union([
-  z.object({
-    backend: z.literal('local'),
-    path: z.string()
-  }),
-  z.object({
-    backend: z.literal('gcs'),
-    project: z.string(),
-    bucket: z.string(),
-    path: z.string().optional()
-  })
-])
-export type LastRunStoreConfig = z.infer<typeof lastRunStoreSchema>
-
-export const customReportSchema = z.object({
-  name: z.string(),
-  paths: z.string().array()
-})
-export type CustomReportConfig = z.infer<typeof customReportSchema>
-
-export const commonSchema = z.object({
-  baseUrl: z.string().optional(),
-  exporter: exporterSchema.optional(),
-  lastRunStore: lastRunStoreSchema.optional()
-})
-export type CommonConfig = z.infer<typeof commonSchema>
+export const createJsonSchema = () => {
+  return zodToJsonSchema(yamlSchema, "CIAnalyzer config schema")
+}
 
 export const loadConfig = (logger: Logger<unknown>, configPath: string): YamlConfig => {
   const config = yaml.load(fs.readFileSync(configPath, 'utf8'))
@@ -67,4 +34,23 @@ export const loadConfig = (logger: Logger<unknown>, configPath: string): YamlCon
   logger.debug(JSON.stringify(config, null, 2))
 
   return config as YamlConfig
+}
+
+// Remove _errors: [] in nested properties for human readability
+const formatErrorForLog = (error: z.ZodError): string =>  {
+    return JSON.stringify(error.format(), (key: any, value: any) => {
+      return (key === '_errors' && value.length === 0) ? undefined : value
+    }, 2)
+}
+
+export const validateConfig = (logger: Logger<unknown>, config: YamlConfig, strict: boolean = false): ValidatedYamlConfig => {
+  const parseResult = yamlSchema.safeParse(config)
+  if (!parseResult.success) {
+    if (strict === true) { throw new Error('Invalid config. Formatted zod error:\n' + formatErrorForLog(parseResult.error)) }
+    else { logger.warn('Invalid config. Formatted zod error:\n', formatErrorForLog(parseResult.error)) }
+  }
+  return {
+    ...config,
+    _configValidated: true
+  }
 }
