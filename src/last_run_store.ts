@@ -1,6 +1,6 @@
 import { Store } from "./store/store"
 import { LocalStore } from "./store/local_store"
-import { LastRunStoreConfig } from "./config/config"
+import { LastRunStoreConfig } from "./config/schema"
 import { GcsStore } from "./store/gcs_store"
 import { ArgumentOptions } from "./arg_options"
 import { NullStore } from "./store/null_store"

@@ -1,5 +1,5 @@
 import { Runner } from "./runner"
-import { ValidatedYamlConfig } from "../config/validator"
+import { ValidatedYamlConfig } from "../config/config"
 import { ArgumentOptions } from "../arg_options"
 import { Logger } from "tslog"
 import { CircleciRunnerV1 } from "./circleci_runner_v1"

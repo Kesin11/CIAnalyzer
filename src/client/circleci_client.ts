@@ -3,7 +3,7 @@ import { minimatch } from 'minimatch'
 import { AxiosInstance } from 'axios'
 import { groupBy, max, minBy } from 'lodash'
 import { Artifact, CustomReportArtifact, createAxios } from './client'
-import { CustomReportConfig } from '../config/config'
+import { CustomReportConfig } from '../config/schema'
 import { ArgumentOptions } from '../arg_options'
 import { Logger } from 'tslog'
 

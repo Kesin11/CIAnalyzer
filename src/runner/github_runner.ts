@@ -1,6 +1,6 @@
 import { groupBy, maxBy } from "lodash"
 import { Runner } from "./runner"
-import { ValidatedYamlConfig } from "../config/validator"
+import { ValidatedYamlConfig } from "../config/config"
 import { GithubClient, WorkflowItem } from "../client/github_client"
 import { GithubAnalyzer, WorkflowRunsItem } from "../analyzer/github_analyzer"
 import { GithubConfig, parseConfig } from "../config/github_config"

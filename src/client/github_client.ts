@@ -4,7 +4,7 @@ import { retry } from '@octokit/plugin-retry'
 import { CustomReportArtifact, Artifact } from './client'
 import { minBy } from "lodash";
 import { ZipExtractor } from "../zip_extractor";
-import { CustomReportConfig } from "../config/config";
+import { CustomReportConfig } from "../config/schema";
 import { ArgumentOptions } from "../arg_options";
 
 // Oktokit document: https://octokit.github.io/rest.js/v18#actions

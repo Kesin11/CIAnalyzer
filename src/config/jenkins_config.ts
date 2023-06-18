@@ -1,5 +1,5 @@
-import { customReportSchema, commonSchema } from './config'
-import { ValidatedYamlConfig } from "./validator"
+import { customReportSchema, commonSchema } from './schema'
+import { ValidatedYamlConfig } from './config'
 import { z } from 'zod'
 import { Logger } from 'tslog'
 

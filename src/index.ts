@@ -4,7 +4,7 @@ import yargs from 'yargs'
 import { ArgumentOptions } from './arg_options'
 import { loadConfig } from './config/config'
 import { CompositRunner } from './runner/runner'
-import { validateConfig } from './config/validator'
+import { validateConfig } from './config/config'
 
 const defaultConfigPath = './ci_analyzer.yaml'
 const baseLoggerForStyles = new Logger()

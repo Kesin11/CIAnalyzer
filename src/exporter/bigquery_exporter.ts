@@ -5,7 +5,7 @@ import crypto from "crypto"
 import { BigQuery } from '@google-cloud/bigquery'
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { Exporter } from "./exporter"
-import { BigqueryExporterConfig } from "../config/config"
+import { BigqueryExporterConfig } from "../config/schema"
 import { CustomReportCollection } from "../custom_report_collection"
 import { Logger } from "tslog"
 

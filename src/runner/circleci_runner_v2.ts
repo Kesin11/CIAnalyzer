@@ -1,6 +1,6 @@
 import { max } from "lodash"
 import { Runner } from "./runner"
-import { ValidatedYamlConfig } from "../config/validator"
+import { ValidatedYamlConfig } from "../config/config"
 import { CircleciConfig, parseConfig } from "../config/circleci_config"
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"

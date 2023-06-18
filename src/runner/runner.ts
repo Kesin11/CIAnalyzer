@@ -1,4 +1,4 @@
-import { ValidatedYamlConfig } from "../config/validator";
+import { ValidatedYamlConfig } from "../config/config";
 import { GithubRunner } from "./github_runner";
 import { CircleciRunner } from "./circleci_runner";
 import { JenkinsRunner } from "./jenkins_runner";

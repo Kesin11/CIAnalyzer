@@ -1,6 +1,6 @@
 import { maxBy } from "lodash"
 import { Runner } from "./runner"
-import { ValidatedYamlConfig } from "../config/validator"
+import { ValidatedYamlConfig } from "../config/config"
 import { WorkflowReport, TestReport } from "../analyzer/analyzer"
 import { CompositExporter } from "../exporter/exporter"
 import { JenkinsClient } from "../client/jenkins_client"

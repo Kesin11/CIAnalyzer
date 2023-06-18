@@ -1,6 +1,6 @@
 import { maxBy } from "lodash"
 import { Runner } from "./runner"
-import { ValidatedYamlConfig } from "../config/validator"
+import { ValidatedYamlConfig } from "../config/config"
 import { CircleciClient } from "../client/circleci_client"
 import { CircleciAnalyzer } from "../analyzer/circleci_analyzer"
 import { CircleciConfig, parseConfig } from "../config/circleci_config"
