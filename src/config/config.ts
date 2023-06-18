@@ -2,6 +2,7 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 import { Logger } from 'tslog'
 import { z } from 'zod'
+import zodToJsonSchema from "zod-to-json-schema"
 import { bitriseYamlSchema } from './bitrise_config'
 import { circleciYamlSchema } from './circleci_config'
 import { githubYamlSchema } from './github_config'
@@ -19,6 +20,10 @@ type YamlConfig = z.infer<typeof yamlSchema>;
 // If other modules want to use the config, they should use ValidatedYamlConfig
 export type ValidatedYamlConfig = YamlConfig & {
   _configValidated: true
+}
+
+export const createJsonSchema = () => {
+  return zodToJsonSchema(yamlSchema, "CIAnalyzer config schema")
 }
 
 export const loadConfig = (logger: Logger<unknown>, configPath: string): YamlConfig => {
