@@ -40,7 +40,7 @@
     "@google-cloud/storage": "6.11.0",
     "@octokit/plugin-retry": "4.1.6",
     "@octokit/plugin-throttling": "6.1.0",
-    "@octokit/rest": "19.0.12",
+    "@octokit/rest": "19.0.13",
     "adm-zip": "0.5.10",
     "axios": "1.4.0",
     "axios-concurrency": "1.0.4",
