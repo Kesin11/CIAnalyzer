@@ -82,9 +82,13 @@ export class GithubClient {
       repo,
     })
 
-    return workflows.data.workflows
+    return this.filterWorkflows(workflows.data.workflows)
   }
 
+  // Ignore auto generated workflows (e.g. CodeQL)
+  filterWorkflows (workflows: WorkflowItem[]): WorkflowItem[] {
+    return workflows.filter((workflow) => workflow.path.startsWith('.github/workflows/'))
+  }
 
   // see: https://developer.github.com/v3/actions/workflow-jobs/#list-jobs-for-a-workflow-run
   async fetchJobs(owner: string, repo: string, runId: number) {
