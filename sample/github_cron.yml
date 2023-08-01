@@ -6,6 +6,10 @@ on:
   - cron:  '0 * * * *'
 concurrency: cianalyzer
 
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -14,19 +18,19 @@ jobs:
     timeout-minutes: 20
     steps:
       # Checkout your repository that contains your config file.
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
 
-      - name: Restore service account json
-        run: echo $SERVICE_ACCOUNT > service_account.json
-        env:
-          SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
       - name: Run CIAnalyzer
         run: ci_analyzer -c ./ci_analyzer.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.YOUR_GITHUB_PAT }}
           CIRCLECI_TOKEN: ${{ secrets.YOUR_CIRCLECI_TOKEN }}
-          GOOGLE_APPLICATION_CREDENTIALS: service_account.json
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: local_exporter output file
