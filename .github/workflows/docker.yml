@@ -16,7 +16,7 @@ jobs:
         with:
           version: latest
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/metadata-action@v4
+      - uses: docker/metadata-action@v5
         id: docker_meta
         with:
           images: ghcr.io/kesin11/ci_analyzer
@@ -28,7 +28,7 @@ jobs:
             type=semver,pattern=v{{major}}.{{minor}}
       - name: Login to ghcr
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
