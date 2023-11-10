@@ -57,12 +57,12 @@
     "zod-to-json-schema": "3.21.4"
   },
   "devDependencies": {
-    "@types/adm-zip": "0.5.3",
+    "@types/adm-zip": "0.5.4",
     "@types/jest": "29.5.7",
     "@types/js-yaml": "4.0.8",
     "@types/lodash": "4.14.200",
     "@types/node": "20.8.10",
-    "@types/yargs": "17.0.29",
+    "@types/yargs": "17.0.30",
     "jest": "29.7.0",
     "jest-junit": "16.0.0",
     "rimraf": "5.0.5",
