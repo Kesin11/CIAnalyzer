@@ -13,7 +13,7 @@ github:
         - name: $CUSTOM_REPORT_NAME # It must be same bigquery.customReports[].name
           paths:
             - 'custom_report.json' # Path at inside of artifact.
-    - Kesin11/Firestore-simple # Can use abbr format if don't collect test report
+    - Kesin11/ts-junit2json # Can use abbr format if don't collect test report
   exporter: &exporter # Can use yaml anchor
     local:
       outDir: ./output # default: output
