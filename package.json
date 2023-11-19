@@ -16,13 +16,13 @@
   },
   "homepage": "https://github.com/Kesin11/CIAnalyzer#readme",
   "engines": {
-    "node": ">=18.18.2"
+    "node": ">=20.9.0"
   },
   "bin": {
     "ci_analyzer": "dist/index.js"
   },
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "node --enable-source-maps dist/index.js",
     "clean": "rimraf dist",
     "build": "tsc -b",
     "build:clean": "npm run clean && npm run build",
