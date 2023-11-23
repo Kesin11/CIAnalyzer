@@ -51,10 +51,7 @@ docker:
   FROM node:20-slim
   WORKDIR /ci_analyzer
 
-  # Download dependencies
   COPY package.json package-lock.json .
-  RUN npm ci --production && rm -rf ~/.npm
-
   COPY README.md LICENSE ci_analyzer.yaml .
   COPY ./proto+protoc/schema bigquery_schema/
   COPY +build/dist ./dist
@@ -64,7 +61,7 @@ docker:
   RUN cd dist && ln -s index.js ci_analyzer && chmod +x ci_analyzer
   ENV PATH=/ci_analyzer/dist:$PATH
 
-  ENTRYPOINT [ "/tini", "--", "node", "/ci_analyzer/dist/index.js" ]
+  ENTRYPOINT [ "/tini", "--", "node", "--enable-source-maps", "/ci_analyzer/dist/index.js" ]
   WORKDIR /app
 
   SAVE IMAGE ghcr.io/kesin11/ci_analyzer:latest
