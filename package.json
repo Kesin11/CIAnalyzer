@@ -27,7 +27,7 @@
     "build": "esbuild --bundle --format=cjs --platform=node --target=node20 --sourcemap --outdir=dist src/index.ts",
     "build:clean": "npm run clean && npm run build",
     "check": "tsc --noEmit",
-    "check:watch": "tsc --noEmit",
+    "check:watch": "tsc --watch --noEmit",
     "lint": "echo \"We have not lint yet\"",
     "test": "jest",
     "test:ci": "jest --coverage --ci --runInBand",
