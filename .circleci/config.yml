@@ -8,8 +8,8 @@ jobs:
       - checkout
       - run: npm ci
       - run:
-          name: Lint
-          command: npm run lint
+          name: Type check
+          command: npm run check
   build_and_test:
     docker:
       - image: cimg/node:lts

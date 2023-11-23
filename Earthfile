@@ -15,6 +15,11 @@ all:
 deps:
   COPY package.json package-lock.json .
   RUN --mount=type=cache,target=/root/.npm npm ci
+
+  ENV TINI_VERSION v0.19.0
+  RUN curl -sSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini -o /tini
+  SAVE ARTIFACT /tini
+
   SAVE IMAGE --cache-hint
 
 build:
@@ -43,24 +48,20 @@ test:
   SAVE ARTIFACT coverage AS LOCAL ./coverage
 
 docker:
-  FROM node:20-alpine
+  FROM node:20-slim
   WORKDIR /ci_analyzer
-  # Resolve nodejs pid=1 problem
-  RUN apk add --no-cache tini
 
-  # Download dependencies
   COPY package.json package-lock.json .
-  RUN npm ci --production && rm -rf ~/.npm
-
   COPY README.md LICENSE ci_analyzer.yaml .
   COPY ./proto+protoc/schema bigquery_schema/
   COPY +build/dist ./dist
+  COPY --chmod=755 +deps/tini /tini
 
   # Make "ci_analyzer" command alias
   RUN cd dist && ln -s index.js ci_analyzer && chmod +x ci_analyzer
   ENV PATH=/ci_analyzer/dist:$PATH
 
-  ENTRYPOINT [ "/sbin/tini", "--", "node", "/ci_analyzer/dist/index.js" ]
+  ENTRYPOINT [ "/tini", "--", "node", "--enable-source-maps", "/ci_analyzer/dist/index.js" ]
   WORKDIR /app
 
   SAVE IMAGE ghcr.io/kesin11/ci_analyzer:latest

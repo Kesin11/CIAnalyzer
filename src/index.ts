@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Logger } from 'tslog'
-import yargs from 'yargs'
+import yargs from 'yargs/yargs'
+import { hideBin } from 'yargs/helpers'
 import { ArgumentOptions } from './arg_options'
 import { loadConfig } from './config/config'
 import { CompositRunner } from './runner/runner'
@@ -10,7 +11,7 @@ const defaultConfigPath = './ci_analyzer.yaml'
 const baseLoggerForStyles = new Logger()
 
 const main = async () => {
-  const argv = await yargs
+  const argv = yargs(hideBin(process.argv))
     .command(['$0', 'workflow'], 'Collect workflow data from CI services', (yargs) => {}, () => {})
     .options({
       c: { type: 'string', alias: 'config', default: defaultConfigPath, describe: 'Path to config yaml' },
@@ -22,7 +23,7 @@ const main = async () => {
       'max-concurrent-requests': { type: 'number', default: 10, describe: 'Limit http request concurrency per service. When set 0, disable concurrency limit' },
     })
     .strict()
-    .argv
+    .parseSync()
   const argOptions = new ArgumentOptions(argv)
   const logger = new Logger({
     minLevel: argOptions.logLevel,
