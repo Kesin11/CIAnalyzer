@@ -24,6 +24,6 @@ export class ArgumentOptions {
     this.keepAlive = argv['keepalive'] as boolean
     this.maxConcurrentRequests = (argv['max-concurrent-requests'] as number > 0)
       ? argv['max-concurrent-requests'] as number
-      : undefined
+      : undefined // When user set 0, yargs parse to undefined
   }
 }

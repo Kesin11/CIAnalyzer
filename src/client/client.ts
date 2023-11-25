@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import axiosRetry from 'axios-retry'
-import { ConcurrencyManager } from 'axios-concurrency'
 import http from 'http'
 import https from 'https'
 import { Logger } from 'tslog'
@@ -18,8 +17,12 @@ export const createAxios = (logger: Logger<unknown>, options: ArgumentOptions, c
   const axiosInstance = axios.create({
     // Default parameters
     timeout: 5000,
-    httpAgent: (options.keepAlive) ? new http.Agent({ keepAlive: true }) : undefined,
-    httpsAgent:(options.keepAlive) ? new https.Agent({ keepAlive: true }) : undefined,
+    httpAgent: (options.keepAlive || options.maxConcurrentRequests )
+      ? new http.Agent({ keepAlive: true, maxSockets: options.maxConcurrentRequests })
+      : undefined,
+    httpsAgent:(options.keepAlive || options.maxConcurrentRequests )
+      ? new https.Agent({ keepAlive: true, maxSockets: options.maxConcurrentRequests })
+      : undefined,
 
     // Overwrite parameters
     ...config
@@ -49,10 +52,6 @@ export const createAxios = (logger: Logger<unknown>, options: ArgumentOptions, c
       }
     return Promise.reject(error)
   })
-
-  if (options.maxConcurrentRequests) {
-    ConcurrencyManager(axiosInstance, options.maxConcurrentRequests)
-  }
 
   return axiosInstance
 }
