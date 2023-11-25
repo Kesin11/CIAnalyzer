@@ -8,11 +8,7 @@ import { Exporter } from "./exporter"
 import { BigqueryExporterConfig } from "../config/schema"
 import { CustomReportCollection } from "../custom_report_collection"
 import { Logger } from "tslog"
-
-const schemaPaths = {
-  workflow: path.join(__dirname, '..', '..', 'bigquery_schema/workflow_report.json'),
-  test_report: path.join(__dirname, '..', '..', 'bigquery_schema/test_report.json'),
-}
+import { BQ_SCHEMA_PATHS } from "../constant"
 
 export class BigqueryExporter implements Exporter {
   bigquery: BigQuery
@@ -96,11 +92,11 @@ export class BigqueryExporter implements Exporter {
   }
 
   async exportWorkflowReports (reports: WorkflowReport[]) {
-    await this.export(reports, this.table.workflow, schemaPaths['workflow'])
+    await this.export(reports, this.table.workflow, BQ_SCHEMA_PATHS['workflow'])
   }
 
   async exportTestReports (reports: TestReport[]) {
-    await this.export(reports, this.table.testReport, schemaPaths['test_report'])
+    await this.export(reports, this.table.testReport, BQ_SCHEMA_PATHS['test_report'])
   }
 
   async exportCustomReports (customReportCollection: CustomReportCollection) {
