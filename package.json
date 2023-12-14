@@ -54,7 +54,7 @@
     "utility-types": "3.10.0",
     "yargs": "17.7.2",
     "zod": "3.22.4",
-    "zod-to-json-schema": "3.22.1"
+    "zod-to-json-schema": "3.22.2"
   },
   "devDependencies": {
     "@types/adm-zip": "0.5.5",
