@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: earthly/actions-setup@v1.0.8
+      - uses: earthly/actions-setup@v1.0.9
         with:
           version: latest
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: earthly/actions-setup@v1.0.8
+      - uses: earthly/actions-setup@v1.0.9
         with:
           version: latest
           github-token: ${{ secrets.GITHUB_TOKEN }}
