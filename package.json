@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/Kesin11/CIAnalyzer#readme",
   "engines": {
-    "node": ">=20.11.0"
+    "node": ">=20.11.1"
   },
   "bin": {
     "ci_analyzer": "dist/index.js"
