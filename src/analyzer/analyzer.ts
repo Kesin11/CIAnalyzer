@@ -1,4 +1,4 @@
-import { round } from "lodash"
+import { round } from "lodash-es"
 import { TestSuites, TestCase, TestSuite, parse } from 'junit2json'
 import { Assign } from 'utility-types'
 import { Artifact } from "../client/client.js"

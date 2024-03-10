@@ -1,5 +1,5 @@
 import { RestEndpointMethodTypes } from '@octokit/rest'
-import { sumBy, min, max } from 'lodash'
+import { sumBy, min, max } from 'lodash-es'
 import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToTestReports } from './analyzer.js'
 import { RepositoryTagMap } from '../client/github_client.js'
 import { Artifact } from '../client/client.js'

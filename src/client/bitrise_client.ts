@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios'
-import { minBy } from 'lodash'
+import { minBy } from 'lodash-es'
 import { Artifact, createAxios, CustomReportArtifact } from './client.js'
 import { minimatch } from 'minimatch'
 import { CustomReportConfig } from '../config/schema.js'

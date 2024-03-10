@@ -1,4 +1,4 @@
-import { max } from "lodash"
+import { max } from "lodash-es"
 import { Runner } from "./runner.js"
 import { ValidatedYamlConfig } from "../config/config.js"
 import { CircleciConfig, parseConfig } from "../config/circleci_config.js"

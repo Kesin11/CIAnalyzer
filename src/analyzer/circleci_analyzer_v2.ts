@@ -1,5 +1,5 @@
 import { URL } from 'node:url'
-import { sumBy, sortBy, first } from "lodash"
+import { sumBy, sortBy, first } from "lodash-es"
 import { Status, diffSec, Analyzer, secRound, TestReport, WorkflowParams, convertToReportTestSuites } from "./analyzer.js"
 import { JobTest } from "../client/circleci_client_v2.js"
 import { TestSuite, TestCase } from "junit2json"

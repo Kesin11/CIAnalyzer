@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { minimatch } from 'minimatch'
 import { AxiosInstance } from 'axios'
-import { groupBy, max, minBy } from 'lodash'
+import { groupBy, max, minBy } from 'lodash-es'
 import { Artifact, CustomReportArtifact, createAxios } from './client.js'
 import { CustomReportConfig } from '../config/schema.js'
 import { ArgumentOptions } from '../arg_options.js'

@@ -1,4 +1,4 @@
-import { maxBy } from "lodash"
+import { maxBy } from "lodash-es"
 import { Runner } from "./runner.js"
 import { ValidatedYamlConfig } from "../config/config.js"
 import { WorkflowReport, TestReport } from "../analyzer/analyzer.js"

@@ -1,4 +1,4 @@
-import { groupBy, maxBy } from "lodash"
+import { groupBy, maxBy } from "lodash-es"
 import { Runner } from "./runner.js"
 import { ValidatedYamlConfig } from "../config/config.js"
 import { GithubClient, WorkflowItem } from "../client/github_client.js"

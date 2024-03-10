@@ -1,4 +1,4 @@
-import { maxBy } from "lodash"
+import { maxBy } from "lodash-es"
 import { Logger } from "tslog"
 import { TestReport, WorkflowReport } from "../analyzer/analyzer.js"
 import { BitriseAnalyzer } from "../analyzer/bitrise_analyzer.js"
