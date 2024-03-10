@@ -21,6 +21,7 @@
   "bin": {
     "ci_analyzer": "dist/index.js"
   },
+  "type": "module",
   "scripts": {
     "start": "node --enable-source-maps dist/index.js",
     "clean": "rm -rf dist",
