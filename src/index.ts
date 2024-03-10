@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Logger } from 'tslog'
 import yargs from 'yargs/yargs'
-import { hideBin } from 'yargs/helpers.js'
+import { hideBin } from 'yargs/helpers'
 import { ArgumentOptions } from './arg_options.js'
 import { loadConfig } from './config/config.js'
 import { CompositRunner } from './runner/runner.js'

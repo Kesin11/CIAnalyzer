@@ -58,6 +58,7 @@
     "zod-to-json-schema": "3.22.4"
   },
   "devDependencies": {
+    "@google-cloud/common": "^5.0.1",
     "@types/adm-zip": "0.5.5",
     "@types/jest": "29.5.12",
     "@types/js-yaml": "4.0.9",
