@@ -23,9 +23,9 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node --enable-source-maps dist/index.js",
+    "start": "node --enable-source-maps dist/index.mjs",
     "clean": "rm -rf dist",
-    "build": "esbuild --bundle --format=cjs --platform=node --target=node20 --sourcemap --outdir=dist src/index.ts",
+    "build": "esbuild --bundle --format=esm --platform=node --target=node20 --sourcemap --outdir=dist --out-extension:.js=.mjs src/index.ts",
     "build:clean": "npm run clean && npm run build",
     "check": "tsc --noEmit",
     "check:watch": "tsc --watch --noEmit",
