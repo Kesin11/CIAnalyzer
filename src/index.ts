@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import { Logger } from 'tslog'
 import yargs from 'yargs/yargs'
-import { hideBin } from 'yargs/helpers'
-import { ArgumentOptions } from './arg_options'
-import { loadConfig } from './config/config'
-import { CompositRunner } from './runner/runner'
-import { validateConfig } from './config/config'
+import { hideBin } from 'yargs/helpers.js'
+import { ArgumentOptions } from './arg_options.js'
+import { loadConfig } from './config/config.js'
+import { CompositRunner } from './runner/runner.js'
+import { validateConfig } from './config/config.js'
 
 const defaultConfigPath = './ci_analyzer.yaml'
 const baseLoggerForStyles = new Logger()

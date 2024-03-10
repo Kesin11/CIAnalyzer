@@ -1,12 +1,12 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import yaml from 'js-yaml'
 import { Logger } from 'tslog'
 import { z } from 'zod'
 import zodToJsonSchema from "zod-to-json-schema"
-import { bitriseYamlSchema } from './bitrise_config'
-import { circleciYamlSchema } from './circleci_config'
-import { githubYamlSchema } from './github_config'
-import { jenkinsYamlSchema } from './jenkins_config'
+import { bitriseYamlSchema } from './bitrise_config.js'
+import { circleciYamlSchema } from './circleci_config.js'
+import { githubYamlSchema } from './github_config.js'
+import { jenkinsYamlSchema } from './jenkins_config.js'
 
 const yamlSchema = z.object({
   github: githubYamlSchema.strict(),

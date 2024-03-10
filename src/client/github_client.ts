@@ -1,11 +1,11 @@
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { throttling } from '@octokit/plugin-throttling'
 import { retry } from '@octokit/plugin-retry'
-import { CustomReportArtifact, Artifact } from './client'
+import { CustomReportArtifact, Artifact } from './client.js'
 import { minBy } from "lodash";
-import { ZipExtractor } from "../zip_extractor";
-import { CustomReportConfig } from "../config/schema";
-import { ArgumentOptions } from "../arg_options";
+import { ZipExtractor } from "../zip_extractor.js";
+import { CustomReportConfig } from "../config/schema.js";
+import { ArgumentOptions } from "../arg_options.js";
 
 // Oktokit document: https://octokit.github.io/rest.js/v18#actions
 

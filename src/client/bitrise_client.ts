@@ -1,9 +1,9 @@
 import { AxiosInstance } from 'axios'
 import { minBy } from 'lodash'
-import { Artifact, createAxios, CustomReportArtifact } from './client'
+import { Artifact, createAxios, CustomReportArtifact } from './client.js'
 import { minimatch } from 'minimatch'
-import { CustomReportConfig } from '../config/schema'
-import { ArgumentOptions } from '../arg_options'
+import { CustomReportConfig } from '../config/schema.js'
+import { ArgumentOptions } from '../arg_options.js'
 import { Logger } from 'tslog'
 
 const DEBUG_PER_PAGE = 10

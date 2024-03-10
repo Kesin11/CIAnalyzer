@@ -1,8 +1,8 @@
-import fs from 'fs'
-import os from 'os'
-import path from 'path'
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import AdmZip from 'adm-zip'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 import { minimatch } from 'minimatch'
 
 const createRandomStr = () => crypto.randomBytes(8).toString('hex')

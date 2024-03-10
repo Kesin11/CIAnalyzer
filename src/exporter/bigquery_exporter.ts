@@ -1,14 +1,14 @@
-import os from "os"
-import path from "path"
-import fs from "fs"
-import crypto from "crypto"
+import os from "node:os"
+import path from "node:path"
+import fs from "node:fs"
+import crypto from "node:crypto"
 import { BigQuery } from '@google-cloud/bigquery'
-import { WorkflowReport, TestReport } from "../analyzer/analyzer"
-import { Exporter } from "./exporter"
-import { BigqueryExporterConfig } from "../config/schema"
-import { CustomReportCollection } from "../custom_report_collection"
+import { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
+import { Exporter } from "./exporter.js"
+import { BigqueryExporterConfig } from "../config/schema.js"
+import { CustomReportCollection } from "../custom_report_collection.js"
 import { Logger } from "tslog"
-import { BQ_SCHEMA_PATHS } from "../constant"
+import { BQ_SCHEMA_PATHS } from "../constant.js"
 
 export class BigqueryExporter implements Exporter {
   bigquery: BigQuery
