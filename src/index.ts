@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Logger } from 'tslog'
-import yargs from 'yargs/yargs'
+import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { ArgumentOptions } from './arg_options.js'
 import { loadConfig } from './config/config.js'
