@@ -306,10 +306,11 @@ export class CircleciClientV2 {
     const workflows: Workflow[] = []
     for (const workflow of pipeline.workflows) {
       const jobResponses = await this.fetchWorkflowJobs(workflow.id)
-      // Filter jobs that has not job_number
+      // Filter jobs that this.fetchJob will be failed
       const filterdWorkflowJobs = jobResponses.filter((jobResponse) => {
         return jobResponse.status !== "blocked"
-          && jobResponse.job_number !== undefined
+            && jobResponse.job_number !== undefined
+            && jobResponse.type !== "approval"
       }) as FilteredWorkflowJob[]
 
       // Fetch jobDetail and steps in parallel and then Combine to job
