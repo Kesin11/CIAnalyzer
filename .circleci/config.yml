@@ -59,9 +59,12 @@ workflows:
   ci:
     jobs:
       - lint
+      - hold:
+          type: approval
       - build_and_test:
           requires:
             - lint
+            - hold
   docker:
     jobs:
       - docker_build
