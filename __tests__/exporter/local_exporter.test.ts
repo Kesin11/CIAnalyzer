@@ -1,11 +1,12 @@
+import { vi } from "vitest"
 import { LocalExporter } from '../../src/exporter/local_exporter'
 import path from 'path'
 import { LocalExporterConfig } from '../../src/config/config'
 import { Logger } from 'tslog'
 
 const mockFsPromises = {
-  mkdir: jest.fn(),
-  writeFile: jest.fn(),
+  mkdir: vi.fn(),
+  writeFile: vi.fn(),
 }
 const logger = new Logger({ type: "hidden" })
 

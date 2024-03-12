@@ -1,13 +1,14 @@
 import path from "path"
+import { vi } from "vitest"
 import { BigqueryExporter } from '../../src/exporter/bigquery_exporter'
 import { BigqueryExporterConfig } from '../../src/config/config'
 import { CustomReportCollection } from '../../src/custom_report_collection'
 import { Logger } from "tslog"
 
 const bigqueryMock = {
-  dataset: jest.fn().mockReturnThis(),
-  table: jest.fn().mockReturnThis(),
-  load: jest.fn(async () => [{}]) // return success 'results' stub
+  dataset: vi.fn().mockReturnThis(),
+  table: vi.fn().mockReturnThis(),
+  load: vi.fn(async () => [{}]) // return success 'results' stub
 }
 const configDir = path.join(__dirname, '..', '..')
 const fixtureSchemaPath = {
