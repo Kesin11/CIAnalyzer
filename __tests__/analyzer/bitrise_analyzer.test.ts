@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest"
 import fs from 'fs'
 import path from 'path'
 import { BitriseAnalyzer } from '../../src/analyzer/bitrise_analyzer'
