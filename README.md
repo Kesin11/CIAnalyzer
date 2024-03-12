@@ -417,7 +417,6 @@ This repository provide devcontainer that includes all dependencies for developi
 ## Install and test
 ```bash
 npm ci
-npm run build
 npm run test
 ```
 
@@ -436,10 +435,17 @@ npm run docker
 ```
 
 ## Execute CIAnalyzer using nodejs
+### Debugging
+
 ```bash
-npm run start
-# or
-node dist/index.js -c your_custom_config.yaml
+npx tsx src/index.ts -c your_custom_config.yaml --debug
+
+```
+
+### Execute production bundled build
+```bash
+npm run build
+npm run start -- -c your_custom_config.yaml
 ```
 
 # LICENSE
