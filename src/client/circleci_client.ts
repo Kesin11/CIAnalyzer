@@ -1,10 +1,10 @@
-import path from 'path'
+import path from 'node:path'
 import { minimatch } from 'minimatch'
 import { AxiosInstance } from 'axios'
-import { groupBy, max, minBy } from 'lodash'
-import { Artifact, CustomReportArtifact, createAxios } from './client'
-import { CustomReportConfig } from '../config/schema'
-import { ArgumentOptions } from '../arg_options'
+import { groupBy, max, minBy } from 'lodash-es'
+import { Artifact, CustomReportArtifact, createAxios } from './client.js'
+import { CustomReportConfig } from '../config/schema.js'
+import { ArgumentOptions } from '../arg_options.js'
 import { Logger } from 'tslog'
 
 const DEBUG_PER_PAGE = 10

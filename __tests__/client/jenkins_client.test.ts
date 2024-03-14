@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest"
 import { Logger } from 'tslog'
 import { ArgumentOptions } from '../../src/arg_options'
 import { JenkinsClient } from '../../src/client/jenkins_client'

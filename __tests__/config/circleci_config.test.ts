@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest"
 import { parseConfig } from '../../src/config/circleci_config'
 
 describe('parseConfig', () => {

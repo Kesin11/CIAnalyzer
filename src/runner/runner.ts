@@ -1,14 +1,14 @@
-import { ValidatedYamlConfig } from "../config/config";
-import { GithubRunner } from "./github_runner";
-import { CircleciRunner } from "./circleci_runner";
-import { JenkinsRunner } from "./jenkins_runner";
-import { Failure, failure, Result, success } from "../result";
-import { BitriseRunner } from "./bitrise_runner";
-import { ArgumentOptions } from "../arg_options";
+import { ValidatedYamlConfig } from "../config/config.js";
+import { GithubRunner } from "./github_runner.js";
+import { CircleciRunner } from "./circleci_runner.js";
+import { JenkinsRunner } from "./jenkins_runner.js";
+import { Failure, failure, Result, success } from "../result.js";
+import { BitriseRunner } from "./bitrise_runner.js";
+import { ArgumentOptions } from "../arg_options.js";
 import { Logger } from "tslog";
 import { ApiError } from "@google-cloud/common"
 import axios from "axios";
-import { summarizeAxiosError } from "../error";
+import { summarizeAxiosError } from "../error.js";
 
 export interface Runner {
   run (): Promise<Result<unknown, Error>>

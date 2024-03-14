@@ -1,7 +1,7 @@
-import { sumBy, min, max, sortBy, first, last } from "lodash"
-import { Status, diffSec, Analyzer, secRound, TestReport, WorkflowParams, convertToReportTestSuites } from "./analyzer"
-import { WorkflowRun, SingleBuildResponse, CircleciStatus, TestResponse } from "../client/circleci_client"
-import { RepositoryTagMap } from "../client/github_client"
+import { sumBy, min, max, sortBy, first, last } from "lodash-es"
+import { Status, diffSec, Analyzer, secRound, TestReport, WorkflowParams, convertToReportTestSuites } from "./analyzer.js"
+import { WorkflowRun, SingleBuildResponse, CircleciStatus, TestResponse } from "../client/circleci_client.js"
+import { RepositoryTagMap } from "../client/github_client.js"
 import { TestSuite, TestCase } from "junit2json"
 
 type WorkflowReport = {

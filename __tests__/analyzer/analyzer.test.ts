@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest"
 import { convertToReportTestSuites, ReportTestSuites } from '../../src/analyzer/analyzer'
 import { TestSuites } from 'junit2json'
 

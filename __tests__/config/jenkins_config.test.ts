@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest"
 import { Logger } from 'tslog'
 import { parseConfig } from '../../src/config/jenkins_config'
 

@@ -1,8 +1,8 @@
-import { URL } from 'url'
-import { Status, Analyzer, secRound, TestReport, WorkflowParams, convertToTestReports } from "./analyzer"
-import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, TimeInQueueAction } from "../client/jenkins_client"
-import { sumBy, first } from "lodash"
-import { Artifact } from "../client/client"
+import { URL } from 'node:url'
+import { Status, Analyzer, secRound, TestReport, WorkflowParams, convertToTestReports } from "./analyzer.js"
+import { WfapiRunResponse, JenkinsStatus, BuildResponse, CauseAction, GhprbParametersAction, BuildData, ParametersAction, TimeInQueueAction } from "../client/jenkins_client.js"
+import { sumBy, first } from "lodash-es"
+import { Artifact } from "../client/client.js"
 
 type WorkflowReport = {
   // workflow

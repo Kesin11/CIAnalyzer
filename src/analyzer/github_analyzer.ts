@@ -1,8 +1,8 @@
-import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods'
-import { sumBy, min, max } from 'lodash'
-import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToTestReports } from './analyzer'
-import { RepositoryTagMap } from '../client/github_client'
-import { Artifact } from '../client/client'
+import { RestEndpointMethodTypes } from '@octokit/rest'
+import { sumBy, min, max } from 'lodash-es'
+import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToTestReports } from './analyzer.js'
+import { RepositoryTagMap } from '../client/github_client.js'
+import { Artifact } from '../client/client.js'
 export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listWorkflowRunsForRepo']['response']['data']['workflow_runs'][0]
 export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']['jobs']
 

@@ -1,11 +1,11 @@
-import { Runner } from "./runner"
-import { ValidatedYamlConfig } from "../config/config"
-import { ArgumentOptions } from "../arg_options"
+import { Runner } from "./runner.js"
+import { ValidatedYamlConfig } from "../config/config.js"
+import { ArgumentOptions } from "../arg_options.js"
 import { Logger } from "tslog"
-import { CircleciRunnerV1 } from "./circleci_runner_v1"
-import { CircleciRunnerV2 } from "./circleci_runner_v2"
-import { parseConfig } from "../config/circleci_config"
-import { Result } from "../result"
+import { CircleciRunnerV1 } from "./circleci_runner_v1.js"
+import { CircleciRunnerV2 } from "./circleci_runner_v2.js"
+import { parseConfig } from "../config/circleci_config.js"
+import { Result } from "../result.js"
 
 export class CircleciRunner implements Runner {
   config: ValidatedYamlConfig

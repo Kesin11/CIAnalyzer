@@ -1,3 +1,4 @@
+import { vi, describe, it, expect, beforeEach } from "vitest"
 import { CircleciRunnerV2, CircleciV2LastRunMetadata } from '../../src/runner/circleci_runner_v2'
 import { Logger } from 'tslog'
 import { ArgumentOptions } from '../../src/arg_options'
