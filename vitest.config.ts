@@ -10,5 +10,8 @@ export default defineConfig({
       }],
     ],
     outputFile: "./junit/junit.xml",
+    coverage: {
+      reporter: ["html", "lcov"],
+    }
   },
 })
