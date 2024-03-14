@@ -31,7 +31,7 @@
     "check:watch": "tsc --watch --noEmit",
     "lint": "echo \"We have not lint yet\"",
     "test": "vitest",
-    "test:ci": "vitest --coverage",
+    "test:ci": "vitest --run --coverage",
     "proto": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +proto",
     "docker": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker",
     "schema": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +schema"

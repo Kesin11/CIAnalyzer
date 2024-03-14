@@ -24,7 +24,7 @@ deps:
 
 build:
   FROM +deps
-  COPY --dir src tsconfig.json .
+  COPY --dir src scripts tsconfig.json .
   COPY ./proto+protoc/pb_types src/pb_types
   RUN npm run build:clean
   SAVE ARTIFACT dist AS LOCAL ./dist
@@ -40,7 +40,7 @@ proto:
 test:
   FROM +deps
   COPY --dir src tsconfig.json \
-      __tests__ jest.config.js bigquery_schema ./
+      __tests__ vitest.config.ts bigquery_schema ./
   COPY ./proto+protoc/pb_types src/pb_types
   COPY ./proto+protoc/schema bigquery_schema/
   RUN npm run test:ci
@@ -58,10 +58,10 @@ docker:
   COPY --chmod=755 +deps/tini /tini
 
   # Make "ci_analyzer" command alias
-  RUN cd dist && ln -s index.js ci_analyzer && chmod +x ci_analyzer
+  RUN cd dist && ln -s index.mjs ci_analyzer && chmod +x ci_analyzer
   ENV PATH=/ci_analyzer/dist:$PATH
 
-  ENTRYPOINT [ "/tini", "--", "node", "--enable-source-maps", "/ci_analyzer/dist/index.js" ]
+  ENTRYPOINT [ "/tini", "--", "node", "--enable-source-maps", "/ci_analyzer/dist/index.mjs" ]
   WORKDIR /app
 
   SAVE IMAGE ghcr.io/kesin11/ci_analyzer:latest
@@ -77,5 +77,5 @@ docker-push:
 schema:
   FROM +deps
   COPY --dir src scripts ./
-  RUN npx ts-node scripts/create_schema.ts schema.json
+  RUN npx tsx scripts/create_schema.ts schema.json
   SAVE ARTIFACT schema.json AS LOCAL ./
