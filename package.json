@@ -37,7 +37,7 @@
     "schema": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +schema"
   },
   "dependencies": {
-    "@google-cloud/bigquery": "7.5.0",
+    "@google-cloud/bigquery": "7.5.1",
     "@google-cloud/storage": "7.8.0",
     "@octokit/plugin-retry": "6.0.1",
     "@octokit/plugin-throttling": "8.2.0",
