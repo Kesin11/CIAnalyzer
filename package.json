@@ -67,7 +67,7 @@
     "esbuild": "0.20.2",
     "ts-proto": "1.171.0",
     "ts-protoc-gen": "0.15.0",
-    "typescript": "5.4.4",
+    "typescript": "5.4.5",
     "vitest": "1.4.0"
   }
 }
