@@ -48,7 +48,7 @@ test:
   SAVE ARTIFACT coverage AS LOCAL ./coverage
 
 docker:
-  FROM node:20-slim
+  FROM node:20.12.2-slim
   WORKDIR /ci_analyzer
 
   COPY package.json package-lock.json .
