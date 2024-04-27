@@ -22,7 +22,8 @@
 			"extensions": [
 				"earthly.earthfile-syntax-highlighting",
 				"redhat.vscode-yaml",
-				"zxh404.vscode-proto3"
+				"zxh404.vscode-proto3",
+				"biomejs.biome"
 			]
 		}
 	}
