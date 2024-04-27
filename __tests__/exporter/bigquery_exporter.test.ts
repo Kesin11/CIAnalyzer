@@ -1,4 +1,4 @@
-import path from "path"
+import path from "node:path"
 import { vi, describe, it, expect, beforeEach } from "vitest"
 import { BigqueryExporter } from '../../src/exporter/bigquery_exporter'
 import type { BigqueryExporterConfig } from '../../src/config/config'

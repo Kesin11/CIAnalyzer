@@ -5,7 +5,7 @@ import { CircleciClient } from '../../src/client/circleci_client'
 
 const logger = new Logger({ type: "hidden" })
 const options = new ArgumentOptions({
-  "c": "./dummy.yaml"
+  c: "./dummy.yaml"
 })
 
 const allCompletedRuns = [
@@ -74,7 +74,7 @@ describe('CircleciClient', () => {
   describe('filterWorkflowRuns', () => {
     let client: CircleciClient
     const options = new ArgumentOptions({
-      "c": "./dummy.yaml"
+      c: "./dummy.yaml"
     })
     beforeEach(() => {
       client = new CircleciClient('DUMMY_TOKEN', logger, options)

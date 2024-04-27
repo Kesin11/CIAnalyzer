@@ -8,10 +8,23 @@
 		"rules": {
 			"recommended": true,
 			"performance": {
-				"noDelete": "off",
+				"noDelete": "off"
 			}
 		}
 	},
+  "overrides": [{
+    "include": ["__tests__/**"],
+    "linter": {
+      "rules": {
+				"style": {
+					"noNonNullAssertion": "off"
+				},
+        "suspicious": {
+          "noExplicitAny": "off"
+        }
+      }
+    }
+  }],
   "vcs": {
     "enabled": true,
     "clientKind": "git",

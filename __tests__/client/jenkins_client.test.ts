@@ -5,7 +5,7 @@ import { JenkinsClient } from '../../src/client/jenkins_client'
 
 const logger = new Logger({ type: "hidden" })
 const options = new ArgumentOptions({
-  "c": "./dummy.yaml"
+  c: "./dummy.yaml"
 })
 
 describe('JenkinsClient', () => {

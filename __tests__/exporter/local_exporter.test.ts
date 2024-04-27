@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from "vitest"
 import { LocalExporter } from '../../src/exporter/local_exporter'
-import path from 'path'
+import path from 'node:path'
 import type { LocalExporterConfig } from '../../src/config/config'
 import { Logger } from 'tslog'
 

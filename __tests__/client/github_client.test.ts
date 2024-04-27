@@ -30,7 +30,7 @@ describe('GithubClient', () => {
   describe('filterWorkflowRuns', () => {
     let client: GithubClient
     const options = new ArgumentOptions({
-      "c": "./dummy.yaml"
+      c: "./dummy.yaml"
     })
     beforeEach(() => {
       client = new GithubClient('DUMMY_TOKEN', options)
@@ -82,7 +82,7 @@ describe('GithubClient', () => {
   describe('filterWorkflows', () => {
     let client: GithubClient
     const options = new ArgumentOptions({
-      "c": "./dummy.yaml"
+      c: "./dummy.yaml"
     })
     beforeEach(() => {
       client = new GithubClient('DUMMY_TOKEN', options)
@@ -90,26 +90,26 @@ describe('GithubClient', () => {
 
     it('when workflows have CodeQL workflow', async () => {
       const workflows = [
-        { name: "Release", "path": ".github/workflows/release.yml" },
-        { name: "CodeQL", "path": "dynamic/github-code-scanning/codeql" }
+        { name: "Release", path: ".github/workflows/release.yml" },
+        { name: "CodeQL", path: "dynamic/github-code-scanning/codeql" }
       ] as any
       const actual = client.filterWorkflows(workflows)
 
       expect(actual).toStrictEqual([
-        { name: "Release", "path": ".github/workflows/release.yml" },
+        { name: "Release", path: ".github/workflows/release.yml" },
       ])
     })
 
     it('when all workflows are user generated', async () => {
       const workflows = [
-        { name: "Release", "path": ".github/workflows/release.yml" },
-        { name: "Test", "path": ".github/workflows/test.yml" }
+        { name: "Release", path: ".github/workflows/release.yml" },
+        { name: "Test", path: ".github/workflows/test.yml" }
       ] as any
       const actual = client.filterWorkflows(workflows)
 
       expect(actual).toStrictEqual([
-        { name: "Release", "path": ".github/workflows/release.yml" },
-        { name: "Test", "path": ".github/workflows/test.yml" }
+        { name: "Release", path: ".github/workflows/release.yml" },
+        { name: "Test", path: ".github/workflows/test.yml" }
       ])
     })
   })
