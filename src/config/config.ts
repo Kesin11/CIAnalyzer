@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import yaml from 'js-yaml'
-import { Logger } from 'tslog'
+import type { Logger } from 'tslog'
 import { z } from 'zod'
 import { zodToJsonSchema } from "zod-to-json-schema"
 import { bitriseYamlSchema } from './bitrise_config.js'
@@ -43,7 +43,7 @@ const formatErrorForLog = (error: z.ZodError): string =>  {
     }, 2)
 }
 
-export const validateConfig = (logger: Logger<unknown>, config: YamlConfig, strict: boolean = false): ValidatedYamlConfig => {
+export const validateConfig = (logger: Logger<unknown>, config: YamlConfig, strict = false): ValidatedYamlConfig => {
   const parseResult = yamlSchema.safeParse(config)
   if (!parseResult.success) {
     if (strict === true) { throw new Error('Invalid config. Formatted zod error:\n' + formatErrorForLog(parseResult.error)) }

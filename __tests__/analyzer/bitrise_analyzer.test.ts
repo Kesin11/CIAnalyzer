@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest"
 import fs from 'fs'
 import path from 'path'
 import { BitriseAnalyzer } from '../../src/analyzer/bitrise_analyzer'
-import { BuildLogResponse } from '../../src/client/bitrise_client'
+import type { BuildLogResponse } from '../../src/client/bitrise_client'
 
 describe('BitriseAnalyzer', () => {
   let analyzer: BitriseAnalyzer

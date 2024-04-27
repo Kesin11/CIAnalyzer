@@ -1,11 +1,11 @@
 import path from 'node:path'
 import { minimatch } from 'minimatch'
-import { AxiosInstance } from 'axios'
+import type { AxiosInstance } from 'axios'
 import { groupBy, max, minBy } from 'lodash-es'
-import { Artifact, CustomReportArtifact, createAxios } from './client.js'
-import { CustomReportConfig } from '../config/schema.js'
-import { ArgumentOptions } from '../arg_options.js'
-import { Logger } from 'tslog'
+import { type Artifact, type CustomReportArtifact, createAxios } from './client.js'
+import type { CustomReportConfig } from '../config/schema.js'
+import type { ArgumentOptions } from '../arg_options.js'
+import type { Logger } from 'tslog'
 
 const DEBUG_PER_PAGE = 10
 const FETCH_RECENT_BUILD_API_NUM = 3

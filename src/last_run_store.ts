@@ -1,10 +1,10 @@
-import { Store } from "./store/store.js"
+import type { Store } from "./store/store.js"
 import { LocalStore } from "./store/local_store.js"
-import { LastRunStoreConfig } from "./config/schema.js"
+import type { LastRunStoreConfig } from "./config/schema.js"
 import { GcsStore } from "./store/gcs_store.js"
-import { ArgumentOptions } from "./arg_options.js"
+import type { ArgumentOptions } from "./arg_options.js"
 import { NullStore } from "./store/null_store.js"
-import { Logger } from "tslog"
+import type { Logger } from "tslog"
 
 type LastRun<T> = {
   [repo: string]: {

@@ -1,10 +1,10 @@
-import { AxiosInstance } from 'axios'
-import { Artifact, CustomReportArtifact, createAxios } from './client.js'
+import type { AxiosInstance } from 'axios'
+import { type Artifact, type CustomReportArtifact, createAxios } from './client.js'
 import { minBy } from 'lodash-es'
 import { minimatch } from 'minimatch'
-import { CustomReportConfig } from '../config/schema.js'
-import { Logger } from 'tslog'
-import { ArgumentOptions } from '../arg_options.js'
+import type { CustomReportConfig } from '../config/schema.js'
+import type { Logger } from 'tslog'
+import type { ArgumentOptions } from '../arg_options.js'
 
 // ref: https://github.com/jenkinsci/pipeline-stage-view-plugin/blob/master/rest-api/src/main/java/com/cloudbees/workflow/rest/external/StatusExt.java
 export type JenkinsStatus = 'SUCCESS' | 'FAILED' | 'ABORTED' | 'NOT_EXECUTED' | 'IN_PROGRESS' | 'PAUSED_PENDING_INPUT' | 'UNSTABLE'

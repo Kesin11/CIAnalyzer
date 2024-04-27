@@ -1,19 +1,19 @@
 import { maxBy } from "lodash-es"
-import { Logger } from "tslog"
-import { TestReport, WorkflowReport } from "../analyzer/analyzer.js"
+import type { Logger } from "tslog"
+import type { TestReport, WorkflowReport } from "../analyzer/analyzer.js"
 import { BitriseAnalyzer } from "../analyzer/bitrise_analyzer.js"
-import { ArgumentOptions } from "../arg_options.js"
+import type { ArgumentOptions } from "../arg_options.js"
 import { BitriseClient } from "../client/bitrise_client.js"
-import { BitriseConfig, parseConfig } from "../config/bitrise_config.js"
-import { ValidatedYamlConfig } from "../config/config.js"
+import { type BitriseConfig, parseConfig } from "../config/bitrise_config.js"
+import type { ValidatedYamlConfig } from "../config/config.js"
 import { createCustomReportCollection, CustomReportCollection } from "../custom_report_collection.js"
 import { CompositExporter } from "../exporter/exporter.js"
 import { LastRunStore } from "../last_run_store.js"
-import { Result, success, failure } from "../result.js"
-import { Runner } from "./runner.js"
+import { type Result, success, failure } from "../result.js"
+import type { Runner } from "./runner.js"
 
 export class BitriseRunner implements Runner {
-  service: string = 'bitrise'
+  service = 'bitrise'
   client: BitriseClient
   analyzer: BitriseAnalyzer
   config: BitriseConfig | undefined

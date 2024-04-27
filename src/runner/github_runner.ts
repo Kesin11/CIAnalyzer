@@ -1,21 +1,21 @@
 import { groupBy, maxBy } from "lodash-es"
-import { Runner } from "./runner.js"
-import { ValidatedYamlConfig } from "../config/config.js"
-import { GithubClient, WorkflowItem } from "../client/github_client.js"
-import { GithubAnalyzer, WorkflowRunsItem } from "../analyzer/github_analyzer.js"
-import { GithubConfig, parseConfig } from "../config/github_config.js"
-import { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
+import type { Runner } from "./runner.js"
+import type { ValidatedYamlConfig } from "../config/config.js"
+import { GithubClient, type WorkflowItem } from "../client/github_client.js"
+import { GithubAnalyzer, type WorkflowRunsItem } from "../analyzer/github_analyzer.js"
+import { type GithubConfig, parseConfig } from "../config/github_config.js"
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
 import { CompositExporter } from "../exporter/exporter.js"
 import { LastRunStore } from "../last_run_store.js"
 import { CustomReportCollection, createCustomReportCollection } from "../custom_report_collection.js"
-import { failure, Result, success } from "../result.js"
-import { ArgumentOptions } from "../arg_options.js"
-import { Logger } from "tslog"
+import { failure, type Result, success } from "../result.js"
+import type { ArgumentOptions } from "../arg_options.js"
+import type { Logger } from "tslog"
 
 type GithubConfigRepo = GithubConfig['repos'][0]
 
 export class GithubRunner implements Runner {
-  service: string = 'github'
+  service = 'github'
   client: GithubClient
   analyzer: GithubAnalyzer 
   config: GithubConfig | undefined

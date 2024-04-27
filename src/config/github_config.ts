@@ -1,5 +1,5 @@
 import { commonSchema, customReportSchema } from './schema.js'
-import { ValidatedYamlConfig } from './config.js'
+import type { ValidatedYamlConfig } from './config.js'
 import { z } from 'zod'
 
 export const githubYamlSchema = commonSchema.merge(z.object({

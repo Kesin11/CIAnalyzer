@@ -1,14 +1,14 @@
 import path from 'node:path'
 import { minimatch } from 'minimatch'
-import { AxiosInstance } from 'axios'
+import type { AxiosInstance } from 'axios'
 import { minBy } from 'lodash-es'
-import { Artifact, CustomReportArtifact, createAxios } from './client.js'
-import { CustomReportConfig } from '../config/schema.js'
-import { ArgumentOptions } from '../arg_options.js'
-import { Logger } from 'tslog'
-import { failure, Result, success } from '../result.js'
-import { CircleciStatus } from './circleci_client.js'
-import { Overwrite } from 'utility-types'
+import { type Artifact, type CustomReportArtifact, createAxios } from './client.js'
+import type { CustomReportConfig } from '../config/schema.js'
+import type { ArgumentOptions } from '../arg_options.js'
+import type { Logger } from 'tslog'
+import { failure, type Result, success } from '../result.js'
+import type { CircleciStatus } from './circleci_client.js'
+import type { Overwrite } from 'utility-types'
 
 const DEBUG_FETCH_LIMIT = 5
 const FETCH_LIMIT = 100

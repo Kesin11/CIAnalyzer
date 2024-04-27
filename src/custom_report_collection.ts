@@ -1,5 +1,5 @@
-import { WorkflowReport } from "./analyzer/analyzer.js"
-import { CustomReportArtifact } from "./client/client.js"
+import type { WorkflowReport } from "./analyzer/analyzer.js"
+import type { CustomReportArtifact } from "./client/client.js"
 
 export type CustomReport = {
   workflowId: string

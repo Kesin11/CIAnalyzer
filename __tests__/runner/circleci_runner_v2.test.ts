@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from "vitest"
-import { CircleciRunnerV2, CircleciV2LastRunMetadata } from '../../src/runner/circleci_runner_v2'
+import { CircleciRunnerV2, type CircleciV2LastRunMetadata } from '../../src/runner/circleci_runner_v2'
 import { Logger } from 'tslog'
 import { ArgumentOptions } from '../../src/arg_options'
 import { LastRunStore } from '../../src/last_run_store'

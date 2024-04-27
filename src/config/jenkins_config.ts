@@ -1,7 +1,7 @@
 import { customReportSchema, commonSchema } from './schema.js'
-import { ValidatedYamlConfig } from './config.js'
+import type { ValidatedYamlConfig } from './config.js'
 import { z } from 'zod'
-import { Logger } from 'tslog'
+import type { Logger } from 'tslog'
 
 export const jenkinsYamlSchema = commonSchema.merge(z.object({
   baseUrl: z.string(),

@@ -1,10 +1,10 @@
 import { URL } from 'node:url'
 import { sumBy, sortBy, first } from "lodash-es"
-import { Status, diffSec, Analyzer, secRound, TestReport, WorkflowParams, convertToReportTestSuites } from "./analyzer.js"
-import { JobTest } from "../client/circleci_client_v2.js"
-import { TestSuite, TestCase } from "junit2json"
-import { Pipeline, Workflow } from "../client/circleci_client_v2.js"
-import { CircleciStatus } from "../client/circleci_client.js"
+import { type Status, diffSec, type Analyzer, secRound, type TestReport, type WorkflowParams, convertToReportTestSuites } from "./analyzer.js"
+import type { JobTest } from "../client/circleci_client_v2.js"
+import type { TestSuite, TestCase } from "junit2json"
+import type { Pipeline, Workflow } from "../client/circleci_client_v2.js"
+import type { CircleciStatus } from "../client/circleci_client.js"
 
 type WorkflowReport = {
   service: 'circleci',

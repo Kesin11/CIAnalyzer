@@ -1,7 +1,7 @@
-import { Analyzer, diffSec, Status, TestReport, WorkflowParams, secRound, convertToTestReports } from './analyzer.js'
-import { BuildResponse, BuildLogResponse, App, BitriseStatus } from '../client/bitrise_client.js'
+import { type Analyzer, diffSec, type Status, type TestReport, type WorkflowParams, secRound, convertToTestReports } from './analyzer.js'
+import type { BuildResponse, BuildLogResponse, App, BitriseStatus } from '../client/bitrise_client.js'
 import { dropWhile, maxBy, sumBy, takeWhile } from 'lodash-es'
-import { Artifact } from '../client/client.js'
+import type { Artifact } from '../client/client.js'
 
 type WorkflowReport = {
   // workflow

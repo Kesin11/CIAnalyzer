@@ -1,10 +1,10 @@
-import { AxiosInstance } from 'axios'
+import type { AxiosInstance } from 'axios'
 import { minBy } from 'lodash-es'
-import { Artifact, createAxios, CustomReportArtifact } from './client.js'
+import { type Artifact, createAxios, type CustomReportArtifact } from './client.js'
 import { minimatch } from 'minimatch'
-import { CustomReportConfig } from '../config/schema.js'
-import { ArgumentOptions } from '../arg_options.js'
-import { Logger } from 'tslog'
+import type { CustomReportConfig } from '../config/schema.js'
+import type { ArgumentOptions } from '../arg_options.js'
+import type { Logger } from 'tslog'
 
 const DEBUG_PER_PAGE = 10
 const NOT_FINISHED_STATUS = 0
@@ -140,7 +140,7 @@ export class BitriseClient {
         limit: (this.#options.debug) ? DEBUG_PER_PAGE : MAX_LIMIT,
       }
     })
-    let builds = res.data.data as BuildResponse[]
+    const builds = res.data.data as BuildResponse[]
     return this.filterBuilds(builds, lastRunId)
   }
 
