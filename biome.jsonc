@@ -7,8 +7,14 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"style": {
+				"noNonNullAssertion": "off",
+			},
 			"performance": {
 				"noDelete": "off"
+			},
+			"complexity": {
+				"noForEach": "off"
 			}
 		}
 	},
@@ -16,9 +22,6 @@
     "include": ["__tests__/**"],
     "linter": {
       "rules": {
-				"style": {
-					"noNonNullAssertion": "off"
-				},
         "suspicious": {
           "noExplicitAny": "off"
         }
