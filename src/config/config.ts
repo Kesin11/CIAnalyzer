@@ -46,8 +46,8 @@ const formatErrorForLog = (error: z.ZodError): string =>  {
 export const validateConfig = (logger: Logger<unknown>, config: YamlConfig, strict = false): ValidatedYamlConfig => {
   const parseResult = yamlSchema.safeParse(config)
   if (!parseResult.success) {
-    if (strict === true) { throw new Error('Invalid config. Formatted zod error:\n' + formatErrorForLog(parseResult.error)) }
-    else { logger.warn('Invalid config. Formatted zod error:\n', formatErrorForLog(parseResult.error)) }
+    if (strict === true) { throw new Error(`Invalid config. Formatted zod error:\n${formatErrorForLog(parseResult.error)}`) }
+    logger.warn('Invalid config. Formatted zod error:\n', formatErrorForLog(parseResult.error)) 
   }
   return {
     ...config,

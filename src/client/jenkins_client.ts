@@ -105,7 +105,7 @@ export type BuildResponse = {
 export type CauseAction = {
   _class: "hudson.model.CauseAction"
   causes: {
-    "_class":
+    _class:
       "hudson.model.Cause$UserIdCause" |
       "hudson.triggers.SCMTrigger$SCMTriggerCause" |
       "org.jenkinsci.plugins.ghprb.GhprbCause" |

@@ -21,7 +21,7 @@ export class BitriseRunner implements Runner {
   logger: Logger<unknown>
 
   constructor(logger: Logger<unknown>, public yamlConfig: ValidatedYamlConfig, public options: ArgumentOptions) {
-    const BITRISE_TOKEN = process.env['BITRISE_TOKEN'] || ''
+    const BITRISE_TOKEN = process.env.BITRISE_TOKEN || ''
     this.config = parseConfig(yamlConfig)
     this.logger = logger.getSubLogger({ name: `${BitriseRunner.name}` })
     this.client = new BitriseClient(BITRISE_TOKEN, this.logger, options)

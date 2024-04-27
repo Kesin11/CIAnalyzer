@@ -92,11 +92,11 @@ export class BigqueryExporter implements Exporter {
   }
 
   async exportWorkflowReports (reports: WorkflowReport[]) {
-    await this.export(reports, this.table.workflow, BQ_SCHEMA_PATHS['workflow'])
+    await this.export(reports, this.table.workflow, BQ_SCHEMA_PATHS.workflow)
   }
 
   async exportTestReports (reports: TestReport[]) {
-    await this.export(reports, this.table.testReport, BQ_SCHEMA_PATHS['test_report'])
+    await this.export(reports, this.table.testReport, BQ_SCHEMA_PATHS.test_report)
   }
 
   async exportCustomReports (customReportCollection: CustomReportCollection) {

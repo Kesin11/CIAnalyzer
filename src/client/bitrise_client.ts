@@ -107,7 +107,7 @@ export class BitriseClient {
     this.#options = options
     this.#axios = createAxios(axiosLogger, options, {
       baseURL: baseUrl ?? 'https://api.bitrise.io/v0.1',
-      headers: {'Authorization': token },
+      headers: {Authorization: token },
     })
 
     this.#artifactAxios = createAxios(axiosLogger, options, {})
@@ -115,7 +115,7 @@ export class BitriseClient {
 
   // https://api-docs.bitrise.io/#/application/app-list
   async fetchApps() {
-    const res = await this.#axios.get( `apps`, {
+    const res = await this.#axios.get( "apps", {
       params: {
         sort_by: 'last_build_at'
       }

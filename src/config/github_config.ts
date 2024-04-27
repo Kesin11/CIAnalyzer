@@ -28,7 +28,8 @@ export const parseConfig = (config: ValidatedYamlConfig): GithubConfig | undefin
   const githubConfig = {
     ...config.github,
     repos: (config.github.repos).map((repoYaml): GithubConfig['repos'][0] => {
-      let owner, repo
+      let owner
+      let repo
       if (typeof repoYaml === 'string') {
         [owner, repo] = repoYaml.split('/')
         return { owner, repo, fullname: repoYaml, testGlob: [], customReports: [] }

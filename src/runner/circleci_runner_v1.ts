@@ -28,13 +28,13 @@ export class CircleciRunnerV1 implements Runner {
   logger: Logger<unknown>
 
   constructor(logger: Logger<unknown>, public yamlConfig: ValidatedYamlConfig, public options: ArgumentOptions) {
-    const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
+    const CIRCLECI_TOKEN = process.env.CIRCLECI_TOKEN || ''
     this.config = parseConfig(yamlConfig)
     this.logger = logger.getSubLogger({ name: `${CircleciRunnerV1.name}` })
     this.client = new CircleciClient(CIRCLECI_TOKEN, this.logger, options, this.config?.baseUrl)
     this.analyzer = new CircleciAnalyzer()
 
-    const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
+    const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ''
     this.githubClient = new GithubClient(GITHUB_TOKEN, options, this.config?.vcsBaseUrl?.github)
   }
 
@@ -116,7 +116,6 @@ export class CircleciRunnerV1 implements Runner {
         const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`
         this.logger.error(errorMessage)
         result = failure(new Error(errorMessage, { cause: error as Error }))
-        continue
       }
     }
 

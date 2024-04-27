@@ -58,7 +58,6 @@ type StepReport = {
 }
 
 export class CircleciAnalyzer implements Analyzer {
-  constructor() { }
 
   createWorkflowParams(workflowName: string, repository: string, buildNumber: number): WorkflowParams {
     return {
@@ -175,9 +174,9 @@ export class CircleciAnalyzer implements Analyzer {
     const statuses = jobs.map((job) => job.status)
 
     if ( statuses.some((status) => status === 'ABORTED' )) return 'ABORTED'
-    else if ( statuses.some((status) => status === 'FAILURE' )) return 'FAILURE'
-    else if ( statuses.some((status) => status === 'SUCCESS' )) return 'SUCCESS'
-    else return 'OTHER'
+    if ( statuses.some((status) => status === 'FAILURE' )) return 'FAILURE'
+    if ( statuses.some((status) => status === 'SUCCESS' )) return 'SUCCESS'
+    return 'OTHER'
   }
 
   async createTestReports( workflowReport: WorkflowReport, jobs: SingleBuildResponse[], tests: TestResponse[]): Promise<TestReport[]> {

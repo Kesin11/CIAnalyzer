@@ -49,7 +49,7 @@ export class CompositRunner implements Runner {
         (result.status === 'fulfilled' && result.value.isFailure())
     }).map((result) => {
       if (result.status === 'rejected') return result.reason
-      else return result.value
+      return result.value
     }) as unknown[]
     if (errors.length > 0) {
       errors.forEach((error) => this.handlingError(error))

@@ -25,8 +25,8 @@ export class JenkinsRunner implements Runner {
     this.config = parseConfig(yamlConfig, this.logger)
 
     if (!this.config) return
-    const JENKINS_USER = process.env['JENKINS_USER']
-    const JENKINS_TOKEN = process.env['JENKINS_TOKEN']
+    const JENKINS_USER = process.env.JENKINS_USER
+    const JENKINS_TOKEN = process.env.JENKINS_TOKEN
     this.analyzer = new JenkinsAnalyzer(this.config.baseUrl)
     this.client = new JenkinsClient(this.config.baseUrl, this.logger, options, JENKINS_USER, JENKINS_TOKEN)
   }
@@ -89,7 +89,6 @@ export class JenkinsRunner implements Runner {
         const errorMessage = `Some error raised in '${job.name}', so it skipped.`
         this.logger.error(errorMessage)
         result = failure(new Error(errorMessage, { cause: error as Error }))
-        continue
       }
     }
 
@@ -121,7 +120,7 @@ export class JenkinsRunner implements Runner {
       const buildRespones = notConfigJobs.map((job) => {
         return {
           jobName: job.name,
-          resultPromise: this.client!.fetchLastBuild(job.name)
+          resultPromise: this.client?.fetchLastBuild(job.name)
             .then((res) => success(res))
             .catch((error) => Promise.resolve(failure(error)))
         }

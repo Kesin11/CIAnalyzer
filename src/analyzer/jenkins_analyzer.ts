@@ -181,9 +181,10 @@ export class JenkinsAnalyzer implements Analyzer {
     switch (action._class) {
       case "hudson.plugins.git.util.BuildData":
         return first(action.remoteUrls) ?? ''
-      case "org.jenkinsci.plugins.ghprb.GhprbParametersAction":
+      case "org.jenkinsci.plugins.ghprb.GhprbParametersAction": {
         const repoParam = action.parameters.find((param) => param.name === "ghprbAuthorRepoGitUrl")
         return repoParam?.value ?? ''
+      }
     }
   }
 
@@ -197,9 +198,10 @@ export class JenkinsAnalyzer implements Analyzer {
     switch (action._class) {
       case "hudson.plugins.git.util.BuildData":
         return action.lastBuiltRevision.SHA1
-      case "org.jenkinsci.plugins.ghprb.GhprbParametersAction":
+      case "org.jenkinsci.plugins.ghprb.GhprbParametersAction": {
         const repoParam = action.parameters.find((param) => param.name === "ghprbActualCommit")
         return repoParam?.value ?? ''
+      }
     }
   }
 
@@ -211,7 +213,7 @@ export class JenkinsAnalyzer implements Analyzer {
     if (!action) return ''
 
     switch (action._class) {
-      case "hudson.plugins.git.util.BuildData":
+      case "hudson.plugins.git.util.BuildData": {
         const branch = first(action.lastBuiltRevision.branch)?.name
         if (!branch) return ''
         // Remove 'refs | remotes | origin' prefix.
@@ -219,9 +221,11 @@ export class JenkinsAnalyzer implements Analyzer {
           .split('/')
           .filter((prefix) => !['refs', 'remotes', 'origin'].includes(prefix))
           .join('/')
-      case "org.jenkinsci.plugins.ghprb.GhprbParametersAction":
+      }
+      case "org.jenkinsci.plugins.ghprb.GhprbParametersAction": {
         const repoParam = action.parameters.find((param) => param.name === "GIT_BRANCH")
         return repoParam?.value ?? ''
+      }
     }
   }
 

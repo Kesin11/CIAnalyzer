@@ -67,7 +67,6 @@ type StepLog = {
 }
 
 export class BitriseAnalyzer implements Analyzer {
-  constructor() { }
 
   createWorkflowParams(app: App, build: BuildResponse): WorkflowParams {
     return {

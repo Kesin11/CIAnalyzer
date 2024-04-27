@@ -23,7 +23,7 @@ export class GithubRunner implements Runner {
   logger: Logger<unknown>
 
   constructor(logger: Logger<unknown>, public yamlConfig: ValidatedYamlConfig, public options: ArgumentOptions) {
-    const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
+    const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ''
     this.config = parseConfig(yamlConfig)
     this.logger = logger.getSubLogger({ name: `${GithubRunner.name}` })
     this.client = new GithubClient(GITHUB_TOKEN, options, this.config?.baseUrl)
