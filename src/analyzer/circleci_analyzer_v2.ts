@@ -210,7 +210,7 @@ export class CircleciAnalyzerV2 implements Analyzer {
         .filter(({ jobTest }) => jobTest && jobTest.tests.length > 0 )
         .map(({ job, jobTest }) => {
           // TestCases = CircleCI tests
-          const testCases: TestCase[] = jobTest?.tests.map((test) => {
+          const testCases: TestCase[] = jobTest!.tests.map((test) => {
             return {
               classname: test.classname,
               name: test.name,

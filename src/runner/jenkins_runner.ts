@@ -120,7 +120,7 @@ export class JenkinsRunner implements Runner {
       const buildRespones = notConfigJobs.map((job) => {
         return {
           jobName: job.name,
-          resultPromise: this.client?.fetchLastBuild(job.name)
+          resultPromise: this.client!.fetchLastBuild(job.name)
             .then((res) => success(res))
             .catch((error) => Promise.resolve(failure(error)))
         }

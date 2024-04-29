@@ -77,7 +77,7 @@ export class GithubAnalyzer implements Analyzer {
       = this.createWorkflowParams(workflowName, workflow)
 
     const jobReports: JobReport[] = jobs.map((job) => {
-      const stepReports: StepReport[] = job.steps?.map((step) => {
+      const stepReports: StepReport[] = job.steps!.map((step) => {
         const startedAt = new Date(step.started_at!)
         const completedAt = new Date(step.completed_at!)
         // step
