@@ -243,10 +243,10 @@ println builder.toString()
   }
 
   // Filter to: lastRunId < Id < firstInprogressId
-  filterJobRuns (runs: WfapiRunResponse[], lastRunId?: number): WfapiRunResponse[] {
-    runs = (lastRunId)
-      ? runs.filter((run) => Number(run.id) > lastRunId)
-      : runs
+  filterJobRuns (rawRuns: WfapiRunResponse[], lastRunId?: number): WfapiRunResponse[] {
+    let runs = (lastRunId)
+      ? rawRuns.filter((run) => Number(run.id) > lastRunId)
+      : rawRuns
     const firstInprogress = minBy(
       runs.filter((run) => run.status === 'IN_PROGRESS' ),
       (run) => Number(run.id)

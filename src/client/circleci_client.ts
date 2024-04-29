@@ -188,9 +188,9 @@ export class CircleciClient {
   }
 
   // Filter to: Each workflow's last build number < first running build number
-  filterWorkflowRuns (runs: WorkflowRun[]): WorkflowRun[] {
+  filterWorkflowRuns (rawRuns: WorkflowRun[]): WorkflowRun[] {
     // Ignore not_run workflows that are [ci-skip] commit OR skipped redundant build
-    runs = runs.filter((run) => { return !run.lifecycles.some((lifecycle) => lifecycle === 'not_run') })
+    let runs = rawRuns.filter((run) => { return !run.lifecycles.some((lifecycle) => lifecycle === 'not_run') })
 
     const inprogressRuns = runs.filter((run) => {
       return !run.lifecycles.every((lifecycle) => lifecycle === 'finished')

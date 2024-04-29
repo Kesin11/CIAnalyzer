@@ -160,6 +160,7 @@ export class BitriseAnalyzer implements Analyzer {
       .filter((row) => row.match(/\d+\s(sec|min)/))
       .map((row) => {
         // Step name
+        // biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
         const names = [...row.matchAll(/;1m(?<name>.+?)\u001b/g)].map((match) => match.groups?.name ?? '')
         const name = maxBy(names, (name) => name.length)
         // Duration

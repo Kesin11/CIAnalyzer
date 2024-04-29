@@ -32,8 +32,8 @@ export const parseConfig = (config: ValidatedYamlConfig): CircleciConfig | undef
   const circleciConfig = {
     ...config.circleci,
     repos: (config.circleci.repos).map((repoYaml): CircleciConfig['repos'][0] => {
-      let owner
-      let repo
+      let owner: string
+      let repo: string
       if (typeof repoYaml === 'string') {
         [owner, repo] = repoYaml.split('/')
         const vcsType = 'github'

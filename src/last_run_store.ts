@@ -21,7 +21,7 @@ export class LastRunStore<T extends Metadata = Metadata> {
   lastRun: LastRun<T>
 
   static async init<T extends Metadata>(logger: Logger<unknown>, options: ArgumentOptions, service: string, config?: LastRunStoreConfig) {
-    let store
+    let store: Store
     if (options.debug) {
       store = new NullStore(logger)
     }
@@ -35,7 +35,8 @@ export class LastRunStore<T extends Metadata = Metadata> {
       store = new GcsStore(logger, service, config.project, config.bucket, config.path)
     }
     else {
-      throw new Error(`Error: Unknown LastRunStore.backend type '${(config as any).backend}'`)
+      const unknownBackend = (config as LastRunStoreConfig).backend
+      throw new Error(`Error: Unknown LastRunStore.backend type '${unknownBackend}'`)
     }
 
     const self = new LastRunStore<T>(store)

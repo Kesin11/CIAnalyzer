@@ -38,6 +38,7 @@ export const loadConfig = (logger: Logger<unknown>, configPath: string): YamlCon
 
 // Remove _errors: [] in nested properties for human readability
 const formatErrorForLog = (error: z.ZodError): string =>  {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     return JSON.stringify(error.format(), (key: any, value: any) => {
       return (key === '_errors' && value.length === 0) ? undefined : value
     }, 2)

@@ -35,9 +35,9 @@ type ReportTestCase = Assign<PbTestCase, {
 }>
 
 export interface Analyzer {
-  createWorkflowParams(...args: any[]): WorkflowParams
-  createWorkflowReport(...args: any[]): WorkflowReport
-  createTestReports(...args: any[]): Promise<TestReport[]>
+  createWorkflowParams(...args: unknown[]): WorkflowParams
+  createWorkflowReport(...args: unknown[]): WorkflowReport
+  createTestReports(...args: unknown[]): Promise<TestReport[]>
 }
 
 export const diffSec = (start: string | Date, end: string | Date): number => {
@@ -62,7 +62,9 @@ export const convertToReportTestSuites = (testSuites: TestSuites): ReportTestSui
       delete testSuite["system-err"]
       delete testSuite.properties
       testSuite?.testcase?.forEach((testCase: TestCase) => {
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         (testCase as any).successCount = (testCase.failure || testCase.error || testCase.skipped) ? 0 : 1;
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         (testCase as any).status =
           testCase.failure ? 'FAILURE'
           : testCase.error ? 'ERROR'

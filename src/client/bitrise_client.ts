@@ -145,10 +145,10 @@ export class BitriseClient {
   }
 
   // Filter to: lastRunId < Id < firstInprogressId
-  filterBuilds (builds: BuildResponse[], lastRunId?: number): BuildResponse[] {
-    builds = (lastRunId)
-      ? builds.filter((build) => build.build_number > lastRunId)
-      : builds
+  filterBuilds (rawBuilds: BuildResponse[], lastRunId?: number): BuildResponse[] {
+    let builds = (lastRunId)
+      ? rawBuilds.filter((build) => build.build_number > lastRunId)
+      : rawBuilds
     const firstInprogress = minBy(
       builds.filter((build) => build.status === NOT_FINISHED_STATUS ),
       (build) => build.build_number

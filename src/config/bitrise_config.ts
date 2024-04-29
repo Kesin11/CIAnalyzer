@@ -28,8 +28,8 @@ export const parseConfig = (config: ValidatedYamlConfig): BitriseConfig | undefi
   const bitriseConfig = {
     ...config.bitrise,
     apps: (config.bitrise.apps).map((appYaml): BitriseConfig['apps'][0] => {
-      let owner
-      let title
+      let owner: string
+      let title: string
       if (typeof appYaml === 'string') {
         [owner, title] = appYaml.split('/')
         return {

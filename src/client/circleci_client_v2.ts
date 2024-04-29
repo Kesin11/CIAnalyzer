@@ -204,7 +204,7 @@ export class CircleciClientV2 {
       throw new Error(`${CircleciClientV2.name} accepts only "/api/" But your baseUrl is ${baseUrl}`)
     }
     const axiosLogger = logger.getSubLogger({ name: CircleciClientV2.name })
-    this.#baseUrl = baseUrl ?? 'https://circleci.com/api',
+    this.#baseUrl = baseUrl ?? 'https://circleci.com/api'
     this.#options = options
     this.#axios = createAxios(axiosLogger, options, {
       baseURL: this.#baseUrl,
@@ -281,10 +281,10 @@ export class CircleciClientV2 {
 
   // Filter pipelines with last build number < first running build number
   // And also ignore still running pipelines.
-  private filterPipelines (pipelines: Pipeline[]): Pipeline[] {
+  private filterPipelines (rawPipelines: Pipeline[]): Pipeline[] {
     // Ignore pipeline that has not any workflows.
     // Ignore pipeline that has 'not_run' status workflows that are [ci-skip] commit OR skipped redundant build.
-    pipelines = pipelines.filter((pipeline) => {
+    let pipelines = rawPipelines.filter((pipeline) => {
       return pipeline.workflows.length > 0
         && !pipeline.workflows.some((workflow) => workflow.status === 'not_run')
     })
