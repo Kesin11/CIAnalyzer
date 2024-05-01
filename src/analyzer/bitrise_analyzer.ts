@@ -1,7 +1,7 @@
-import { Analyzer, diffSec, Status, TestReport, WorkflowParams, secRound, convertToTestReports } from './analyzer.js'
-import { BuildResponse, BuildLogResponse, App, BitriseStatus } from '../client/bitrise_client.js'
+import { type Analyzer, diffSec, type Status, type TestReport, type WorkflowParams, secRound, convertToTestReports } from './analyzer.js'
+import type { BuildResponse, BuildLogResponse, App, BitriseStatus } from '../client/bitrise_client.js'
 import { dropWhile, maxBy, sumBy, takeWhile } from 'lodash-es'
-import { Artifact } from '../client/client.js'
+import type { Artifact } from '../client/client.js'
 
 type WorkflowReport = {
   // workflow
@@ -67,7 +67,6 @@ type StepLog = {
 }
 
 export class BitriseAnalyzer implements Analyzer {
-  constructor() { }
 
   createWorkflowParams(app: App, build: BuildResponse): WorkflowParams {
     return {
@@ -161,6 +160,7 @@ export class BitriseAnalyzer implements Analyzer {
       .filter((row) => row.match(/\d+\s(sec|min)/))
       .map((row) => {
         // Step name
+        // biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
         const names = [...row.matchAll(/;1m(?<name>.+?)\u001b/g)].map((match) => match.groups?.name ?? '')
         const name = maxBy(names, (name) => name.length)
         // Duration

@@ -9,7 +9,6 @@ const createRandomStr = () => crypto.randomBytes(8).toString('hex')
 
 export class ZipExtractor {
   zipPaths: string[] = []
-  constructor() { }
 
   async rmTmpZip() {
     for (const zipPath of this.zipPaths) {

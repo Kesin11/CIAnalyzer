@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { Logger } from 'tslog'
-import { Store, AnyObject } from './store.js'
+import type { Logger } from 'tslog'
+import type { Store, AnyObject } from './store.js'
 
 const defaultDir = path.join('.ci_analyzer', 'last_run')
 

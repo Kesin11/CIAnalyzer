@@ -1,5 +1,5 @@
 import { commonSchema, customReportSchema } from './schema.js'
-import { ValidatedYamlConfig } from "./config.js"
+import type { ValidatedYamlConfig } from "./config.js"
 import { z } from 'zod'
 
 export const bitriseYamlSchema = commonSchema.merge(z.object({
@@ -28,7 +28,8 @@ export const parseConfig = (config: ValidatedYamlConfig): BitriseConfig | undefi
   const bitriseConfig = {
     ...config.bitrise,
     apps: (config.bitrise.apps).map((appYaml): BitriseConfig['apps'][0] => {
-      let owner, title
+      let owner: string
+      let title: string
       if (typeof appYaml === 'string') {
         [owner, title] = appYaml.split('/')
         return {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest"
 import { Logger } from 'tslog'
-import { ValidatedYamlConfig, validateConfig } from '../../src/config/config'
+import { type ValidatedYamlConfig, validateConfig } from '../../src/config/config'
 
 const logger = new Logger({ type: "hidden" })
 

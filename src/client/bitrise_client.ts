@@ -1,10 +1,10 @@
-import { AxiosInstance } from 'axios'
+import type { AxiosInstance } from 'axios'
 import { minBy } from 'lodash-es'
-import { Artifact, createAxios, CustomReportArtifact } from './client.js'
+import { type Artifact, createAxios, type CustomReportArtifact } from './client.js'
 import { minimatch } from 'minimatch'
-import { CustomReportConfig } from '../config/schema.js'
-import { ArgumentOptions } from '../arg_options.js'
-import { Logger } from 'tslog'
+import type { CustomReportConfig } from '../config/schema.js'
+import type { ArgumentOptions } from '../arg_options.js'
+import type { Logger } from 'tslog'
 
 const DEBUG_PER_PAGE = 10
 const NOT_FINISHED_STATUS = 0
@@ -107,7 +107,7 @@ export class BitriseClient {
     this.#options = options
     this.#axios = createAxios(axiosLogger, options, {
       baseURL: baseUrl ?? 'https://api.bitrise.io/v0.1',
-      headers: {'Authorization': token },
+      headers: {Authorization: token },
     })
 
     this.#artifactAxios = createAxios(axiosLogger, options, {})
@@ -115,7 +115,7 @@ export class BitriseClient {
 
   // https://api-docs.bitrise.io/#/application/app-list
   async fetchApps() {
-    const res = await this.#axios.get( `apps`, {
+    const res = await this.#axios.get( "apps", {
       params: {
         sort_by: 'last_build_at'
       }
@@ -140,15 +140,15 @@ export class BitriseClient {
         limit: (this.#options.debug) ? DEBUG_PER_PAGE : MAX_LIMIT,
       }
     })
-    let builds = res.data.data as BuildResponse[]
+    const builds = res.data.data as BuildResponse[]
     return this.filterBuilds(builds, lastRunId)
   }
 
   // Filter to: lastRunId < Id < firstInprogressId
-  filterBuilds (builds: BuildResponse[], lastRunId?: number): BuildResponse[] {
-    builds = (lastRunId)
-      ? builds.filter((build) => build.build_number > lastRunId)
-      : builds
+  filterBuilds (rawBuilds: BuildResponse[], lastRunId?: number): BuildResponse[] {
+    let builds = (lastRunId)
+      ? rawBuilds.filter((build) => build.build_number > lastRunId)
+      : rawBuilds
     const firstInprogress = minBy(
       builds.filter((build) => build.status === NOT_FINISHED_STATUS ),
       (build) => build.build_number

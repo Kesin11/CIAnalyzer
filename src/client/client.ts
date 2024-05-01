@@ -1,9 +1,9 @@
-import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
+import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios'
 import axiosRetry from 'axios-retry'
 import http from 'node:http'
 import https from 'node:https'
-import { Logger } from 'tslog'
-import { ArgumentOptions } from '../arg_options.js'
+import type { Logger } from 'tslog'
+import type { ArgumentOptions } from '../arg_options.js'
 import { summarizeAxiosError } from '../error.js'
 
 export type Artifact = {

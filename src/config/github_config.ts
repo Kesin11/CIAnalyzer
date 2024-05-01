@@ -1,5 +1,5 @@
 import { commonSchema, customReportSchema } from './schema.js'
-import { ValidatedYamlConfig } from './config.js'
+import type { ValidatedYamlConfig } from './config.js'
 import { z } from 'zod'
 
 export const githubYamlSchema = commonSchema.merge(z.object({
@@ -28,7 +28,8 @@ export const parseConfig = (config: ValidatedYamlConfig): GithubConfig | undefin
   const githubConfig = {
     ...config.github,
     repos: (config.github.repos).map((repoYaml): GithubConfig['repos'][0] => {
-      let owner, repo
+      let owner: string
+      let repo: string
       if (typeof repoYaml === 'string') {
         [owner, repo] = repoYaml.split('/')
         return { owner, repo, fullname: repoYaml, testGlob: [], customReports: [] }

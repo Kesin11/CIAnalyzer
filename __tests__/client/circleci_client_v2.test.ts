@@ -5,7 +5,7 @@ import { CircleciClientV2 } from '../../src/client/circleci_client_v2'
 
 const logger = new Logger({ type: "hidden" })
 const options = new ArgumentOptions({
-  "c": "./dummy.yaml"
+  c: "./dummy.yaml"
 })
 
 describe('CircleciClient', () => {

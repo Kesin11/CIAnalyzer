@@ -1,9 +1,9 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest"
 import { LocalStore } from '../../src/store/local_store'
-import os from 'os'
-import fs from 'fs'
-import path from 'path'
-import crypto from 'crypto'
+import os from 'node:os'
+import fs from 'node:fs'
+import path from 'node:path'
+import crypto from 'node:crypto'
 import { Logger } from 'tslog'
 
 const createRandomStr = () => crypto.randomBytes(8).toString('hex')

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest"
 import { LastRunStore } from '../src/last_run_store'
-import { Store, AnyObject } from '../src/store/store'
+import type { Store, AnyObject } from '../src/store/store'
 
 class MockStore implements Store {
   constructor (public data: AnyObject = {}) { }

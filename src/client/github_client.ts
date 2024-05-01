@@ -1,11 +1,11 @@
-import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
+import { Octokit, type RestEndpointMethodTypes } from "@octokit/rest";
 import { throttling } from '@octokit/plugin-throttling'
 import { retry } from '@octokit/plugin-retry'
-import { CustomReportArtifact, Artifact } from './client.js'
+import type { CustomReportArtifact, Artifact } from './client.js'
 import { minBy } from "lodash-es";
 import { ZipExtractor } from "../zip_extractor.js";
-import { CustomReportConfig } from "../config/schema.js";
-import { ArgumentOptions } from "../arg_options.js";
+import type { CustomReportConfig } from "../config/schema.js";
+import type { ArgumentOptions } from "../arg_options.js";
 
 // Oktokit document: https://octokit.github.io/rest.js/v18#actions
 
@@ -27,7 +27,7 @@ export class GithubClient {
       baseUrl: (baseUrl) ? baseUrl : 'https://api.github.com',
       log: (options.debug) ? console : undefined,
       throttle: {
-        onRateLimit: (retryAfter, options: any, _octokit, retryCount) => {
+        onRateLimit: (retryAfter, options, _octokit, retryCount) => {
           this.#octokit.log.warn(
             `Request quota exhausted for request ${options.method} ${options.url}`
           )
@@ -37,7 +37,7 @@ export class GithubClient {
             return true;
           }
         },
-        onSecondaryRateLimit: (_retryAfter, options: any, _octokit, _retryCount) => {
+        onSecondaryRateLimit: (_retryAfter, options, _octokit, _retryCount) => {
           // does not retry, only logs a warning
           this.#octokit.log.warn(
             `Abuse detected for request ${options.method} ${options.url}`
@@ -61,10 +61,10 @@ export class GithubClient {
   }
 
   // Filter to: lastRunId < Id < firstInprogressId
-  filterWorkflowRuns (runs: WorkflowRunsItem[], lastRunId?: number): WorkflowRunsItem[] {
-    runs = (lastRunId)
-      ? runs.filter((run) => run.run_number > lastRunId)
-      : runs
+  filterWorkflowRuns (rawRuns: WorkflowRunsItem[], lastRunId?: number): WorkflowRunsItem[] {
+    let runs = (lastRunId)
+      ? rawRuns.filter((run) => run.run_number > lastRunId)
+      : rawRuns
     const firstInprogress = minBy(
       runs.filter((run) => run.status as RunStatus !== 'completed'),
       (run) => run.run_number

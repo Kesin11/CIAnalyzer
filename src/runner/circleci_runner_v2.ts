@@ -1,16 +1,16 @@
 import { max } from "lodash-es"
-import { Runner } from "./runner.js"
-import { ValidatedYamlConfig } from "../config/config.js"
-import { CircleciConfig, parseConfig } from "../config/circleci_config.js"
-import { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
+import type { Runner } from "./runner.js"
+import type { ValidatedYamlConfig } from "../config/config.js"
+import { type CircleciConfig, parseConfig } from "../config/circleci_config.js"
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
 import { CompositExporter } from "../exporter/exporter.js"
 import { LastRunStore } from "../last_run_store.js"
 import { GithubClient } from "../client/github_client.js"
 import { CustomReportCollection, createCustomReportCollection, aggregateCustomReportArtifacts } from "../custom_report_collection.js"
-import { failure, Result, success } from "../result.js"
-import { ArgumentOptions } from "../arg_options.js"
-import { Logger } from "tslog"
-import { CircleciClientV2, Pipeline } from "../client/circleci_client_v2.js"
+import { failure, type Result, success } from "../result.js"
+import type { ArgumentOptions } from "../arg_options.js"
+import type { Logger } from "tslog"
+import { CircleciClientV2, type Pipeline } from "../client/circleci_client_v2.js"
 import { CircleciAnalyzerV2 } from "../analyzer/circleci_analyzer_v2.js"
 
 const META_VERSION = 2
@@ -19,7 +19,7 @@ export type CircleciV2LastRunMetadata = {
 }
 
 export class CircleciRunnerV2 implements Runner {
-  service: string = 'circleci'
+  service = 'circleci'
   client: CircleciClientV2
   analyzer: CircleciAnalyzerV2
   config: CircleciConfig | undefined
@@ -28,13 +28,13 @@ export class CircleciRunnerV2 implements Runner {
   logger: Logger<unknown>
 
   constructor(logger: Logger<unknown>, public yamlConfig: ValidatedYamlConfig, public options: ArgumentOptions) {
-    const CIRCLECI_TOKEN = process.env['CIRCLECI_TOKEN'] || ''
+    const CIRCLECI_TOKEN = process.env.CIRCLECI_TOKEN || ''
     this.config = parseConfig(yamlConfig)
     this.logger = logger.getSubLogger({ name: `${CircleciRunnerV2.name}` })
     this.client = new CircleciClientV2(CIRCLECI_TOKEN, this.logger, options, this.config?.baseUrl)
     this.analyzer = new CircleciAnalyzerV2(this.config?.baseUrl)
 
-    const GITHUB_TOKEN = process.env['GITHUB_TOKEN'] || ''
+    const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ''
     this.githubClient = new GithubClient(GITHUB_TOKEN, options, this.config?.vcsBaseUrl?.github)
   }
 
@@ -95,7 +95,6 @@ export class CircleciRunnerV2 implements Runner {
         const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`
         this.logger.error(errorMessage)
         result = failure(new Error(errorMessage, { cause: error as Error }))
-        continue
       }
     }
 

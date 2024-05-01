@@ -1,11 +1,11 @@
 import path from "node:path"
 import fs from "node:fs"
 import dayjs from 'dayjs'
-import { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
-import { Exporter } from "./exporter.js"
-import { LocalExporterConfig } from "../config/schema.js"
-import { CustomReportCollection } from "../custom_report_collection.js"
-import { Logger } from "tslog"
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
+import type { Exporter } from "./exporter.js"
+import type { LocalExporterConfig } from "../config/schema.js"
+import type { CustomReportCollection } from "../custom_report_collection.js"
+import type { Logger } from "tslog"
 
 const defaultOutDir = 'output'
 

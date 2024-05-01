@@ -1,19 +1,19 @@
 import { maxBy } from "lodash-es"
-import { Runner } from "./runner.js"
-import { ValidatedYamlConfig } from "../config/config.js"
-import { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
+import type { Runner } from "./runner.js"
+import type { ValidatedYamlConfig } from "../config/config.js"
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
 import { CompositExporter } from "../exporter/exporter.js"
 import { JenkinsClient } from "../client/jenkins_client.js"
 import { JenkinsAnalyzer } from "../analyzer/jenkins_analyzer.js"
-import { JenkinsConfig, parseConfig } from "../config/jenkins_config.js"
+import { type JenkinsConfig, parseConfig } from "../config/jenkins_config.js"
 import { LastRunStore } from "../last_run_store.js"
 import { CustomReportCollection, createCustomReportCollection } from "../custom_report_collection.js"
-import { failure, Result, success } from "../result.js"
-import { ArgumentOptions } from "../arg_options.js"
-import { Logger } from "tslog"
+import { failure, type Result, success } from "../result.js"
+import type { ArgumentOptions } from "../arg_options.js"
+import type { Logger } from "tslog"
 
 export class JenkinsRunner implements Runner {
-  service: string = 'jenkins'
+  service = 'jenkins'
   client?: JenkinsClient
   analyzer?: JenkinsAnalyzer
   config?: JenkinsConfig
@@ -25,8 +25,8 @@ export class JenkinsRunner implements Runner {
     this.config = parseConfig(yamlConfig, this.logger)
 
     if (!this.config) return
-    const JENKINS_USER = process.env['JENKINS_USER']
-    const JENKINS_TOKEN = process.env['JENKINS_TOKEN']
+    const JENKINS_USER = process.env.JENKINS_USER
+    const JENKINS_TOKEN = process.env.JENKINS_TOKEN
     this.analyzer = new JenkinsAnalyzer(this.config.baseUrl)
     this.client = new JenkinsClient(this.config.baseUrl, this.logger, options, JENKINS_USER, JENKINS_TOKEN)
   }
@@ -89,7 +89,6 @@ export class JenkinsRunner implements Runner {
         const errorMessage = `Some error raised in '${job.name}', so it skipped.`
         this.logger.error(errorMessage)
         result = failure(new Error(errorMessage, { cause: error as Error }))
-        continue
       }
     }
 

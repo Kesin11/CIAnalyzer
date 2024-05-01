@@ -1,8 +1,8 @@
 import { sumBy, min, max, sortBy, first, last } from "lodash-es"
-import { Status, diffSec, Analyzer, secRound, TestReport, WorkflowParams, convertToReportTestSuites } from "./analyzer.js"
-import { WorkflowRun, SingleBuildResponse, CircleciStatus, TestResponse } from "../client/circleci_client.js"
-import { RepositoryTagMap } from "../client/github_client.js"
-import { TestSuite, TestCase } from "junit2json"
+import { type Status, diffSec, type Analyzer, secRound, type TestReport, type WorkflowParams, convertToReportTestSuites } from "./analyzer.js"
+import type { WorkflowRun, SingleBuildResponse, CircleciStatus, TestResponse } from "../client/circleci_client.js"
+import type { RepositoryTagMap } from "../client/github_client.js"
+import type { TestSuite, TestCase } from "junit2json"
 
 type WorkflowReport = {
   // workflow
@@ -58,7 +58,6 @@ type StepReport = {
 }
 
 export class CircleciAnalyzer implements Analyzer {
-  constructor() { }
 
   createWorkflowParams(workflowName: string, repository: string, buildNumber: number): WorkflowParams {
     return {
@@ -175,9 +174,9 @@ export class CircleciAnalyzer implements Analyzer {
     const statuses = jobs.map((job) => job.status)
 
     if ( statuses.some((status) => status === 'ABORTED' )) return 'ABORTED'
-    else if ( statuses.some((status) => status === 'FAILURE' )) return 'FAILURE'
-    else if ( statuses.some((status) => status === 'SUCCESS' )) return 'SUCCESS'
-    else return 'OTHER'
+    if ( statuses.some((status) => status === 'FAILURE' )) return 'FAILURE'
+    if ( statuses.some((status) => status === 'SUCCESS' )) return 'SUCCESS'
+    return 'OTHER'
   }
 
   async createTestReports( workflowReport: WorkflowReport, jobs: SingleBuildResponse[], tests: TestResponse[]): Promise<TestReport[]> {

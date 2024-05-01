@@ -1,8 +1,8 @@
-import { RestEndpointMethodTypes } from '@octokit/rest'
+import type { RestEndpointMethodTypes } from '@octokit/rest'
 import { sumBy, min, max } from 'lodash-es'
-import { Analyzer, diffSec, Status, TestReport, WorkflowParams, convertToTestReports } from './analyzer.js'
-import { RepositoryTagMap } from '../client/github_client.js'
-import { Artifact } from '../client/client.js'
+import { type Analyzer, diffSec, type Status, type TestReport, type WorkflowParams, convertToTestReports } from './analyzer.js'
+import type { RepositoryTagMap } from '../client/github_client.js'
+import type { Artifact } from '../client/client.js'
 export type WorkflowRunsItem = RestEndpointMethodTypes['actions']['listWorkflowRunsForRepo']['response']['data']['workflow_runs'][0]
 export type JobsItem = RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']['jobs']
 
@@ -60,7 +60,6 @@ type StepReport = {
 }
 
 export class GithubAnalyzer implements Analyzer {
-  constructor() { }
 
   createWorkflowParams(workflowName: string, workflow: WorkflowRunsItem): WorkflowParams {
     const buildNumber = workflow.run_number

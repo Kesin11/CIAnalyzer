@@ -1,7 +1,7 @@
 import path from 'node:path'
-import { Storage, File } from '@google-cloud/storage'
-import { Store, AnyObject } from './store.js'
-import { Logger } from 'tslog'
+import { Storage, type File } from '@google-cloud/storage'
+import type { Store, AnyObject } from './store.js'
+import type { Logger } from 'tslog'
 
 const defaultDir = path.join('ci_analyzer', 'last_run')
 

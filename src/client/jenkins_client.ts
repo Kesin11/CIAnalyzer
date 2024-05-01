@@ -1,10 +1,10 @@
-import { AxiosInstance } from 'axios'
-import { Artifact, CustomReportArtifact, createAxios } from './client.js'
+import type { AxiosInstance } from 'axios'
+import { type Artifact, type CustomReportArtifact, createAxios } from './client.js'
 import { minBy } from 'lodash-es'
 import { minimatch } from 'minimatch'
-import { CustomReportConfig } from '../config/schema.js'
-import { Logger } from 'tslog'
-import { ArgumentOptions } from '../arg_options.js'
+import type { CustomReportConfig } from '../config/schema.js'
+import type { Logger } from 'tslog'
+import type { ArgumentOptions } from '../arg_options.js'
 
 // ref: https://github.com/jenkinsci/pipeline-stage-view-plugin/blob/master/rest-api/src/main/java/com/cloudbees/workflow/rest/external/StatusExt.java
 export type JenkinsStatus = 'SUCCESS' | 'FAILED' | 'ABORTED' | 'NOT_EXECUTED' | 'IN_PROGRESS' | 'PAUSED_PENDING_INPUT' | 'UNSTABLE'
@@ -105,7 +105,7 @@ export type BuildResponse = {
 export type CauseAction = {
   _class: "hudson.model.CauseAction"
   causes: {
-    "_class":
+    _class:
       "hudson.model.Cause$UserIdCause" |
       "hudson.triggers.SCMTrigger$SCMTriggerCause" |
       "org.jenkinsci.plugins.ghprb.GhprbCause" |
@@ -243,10 +243,10 @@ println builder.toString()
   }
 
   // Filter to: lastRunId < Id < firstInprogressId
-  filterJobRuns (runs: WfapiRunResponse[], lastRunId?: number): WfapiRunResponse[] {
-    runs = (lastRunId)
-      ? runs.filter((run) => Number(run.id) > lastRunId)
-      : runs
+  filterJobRuns (rawRuns: WfapiRunResponse[], lastRunId?: number): WfapiRunResponse[] {
+    let runs = (lastRunId)
+      ? rawRuns.filter((run) => Number(run.id) > lastRunId)
+      : rawRuns
     const firstInprogress = minBy(
       runs.filter((run) => run.status === 'IN_PROGRESS' ),
       (run) => Number(run.id)

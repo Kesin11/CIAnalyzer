@@ -1,10 +1,10 @@
-import { Store } from "./store/store.js"
+import type { Store } from "./store/store.js"
 import { LocalStore } from "./store/local_store.js"
-import { LastRunStoreConfig } from "./config/schema.js"
+import type { LastRunStoreConfig } from "./config/schema.js"
 import { GcsStore } from "./store/gcs_store.js"
-import { ArgumentOptions } from "./arg_options.js"
+import type { ArgumentOptions } from "./arg_options.js"
 import { NullStore } from "./store/null_store.js"
-import { Logger } from "tslog"
+import type { Logger } from "tslog"
 
 type LastRun<T> = {
   [repo: string]: {
@@ -21,7 +21,7 @@ export class LastRunStore<T extends Metadata = Metadata> {
   lastRun: LastRun<T>
 
   static async init<T extends Metadata>(logger: Logger<unknown>, options: ArgumentOptions, service: string, config?: LastRunStoreConfig) {
-    let store
+    let store: Store
     if (options.debug) {
       store = new NullStore(logger)
     }
@@ -35,7 +35,8 @@ export class LastRunStore<T extends Metadata = Metadata> {
       store = new GcsStore(logger, service, config.project, config.bucket, config.path)
     }
     else {
-      throw new Error(`Error: Unknown LastRunStore.backend type '${(config as any).backend}'`)
+      const unknownBackend = (config as LastRunStoreConfig).backend
+      throw new Error(`Error: Unknown LastRunStore.backend type '${unknownBackend}'`)
     }
 
     const self = new LastRunStore<T>(store)

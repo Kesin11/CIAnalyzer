@@ -1,5 +1,5 @@
 import { commonSchema, customReportSchema } from './schema.js'
-import { ValidatedYamlConfig } from './config.js'
+import type { ValidatedYamlConfig } from './config.js'
 import { z } from 'zod'
 
 export const circleciYamlSchema = commonSchema.merge(z.object({
@@ -32,7 +32,8 @@ export const parseConfig = (config: ValidatedYamlConfig): CircleciConfig | undef
   const circleciConfig = {
     ...config.circleci,
     repos: (config.circleci.repos).map((repoYaml): CircleciConfig['repos'][0] => {
-      let owner, repo
+      let owner: string
+      let repo: string
       if (typeof repoYaml === 'string') {
         [owner, repo] = repoYaml.split('/')
         const vcsType = 'github'

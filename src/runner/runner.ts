@@ -1,11 +1,11 @@
-import { ValidatedYamlConfig } from "../config/config.js";
+import type { ValidatedYamlConfig } from "../config/config.js";
 import { GithubRunner } from "./github_runner.js";
 import { CircleciRunner } from "./circleci_runner.js";
 import { JenkinsRunner } from "./jenkins_runner.js";
-import { Failure, failure, Result, success } from "../result.js";
+import { Failure, failure, type Result, success } from "../result.js";
 import { BitriseRunner } from "./bitrise_runner.js";
-import { ArgumentOptions } from "../arg_options.js";
-import { Logger } from "tslog";
+import type { ArgumentOptions } from "../arg_options.js";
+import type { Logger } from "tslog";
 import { ApiError } from "@google-cloud/common"
 import axios from "axios";
 import { summarizeAxiosError } from "../error.js";
@@ -49,7 +49,7 @@ export class CompositRunner implements Runner {
         (result.status === 'fulfilled' && result.value.isFailure())
     }).map((result) => {
       if (result.status === 'rejected') return result.reason
-      else return result.value
+      return result.value
     }) as unknown[]
     if (errors.length > 0) {
       errors.forEach((error) => this.handlingError(error))

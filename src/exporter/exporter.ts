@@ -1,10 +1,10 @@
 import { LocalExporter } from "./local_exporter.js";
-import { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
-import { ExporterConfig, LocalExporterConfig, BigqueryExporterConfig } from "../config/schema.js";
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
+import type { ExporterConfig, LocalExporterConfig, BigqueryExporterConfig } from "../config/schema.js";
 import { BigqueryExporter } from "./bigquery_exporter.js";
-import { CustomReportCollection } from "../custom_report_collection.js";
-import { ArgumentOptions } from "../arg_options.js";
-import { Logger } from "tslog";
+import type { CustomReportCollection } from "../custom_report_collection.js";
+import type { ArgumentOptions } from "../arg_options.js";
+import type { Logger } from "tslog";
 
 export interface Exporter {
   exportWorkflowReports(reports: WorkflowReport[]): Promise<void>

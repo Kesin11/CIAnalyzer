@@ -3,11 +3,11 @@ import path from "node:path"
 import fs from "node:fs"
 import crypto from "node:crypto"
 import { BigQuery } from '@google-cloud/bigquery'
-import { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
-import { Exporter } from "./exporter.js"
-import { BigqueryExporterConfig } from "../config/schema.js"
-import { CustomReportCollection } from "../custom_report_collection.js"
-import { Logger } from "tslog"
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
+import type { Exporter } from "./exporter.js"
+import type { BigqueryExporterConfig } from "../config/schema.js"
+import type { CustomReportCollection } from "../custom_report_collection.js"
+import type { Logger } from "tslog"
 import { BQ_SCHEMA_PATHS } from "../constant.js"
 
 export class BigqueryExporter implements Exporter {
@@ -92,11 +92,11 @@ export class BigqueryExporter implements Exporter {
   }
 
   async exportWorkflowReports (reports: WorkflowReport[]) {
-    await this.export(reports, this.table.workflow, BQ_SCHEMA_PATHS['workflow'])
+    await this.export(reports, this.table.workflow, BQ_SCHEMA_PATHS.workflow)
   }
 
   async exportTestReports (reports: TestReport[]) {
-    await this.export(reports, this.table.testReport, BQ_SCHEMA_PATHS['test_report'])
+    await this.export(reports, this.table.testReport, BQ_SCHEMA_PATHS.test_report)
   }
 
   async exportCustomReports (customReportCollection: CustomReportCollection) {
