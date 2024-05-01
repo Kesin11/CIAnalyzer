@@ -23,6 +23,23 @@ jobs:
       - name: Check uncommited generated files are exists
         run: git diff --name-only --exit-code
 
+  lint_fmt:
+    runs-on: ubuntu-latest
+    container:
+      image: "node:lts"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: npm ci
+
+      - name: Biome lint
+        run: npm run lint
+
   build_and_test:
     runs-on: ubuntu-latest
     container:
