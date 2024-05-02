@@ -18,6 +18,10 @@
 			}
 		}
 	},
+	"formatter": {
+		"formatWithErrors": true,
+		"indentStyle": "space"
+	},
   "overrides": [{
     "include": ["__tests__/**"],
     "linter": {
