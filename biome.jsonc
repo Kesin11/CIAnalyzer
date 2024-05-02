@@ -21,14 +21,14 @@
   "formatter": {
     "formatWithErrors": true,
     "indentStyle": "space",
-		"ignore": [
-			// Generated file
-			"schema.json",
-			// Test fixtures
-			"__tests__/fixtures/**",
-			// Others
-			"tsconfig.json"
-		]
+    "ignore": [
+      // Generated file
+      "schema.json",
+      // Test fixtures
+      "__tests__/fixtures/**",
+      // Others
+      "tsconfig.json"
+    ]
   },
   "overrides": [
     {

@@ -1,12 +1,12 @@
 [
   {
-    "mode": "NULLABLE", 
-    "name": "workflowId", 
+    "mode": "NULLABLE",
+    "name": "workflowId",
     "type": "STRING"
-  }, 
+  },
   {
-    "mode": "NULLABLE", 
-    "name": "workflowRunId", 
+    "mode": "NULLABLE",
+    "name": "workflowRunId",
     "type": "STRING"
   }
 ]

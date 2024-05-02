@@ -1,185 +1,185 @@
 [
- {
-  "name": "successCount",
-  "type": "INTEGER",
-  "mode": "NULLABLE"
- },
- {
-  "name": "status",
-  "type": "STRING",
-  "mode": "NULLABLE"
- },
- {
-  "name": "branch",
-  "type": "STRING",
-  "mode": "NULLABLE"
- },
- {
-  "name": "workflowName",
-  "type": "STRING",
-  "mode": "NULLABLE"
- },
- {
-  "name": "createdAt",
-  "type": "TIMESTAMP",
-  "mode": "NULLABLE",
-  "description": "bq-datetime"
- },
- {
-  "name": "buildNumber",
-  "type": "INTEGER",
-  "mode": "NULLABLE"
- },
- {
-  "name": "testSuites",
-  "type": "RECORD",
-  "mode": "NULLABLE",
-  "fields": [
-   {
-    "name": "testsuite",
+  {
+    "name": "successCount",
+    "type": "INTEGER",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "branch",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "workflowName",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "createdAt",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE",
+    "description": "bq-datetime"
+  },
+  {
+    "name": "buildNumber",
+    "type": "INTEGER",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "testSuites",
     "type": "RECORD",
-    "mode": "REPEATED",
+    "mode": "NULLABLE",
     "fields": [
-     {
-      "name": "testcase",
-      "type": "RECORD",
-      "mode": "REPEATED",
-      "fields": [
-       {
-        "name": "status",
-        "type": "STRING",
-        "mode": "NULLABLE"
-       },
-       {
-        "name": "successCount",
+      {
+        "name": "testsuite",
+        "type": "RECORD",
+        "mode": "REPEATED",
+        "fields": [
+          {
+            "name": "testcase",
+            "type": "RECORD",
+            "mode": "REPEATED",
+            "fields": [
+              {
+                "name": "status",
+                "type": "STRING",
+                "mode": "NULLABLE"
+              },
+              {
+                "name": "successCount",
+                "type": "INTEGER",
+                "mode": "NULLABLE"
+              },
+              {
+                "name": "time",
+                "type": "FLOAT",
+                "mode": "NULLABLE"
+              },
+              {
+                "name": "name",
+                "type": "STRING",
+                "mode": "NULLABLE"
+              },
+              {
+                "name": "classname",
+                "type": "STRING",
+                "mode": "NULLABLE"
+              },
+              {
+                "name": "assertions",
+                "type": "INTEGER",
+                "mode": "NULLABLE"
+              }
+            ]
+          },
+          {
+            "name": "tests",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "time",
+            "type": "FLOAT",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "timestamp",
+            "type": "TIMESTAMP",
+            "mode": "NULLABLE",
+            "description": "bq-datetime"
+          },
+          {
+            "name": "skipped",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "failures",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "errors",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "name",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "disabled",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "hostname",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "id",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "package",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          }
+        ]
+      },
+      {
+        "name": "failures",
         "type": "INTEGER",
         "mode": "NULLABLE"
-       },
-       {
+      },
+      {
         "name": "time",
         "type": "FLOAT",
         "mode": "NULLABLE"
-       },
-       {
+      },
+      {
+        "name": "tests",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
         "name": "name",
         "type": "STRING",
         "mode": "NULLABLE"
-       },
-       {
-        "name": "classname",
-        "type": "STRING",
-        "mode": "NULLABLE"
-       },
-       {
-        "name": "assertions",
+      },
+      {
+        "name": "errors",
         "type": "INTEGER",
         "mode": "NULLABLE"
-       }
-      ]
-     },
-     {
-      "name": "tests",
-      "type": "INTEGER",
-      "mode": "NULLABLE"
-     },
-     {
-      "name": "time",
-      "type": "FLOAT",
-      "mode": "NULLABLE"
-     },
-     {
-      "name": "timestamp",
-      "type": "TIMESTAMP",
-      "mode": "NULLABLE",
-      "description": "bq-datetime"
-     },
-     {
-      "name": "skipped",
-      "type": "INTEGER",
-      "mode": "NULLABLE"
-     },
-     {
-      "name": "failures",
-      "type": "INTEGER",
-      "mode": "NULLABLE"
-     },
-     {
-      "name": "errors",
-      "type": "INTEGER",
-      "mode": "NULLABLE"
-     },
-     {
-      "name": "name",
-      "type": "STRING",
-      "mode": "NULLABLE"
-     },
-     {
-      "name": "disabled",
-      "type": "INTEGER",
-      "mode": "NULLABLE"
-     },
-     {
-      "name": "hostname",
-      "type": "STRING",
-      "mode": "NULLABLE"
-     },
-     {
-      "name": "id",
-      "type": "STRING",
-      "mode": "NULLABLE"
-     },
-     {
-      "name": "package",
-      "type": "STRING",
-      "mode": "NULLABLE"
-     }
+      },
+      {
+        "name": "disabled",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      }
     ]
-   },
-   {
-    "name": "failures",
-    "type": "INTEGER",
-    "mode": "NULLABLE"
-   },
-   {
-    "name": "time",
-    "type": "FLOAT",
-    "mode": "NULLABLE"
-   },
-   {
-    "name": "tests",
-    "type": "INTEGER",
-    "mode": "NULLABLE"
-   },
-   {
-    "name": "name",
+  },
+  {
+    "name": "service",
     "type": "STRING",
     "mode": "NULLABLE"
-   },
-   {
-    "name": "errors",
-    "type": "INTEGER",
+  },
+  {
+    "name": "workflowRunId",
+    "type": "STRING",
     "mode": "NULLABLE"
-   },
-   {
-    "name": "disabled",
-    "type": "INTEGER",
+  },
+  {
+    "name": "workflowId",
+    "type": "STRING",
     "mode": "NULLABLE"
-   }
-  ]
- },
- {
-  "name": "service",
-  "type": "STRING",
-  "mode": "NULLABLE"
- },
- {
-  "name": "workflowRunId",
-  "type": "STRING",
-  "mode": "NULLABLE"
- },
- {
-  "name": "workflowId",
-  "type": "STRING",
-  "mode": "NULLABLE"
- }
+  }
 ]

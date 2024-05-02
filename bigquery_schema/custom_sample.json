@@ -1,38 +1,38 @@
 [
   {
-    "mode": "NULLABLE", 
-    "name": "workflowId", 
+    "mode": "NULLABLE",
+    "name": "workflowId",
     "type": "STRING"
-  }, 
+  },
   {
-    "mode": "NULLABLE", 
-    "name": "workflowRunId", 
+    "mode": "NULLABLE",
+    "name": "workflowRunId",
     "type": "STRING"
-  }, 
+  },
   {
-    "description": "bq-datetime", 
-    "mode": "NULLABLE", 
-    "name": "createdAt", 
+    "description": "bq-datetime",
+    "mode": "NULLABLE",
+    "name": "createdAt",
     "type": "TIMESTAMP"
-  }, 
+  },
   {
-    "mode": "NULLABLE", 
-    "name": "job", 
+    "mode": "NULLABLE",
+    "name": "job",
     "type": "STRING"
-  }, 
+  },
   {
-    "mode": "NULLABLE", 
-    "name": "node", 
+    "mode": "NULLABLE",
+    "name": "node",
     "type": "STRING"
-  }, 
+  },
   {
-    "mode": "NULLABLE", 
-    "name": "os", 
+    "mode": "NULLABLE",
+    "name": "os",
     "type": "STRING"
-  }, 
+  },
   {
-    "mode": "NULLABLE", 
-    "name": "container", 
+    "mode": "NULLABLE",
+    "name": "container",
     "type": "STRING"
-  } 
+  }
 ]

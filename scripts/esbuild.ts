@@ -1,6 +1,6 @@
-import * as esbuild from "esbuild"
+import * as esbuild from "esbuild";
 
-console.log("Bundle with esbuild...")
+console.log("Bundle with esbuild...");
 
 await esbuild.build({
   entryPoints: ["src/index.ts"],
@@ -16,6 +16,6 @@ await esbuild.build({
   //
   // ref: https://github.com/evanw/esbuild/issues/1921
   banner: {
-    js: "import { createRequire } from 'module';const require = createRequire(import.meta.url);"
+    js: "import { createRequire } from 'module';const require = createRequire(import.meta.url);",
   },
-})
+});

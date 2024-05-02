@@ -14,6 +14,6 @@ export const summarizeAxiosError = (error: AxiosError) => {
       baseUrl: error.response?.config.baseURL,
       url: error.response?.config.url,
       params: error.response?.config.params,
-    }
-  }
-}
+    },
+  };
+};
