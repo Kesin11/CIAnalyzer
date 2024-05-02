@@ -2,10 +2,10 @@ name: "CI"
 on:
   push:
     paths-ignore:
-    - 'sample/**'
-    - '**.md'
-    - 'renovate.json'
-    - 'Jenkinsfile'
+      - "sample/**"
+      - "**.md"
+      - "renovate.json"
+      - "Jenkinsfile"
 
 jobs:
   check_generated_files:
@@ -36,7 +36,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-
       - name: Biome lint
         run: npm run lint
 
@@ -54,7 +53,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-
       # Test
       - name: Type check
         run: npm run check
