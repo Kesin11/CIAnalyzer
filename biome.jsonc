@@ -1,37 +1,47 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.7.1/schema.json",
-	"organizeImports": {
-		"enabled": true
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true,
-			"style": {
-				"noNonNullAssertion": "off"
-			},
-			"performance": {
-				"noDelete": "off"
-			},
-			"complexity": {
-				"noForEach": "off"
-			}
-		}
-	},
-	"formatter": {
-		"formatWithErrors": true,
-		"indentStyle": "space"
-	},
-  "overrides": [{
-    "include": ["__tests__/**"],
-    "linter": {
-      "rules": {
-        "suspicious": {
-          "noExplicitAny": "off"
+  "$schema": "https://biomejs.dev/schemas/1.7.1/schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        "noNonNullAssertion": "off"
+      },
+      "performance": {
+        "noDelete": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
+      }
+    }
+  },
+  "formatter": {
+    "formatWithErrors": true,
+    "indentStyle": "space",
+		"ignore": [
+			// Generated file
+			"schema.json",
+			// Test fixtures
+			"__tests__/fixtures/**",
+			// Others
+			"tsconfig.json"
+		]
+  },
+  "overrides": [
+    {
+      "include": ["__tests__/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
         }
       }
     }
-  }],
+  ],
   "vcs": {
     "enabled": true,
     "clientKind": "git",
