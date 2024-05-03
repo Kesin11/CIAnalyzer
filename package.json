@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.7.2",
-    "@google-cloud/common": "^5.0.1",
+    "@google-cloud/common": "^5.0.2",
     "@types/adm-zip": "0.5.5",
     "@types/js-yaml": "4.0.9",
     "@types/lodash-es": "4.17.12",
