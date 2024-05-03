@@ -24,6 +24,8 @@
     "ignore": [
       // Generated file
       "schema.json",
+      "bigquery_schema/**",
+      "./src/pb_types/**",
       // Test fixtures
       "__tests__/fixtures/**",
       // Others
