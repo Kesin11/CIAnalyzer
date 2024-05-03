@@ -27,7 +27,7 @@
     "build:clean": "npm run clean && npm run build",
     "check": "tsc --noEmit",
     "check:watch": "tsc --watch --noEmit",
-    "biome:ci": "biome ci",
+    "biome:ci": "biome ci .",
     "lint:fix": "biome lint --apply-unsafe .",
     "fmt:fix": "biome format --write .",
     "test": "vitest",

@@ -36,8 +36,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - name: Biome lint
-        run: npm run lint
+      - name: Biome lint and format
+        run: npm run biome:ci
 
   build_and_test:
     runs-on: ubuntu-latest
