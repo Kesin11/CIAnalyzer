@@ -10,10 +10,7 @@
     {
       "matchDepTypes": ["devDependencies"],
       "separateMajorMinor": false,
-      "extends": [
-        ":automergeMajor",
-        "schedule:weekends"
-      ]
+      "extends": [":automergeMajor", "schedule:weekends"]
     }
   ]
 }

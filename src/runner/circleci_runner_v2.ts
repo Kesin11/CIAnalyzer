@@ -1,127 +1,180 @@
-import { max } from "lodash-es"
-import type { Runner } from "./runner.js"
-import type { ValidatedYamlConfig } from "../config/config.js"
-import { type CircleciConfig, parseConfig } from "../config/circleci_config.js"
-import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js"
-import { CompositExporter } from "../exporter/exporter.js"
-import { LastRunStore } from "../last_run_store.js"
-import { GithubClient } from "../client/github_client.js"
-import { CustomReportCollection, createCustomReportCollection, aggregateCustomReportArtifacts } from "../custom_report_collection.js"
-import { failure, type Result, success } from "../result.js"
-import type { ArgumentOptions } from "../arg_options.js"
-import type { Logger } from "tslog"
-import { CircleciClientV2, type Pipeline } from "../client/circleci_client_v2.js"
-import { CircleciAnalyzerV2 } from "../analyzer/circleci_analyzer_v2.js"
+import { max } from "lodash-es";
+import type { Runner } from "./runner.js";
+import type { ValidatedYamlConfig } from "../config/config.js";
+import { type CircleciConfig, parseConfig } from "../config/circleci_config.js";
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
+import { CompositExporter } from "../exporter/exporter.js";
+import { LastRunStore } from "../last_run_store.js";
+import { GithubClient } from "../client/github_client.js";
+import {
+  CustomReportCollection,
+  createCustomReportCollection,
+  aggregateCustomReportArtifacts,
+} from "../custom_report_collection.js";
+import { failure, type Result, success } from "../result.js";
+import type { ArgumentOptions } from "../arg_options.js";
+import type { Logger } from "tslog";
+import {
+  CircleciClientV2,
+  type Pipeline,
+} from "../client/circleci_client_v2.js";
+import { CircleciAnalyzerV2 } from "../analyzer/circleci_analyzer_v2.js";
 
-const META_VERSION = 2
+const META_VERSION = 2;
 export type CircleciV2LastRunMetadata = {
-  version: number
-}
+  version: number;
+};
 
 export class CircleciRunnerV2 implements Runner {
-  service = 'circleci'
-  client: CircleciClientV2
-  analyzer: CircleciAnalyzerV2
-  config: CircleciConfig | undefined
-  store?: LastRunStore<CircleciV2LastRunMetadata>
-  githubClient: GithubClient
-  logger: Logger<unknown>
+  service = "circleci";
+  client: CircleciClientV2;
+  analyzer: CircleciAnalyzerV2;
+  config: CircleciConfig | undefined;
+  store?: LastRunStore<CircleciV2LastRunMetadata>;
+  githubClient: GithubClient;
+  logger: Logger<unknown>;
 
-  constructor(logger: Logger<unknown>, public yamlConfig: ValidatedYamlConfig, public options: ArgumentOptions) {
-    const CIRCLECI_TOKEN = process.env.CIRCLECI_TOKEN || ''
-    this.config = parseConfig(yamlConfig)
-    this.logger = logger.getSubLogger({ name: `${CircleciRunnerV2.name}` })
-    this.client = new CircleciClientV2(CIRCLECI_TOKEN, this.logger, options, this.config?.baseUrl)
-    this.analyzer = new CircleciAnalyzerV2(this.config?.baseUrl)
+  constructor(
+    logger: Logger<unknown>,
+    public yamlConfig: ValidatedYamlConfig,
+    public options: ArgumentOptions,
+  ) {
+    const CIRCLECI_TOKEN = process.env.CIRCLECI_TOKEN || "";
+    this.config = parseConfig(yamlConfig);
+    this.logger = logger.getSubLogger({ name: `${CircleciRunnerV2.name}` });
+    this.client = new CircleciClientV2(
+      CIRCLECI_TOKEN,
+      this.logger,
+      options,
+      this.config?.baseUrl,
+    );
+    this.analyzer = new CircleciAnalyzerV2(this.config?.baseUrl);
 
-    const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ''
-    this.githubClient = new GithubClient(GITHUB_TOKEN, options, this.config?.vcsBaseUrl?.github)
+    const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
+    this.githubClient = new GithubClient(
+      GITHUB_TOKEN,
+      options,
+      this.config?.vcsBaseUrl?.github,
+    );
   }
 
   async isHostAvailableVersion(): Promise<Result<unknown, Error>> {
-    return this.client.isHostAvailableVersion()
+    return this.client.isHostAvailableVersion();
   }
 
   private setRepoLastRun(reponame: string, pipelines: Pipeline[]) {
-    const maxBuildNumber = max(pipelines.map((pipeline) => pipeline.number))
+    const maxBuildNumber = max(pipelines.map((pipeline) => pipeline.number));
     if (maxBuildNumber) {
-      this.store?.setLastRun(reponame, maxBuildNumber)
+      this.store?.setLastRun(reponame, maxBuildNumber);
     }
   }
 
-  async run (): Promise<Result<unknown, Error>> {
-    let result: Result<unknown, Error> = success(this.service)
-    if (!this.config) return failure(new Error('this.config must not be undefined'))
-    this.store = await LastRunStore.init<CircleciV2LastRunMetadata>(this.logger, this.options, this.service, this.config.lastRunStore)
+  async run(): Promise<Result<unknown, Error>> {
+    let result: Result<unknown, Error> = success(this.service);
+    if (!this.config)
+      return failure(new Error("this.config must not be undefined"));
+    this.store = await LastRunStore.init<CircleciV2LastRunMetadata>(
+      this.logger,
+      this.options,
+      this.service,
+      this.config.lastRunStore,
+    );
 
-    const workflowReports: WorkflowReport[] = []
-    const testReports: TestReport[] = []
-    const customReportCollection = new CustomReportCollection()
+    const workflowReports: WorkflowReport[] = [];
+    const testReports: TestReport[] = [];
+    const customReportCollection = new CustomReportCollection();
     for (const repo of this.config.repos) {
-      this.logger.info(`Fetching ${this.service} - ${repo.fullname} ...`)
+      this.logger.info(`Fetching ${this.service} - ${repo.fullname} ...`);
 
       try {
-        this.migrateLastRun(repo.fullname)
-        const lastRunId = this.store.getLastRun(repo.fullname)
-        const pipelines = await this.client.fetchWorkflowRuns(repo.owner, repo.repo, repo.vcsType, lastRunId)
+        this.migrateLastRun(repo.fullname);
+        const lastRunId = this.store.getLastRun(repo.fullname);
+        const pipelines = await this.client.fetchWorkflowRuns(
+          repo.owner,
+          repo.repo,
+          repo.vcsType,
+          lastRunId,
+        );
 
         for (const pipeline of pipelines) {
-          const workflows = await this.client.fetchPipelineWorkflows(pipeline)
-          const tests = await this.client.fetchWorkflowsTests(workflows)
+          const workflows = await this.client.fetchPipelineWorkflows(pipeline);
+          const tests = await this.client.fetchWorkflowsTests(workflows);
 
           // Create report
-          const pipelineWorkflowReports = workflows.map((workflow) => this.analyzer.createWorkflowReport(pipeline, workflow))
-          const pipelineTestReports = await this.analyzer.createTestReports(pipelineWorkflowReports, tests)
+          const pipelineWorkflowReports = workflows.map((workflow) =>
+            this.analyzer.createWorkflowReport(pipeline, workflow),
+          );
+          const pipelineTestReports = await this.analyzer.createTestReports(
+            pipelineWorkflowReports,
+            tests,
+          );
 
           // Aggregate
-          workflowReports.push(...pipelineWorkflowReports)
-          testReports.push(...pipelineTestReports)
+          workflowReports.push(...pipelineWorkflowReports);
+          testReports.push(...pipelineTestReports);
 
           // Custom Report
           for (const workflow of workflows) {
-            const customReportArtifactsList = await this.client.fetchWorkflowCustomReports(workflow, repo.customReports)
-            const customReportArtifacts = aggregateCustomReportArtifacts(customReportArtifactsList)
+            const customReportArtifactsList =
+              await this.client.fetchWorkflowCustomReports(
+                workflow,
+                repo.customReports,
+              );
+            const customReportArtifacts = aggregateCustomReportArtifacts(
+              customReportArtifactsList,
+            );
 
-            const workflowReport = pipelineWorkflowReports.find((report) => workflow.name === report.workflowName )!
-            const runCustomReportCollection = await createCustomReportCollection(workflowReport, customReportArtifacts)
+            const workflowReport = pipelineWorkflowReports.find(
+              (report) => workflow.name === report.workflowName,
+            )!;
+            const runCustomReportCollection =
+              await createCustomReportCollection(
+                workflowReport,
+                customReportArtifacts,
+              );
 
-            customReportCollection.aggregate(runCustomReportCollection)
+            customReportCollection.aggregate(runCustomReportCollection);
           }
         }
 
-        this.setRepoLastRun(repo.fullname, pipelines)
-      }
-      catch (error) {
-        const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`
-        this.logger.error(errorMessage)
-        result = failure(new Error(errorMessage, { cause: error as Error }))
+        this.setRepoLastRun(repo.fullname, pipelines);
+      } catch (error) {
+        const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`;
+        this.logger.error(errorMessage);
+        result = failure(new Error(errorMessage, { cause: error as Error }));
       }
     }
 
-    this.logger.info(`Exporting ${this.service} workflow reports ...`)
-    const exporter = new CompositExporter(this.logger, this.options, this.service, this.config.exporter)
-    await exporter.exportWorkflowReports(workflowReports)
-    await exporter.exportTestReports(testReports)
-    await exporter.exportCustomReports(customReportCollection)
+    this.logger.info(`Exporting ${this.service} workflow reports ...`);
+    const exporter = new CompositExporter(
+      this.logger,
+      this.options,
+      this.service,
+      this.config.exporter,
+    );
+    await exporter.exportWorkflowReports(workflowReports);
+    await exporter.exportTestReports(testReports);
+    await exporter.exportCustomReports(customReportCollection);
 
-    this.store.save()
-    this.logger.info(`Done execute '${this.service}'. status: ${result.type}`)
+    this.store.save();
+    this.logger.info(`Done execute '${this.service}'. status: ${result.type}`);
 
-    return result
+    return result;
   }
 
   migrateLastRun(repoFullname: string) {
-    const metadata = this.store?.getMeta(repoFullname)
-    if (metadata?.version === META_VERSION) return
+    const metadata = this.store?.getMeta(repoFullname);
+    if (metadata?.version === META_VERSION) return;
 
     if (metadata === undefined || metadata.version < META_VERSION) {
-        // v1 is used job.number as WorkflowRunId that is grater than pipeline.number
-        // As a result, should reset lastRun number before execute when migrate v1 to v2.
-        this.store?.resetLastRun(repoFullname)
-        this.store?.setMeta(repoFullname, { version: META_VERSION })
-    }
-    else if (metadata.version > META_VERSION) {
-      throw new Error(`${repoFullname} was executed with ${metadata.version} that is newer than ${CircleciRunnerV2.name}`)
+      // v1 is used job.number as WorkflowRunId that is grater than pipeline.number
+      // As a result, should reset lastRun number before execute when migrate v1 to v2.
+      this.store?.resetLastRun(repoFullname);
+      this.store?.setMeta(repoFullname, { version: META_VERSION });
+    } else if (metadata.version > META_VERSION) {
+      throw new Error(
+        `${repoFullname} was executed with ${metadata.version} that is newer than ${CircleciRunnerV2.name}`,
+      );
     }
   }
 }
