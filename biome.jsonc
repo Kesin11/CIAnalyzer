@@ -29,7 +29,8 @@
       // Test fixtures
       "__tests__/fixtures/**",
       // Others
-      "tsconfig.json"
+      "tsconfig.json",
+      "package.json"
     ]
   },
   "overrides": [
