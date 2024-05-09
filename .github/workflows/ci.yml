@@ -21,7 +21,7 @@ jobs:
           npm run proto
           npm run schema
       - name: Check uncommited generated files are exists
-        run: git diff --name-only --exit-code
+        run: git diff --exit-code
 
   lint_fmt:
     runs-on: ubuntu-latest
