@@ -12,6 +12,7 @@ protoc:
     --plugin="protoc-gen-bq-schema" \
     --ts_proto_out="generated" \
     --ts_proto_opt=outputEncodeMethods=false,outputJsonMethods=false,outputClientImpl=false \
+    --ts_proto_opt=annotateFilesWithVersion=false \
     -I=proto \
     -I=protoc \
     --bq-schema_out=generated \
