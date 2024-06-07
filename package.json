@@ -68,7 +68,7 @@
     "@types/yargs": "17.0.32",
     "@vitest/coverage-v8": "^1.6.0",
     "esbuild": "0.21.4",
-    "ts-proto": "1.176.1",
+    "ts-proto": "1.176.2",
     "ts-protoc-gen": "0.15.0",
     "typescript": "5.4.5",
     "vitest": "1.6.0"
