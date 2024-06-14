@@ -59,7 +59,7 @@
     "zod-to-json-schema": "3.23.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.8.0",
+    "@biomejs/biome": "1.8.1",
     "@google-cloud/common": "^5.0.2",
     "@types/adm-zip": "0.5.5",
     "@types/js-yaml": "4.0.9",
