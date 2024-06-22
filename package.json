@@ -41,8 +41,8 @@
   "dependencies": {
     "@google-cloud/bigquery": "7.7.1",
     "@google-cloud/storage": "7.11.2",
-    "@octokit/plugin-retry": "6.0.1",
-    "@octokit/plugin-throttling": "8.2.0",
+    "@octokit/plugin-retry": "7.1.1",
+    "@octokit/plugin-throttling": "9.3.0",
     "@octokit/rest": "20.1.1",
     "adm-zip": "0.5.14",
     "axios": "1.7.2",
