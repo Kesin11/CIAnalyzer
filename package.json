@@ -66,11 +66,11 @@
     "@types/lodash-es": "4.17.12",
     "@types/node": "20.14.13",
     "@types/yargs": "17.0.32",
-    "@vitest/coverage-v8": "^2.0.4",
+    "@vitest/coverage-v8": "^2.0.5",
     "esbuild": "0.23.0",
     "ts-proto": "1.181.1",
     "ts-protoc-gen": "0.15.0",
     "typescript": "5.5.4",
-    "vitest": "2.0.4"
+    "vitest": "2.0.5"
   }
 }
