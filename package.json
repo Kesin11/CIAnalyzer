@@ -44,7 +44,7 @@
     "@octokit/plugin-retry": "7.1.1",
     "@octokit/plugin-throttling": "9.3.1",
     "@octokit/rest": "21.0.1",
-    "adm-zip": "0.5.14",
+    "adm-zip": "0.5.15",
     "axios": "1.7.3",
     "axios-retry": "4.5.0",
     "dayjs": "1.11.12",
