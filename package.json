@@ -43,7 +43,7 @@
     "@google-cloud/storage": "7.12.1",
     "@octokit/plugin-retry": "7.1.1",
     "@octokit/plugin-throttling": "9.3.1",
-    "@octokit/rest": "21.0.1",
+    "@octokit/rest": "21.0.2",
     "adm-zip": "0.5.15",
     "axios": "1.7.4",
     "axios-retry": "4.5.0",
