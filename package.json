@@ -47,7 +47,7 @@
     "adm-zip": "0.5.15",
     "axios": "1.7.4",
     "axios-retry": "4.5.0",
-    "dayjs": "1.11.12",
+    "dayjs": "1.11.13",
     "js-yaml": "4.1.0",
     "junit2json": "3.1.11",
     "lodash-es": "4.17.21",
