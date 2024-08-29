@@ -94,6 +94,7 @@ export class GithubClient {
     const workflows = await this.#octokit.actions.listRepoWorkflows({
       owner,
       repo,
+      per_page: 100,
     });
 
     return this.filterWorkflows(workflows.data.workflows);
