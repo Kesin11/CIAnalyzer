@@ -56,10 +56,7 @@ export class CompositExporter implements Exporter {
             return new BigqueryExporter(logger, _config, options.configDir);
         }
       })
-      .filter(
-        (exporter): exporter is NonNullable<typeof exporter> =>
-          exporter !== undefined,
-      );
+      .filter((exporter) => exporter !== undefined);
   }
 
   async exportWorkflowReports(reports: WorkflowReport[]) {

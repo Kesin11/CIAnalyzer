@@ -44,9 +44,7 @@ export class CompositRunner implements Runner {
             return undefined;
         }
       })
-      .filter(
-        (runner): runner is NonNullable<typeof runner> => runner !== undefined,
-      );
+      .filter((runner) => runner !== undefined);
   }
 
   async run(): Promise<Result<unknown, Error>> {

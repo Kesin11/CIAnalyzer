@@ -51,7 +51,7 @@ export const createCustomReportCollection = async (
           ...data,
         } as CustomReport;
       })
-      .filter((report): report is CustomReport => report !== undefined);
+      .filter((report) => report !== undefined);
 
     reportCollection.set(reportName, reports);
   }
