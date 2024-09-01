@@ -49,6 +49,7 @@ export interface PbJobReport {
   executorClass: string;
   executorType: string;
   executorName: string;
+  queuedDurationSec: number;
 }
 
 export interface PbStepReport {

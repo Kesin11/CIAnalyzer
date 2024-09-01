@@ -55,6 +55,7 @@ type JobReport = {
   executorClass: string; // medium
   executorType: string; // docker
   executorName: ""; // CircleCI does not support self-hosted runner
+  queuedDurationSec: 0; // CircleciAnalyzerV2 does not support job queued duration yet
 };
 
 type StepReport = {
@@ -139,6 +140,7 @@ export class CircleciAnalyzerV2 implements Analyzer {
         executorClass: job.detail.executor.resource_class,
         executorType: job.detail.executor.type,
         executorName: "",
+        queuedDurationSec: 0, // Not supported yet
       };
     });
 

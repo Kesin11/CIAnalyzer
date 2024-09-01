@@ -36,7 +36,7 @@ type WorkflowReport = {
   sumJobsDurationSec: number; // = sum(jobs sumStepsDurationSec)
   successCount: 0 | 1; // = 'SUCCESS': 1, others: 0
   parameters: []; // GithubAnalyzer does not support build parameters yet
-  queuedDurationSec: number; // createdAt - startedAt
+  queuedDurationSec: number; // workflow createdAt - workflow startedAt
   commitMessage: string;
   actor: string; // Kenta Kase
   url: string; // https://github.com/{org}/{repo}/actions/runs/{runId}
@@ -57,6 +57,7 @@ type JobReport = {
   executorClass: ""; // Github Actions does not provide about class of executor
   executorType: ""; // Github Actions does not provde about type of executor
   executorName: string; // self-hosted runner name
+  queuedDurationSec: number; // job createdAt - job startedAt
 };
 
 type StepReport = {
@@ -109,6 +110,7 @@ export class GithubAnalyzer implements Analyzer {
 
       const startedAt = new Date(job.started_at);
       const completedAt = new Date(job.completed_at!);
+      const createdAt = new Date(job.created_at);
       // job
       return {
         workflowRunId: workflowRunId,
@@ -125,6 +127,7 @@ export class GithubAnalyzer implements Analyzer {
         executorClass: "",
         executorType: "",
         executorName: job.runner_name ?? "",
+        queuedDurationSec: diffSec(createdAt, startedAt), // job.createdAt - job.startedAt
       };
     });
 
@@ -156,7 +159,7 @@ export class GithubAnalyzer implements Analyzer {
       sumJobsDurationSec: sumBy(jobReports, "sumStepsDurationSec"),
       successCount: status === "SUCCESS" ? 1 : 0,
       parameters: [],
-      queuedDurationSec: diffSec(createdAt, startedAt),
+      queuedDurationSec: diffSec(createdAt, startedAt), // workflow.created_at - firstJob.started_at
       commitMessage: workflow.head_commit?.message ?? "",
       actor: workflow.head_commit?.author?.name ?? "",
       url: workflow.html_url,

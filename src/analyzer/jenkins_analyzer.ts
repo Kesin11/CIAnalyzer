@@ -61,7 +61,8 @@ type JobReport = {
   url: ""; // Jenkins does not provide each stage url
   executorClass: ""; // JenkinsAnalyzer does not support
   executorType: ""; // JenkinsAnalyzer does not support
-  executorName: ""; // JenkinsAnalyzer doen not support
+  executorName: ""; // JenkinsAnalyzer does not support
+  queuedDurationSec: 0; // JenkinsAnalyzer does not support job queued duration yet
 };
 
 type StepReport = {
@@ -130,6 +131,7 @@ export class JenkinsAnalyzer implements Analyzer {
         executorClass: "",
         executorType: "",
         executorName: "",
+        queuedDurationSec: 0, // Not supported yet
       };
     });
 

@@ -59,6 +59,7 @@ export type JobReport = {
   executorClass: ""; // CircleCIAnalyzer(v1) does not support
   executorType: ""; // CircleCIAnalyzer(v1) does not support
   executorName: ""; // CircleCIAnalyzer(v1) does not support
+  queuedDurationSec: 0; // CircleciAnalyzer(v1) does not support
 };
 
 type StepReport = {
@@ -142,6 +143,7 @@ export class CircleciAnalyzer implements Analyzer {
         executorClass: "",
         executorType: "",
         executorName: "",
+        queuedDurationSec: 0, // Not supported yet
       };
     });
 
