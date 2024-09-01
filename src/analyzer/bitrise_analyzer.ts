@@ -58,6 +58,7 @@ type JobReport = {
   executorClass: string; // "standard"
   executorType: string; // osx-vs4mac-stable
   executorName: ""; // Bitrise does not support self-hosted runner
+  queuedDurationSec: 0; // BitriseAnalyzer does not support job queued duration yet
 };
 
 type StepReport = {
@@ -134,6 +135,7 @@ export class BitriseAnalyzer implements Analyzer {
           executorClass: build.machine_type_id,
           executorType: build.stack_identifier,
           executorName: "",
+          queuedDurationSec: 0, // Not supported yet
         },
       ],
       startedAt,
