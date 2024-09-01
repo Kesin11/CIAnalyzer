@@ -60,6 +60,7 @@ message PbJobReport {
   string executorClass = 12;
   string executorType = 13;
   string executorName = 14;
+  float queuedDurationSec = 15;
 }
 
 message PbStepReport {
