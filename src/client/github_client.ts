@@ -94,7 +94,7 @@ export class GithubClient {
     const workflows = await this.#octokit.actions.listRepoWorkflows({
       owner,
       repo,
-      per_page: 100,
+      per_page: 100, // max 100
     });
 
     return this.filterWorkflows(workflows.data.workflows);
@@ -113,6 +113,7 @@ export class GithubClient {
       owner,
       repo,
       run_id: runId,
+      per_page: 100, // max 100
     });
     return jobs.data.jobs;
   }
