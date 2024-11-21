@@ -34,7 +34,8 @@ github:
     gcs:
       project: $GCP_PROJECT_ID
       bucket: $BUCKET_NAME
-      pathTemplate: ci_analyzer/{type}/{YYYY}/{MM}/{DD}/{hh}/{mm}/{ss}.json
+      # {reportType} placeholder is Required. Others are optional.
+      pathTemplate: gs://ci_analyzer/{reportType}/{YYYY}/{MM}/{DD}/{hh}/{mm}/{ss}.json
   lastRunStore:
     backend: gcs # Recommend using 'gcs' backend
     project: $GCP_PROJECT_ID

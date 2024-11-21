@@ -18,6 +18,11 @@ export class GcsExporter implements Exporter {
         "Must need 'project', 'bucket', and 'pathTemplate' parameters in exporter.gcs config."
       );
     }
+    if (!config.pathTemplate.includes("{reportType}")) {
+      throw new Error(
+        "pathTemplate must include '{reportType}' placeholder."
+      );
+    }
     this.logger = logger.getSubLogger({ name: GcsExporter.name });
     this.storage = new Storage({ projectId: config.project });
     this.bucketName = config.bucket;
@@ -28,10 +33,11 @@ export class GcsExporter implements Exporter {
     return reports.map((report) => JSON.stringify(report)).join("\n");
   }
 
-  private async export(reports: unknown[], type: string) {
+  private async export(reports: unknown[], reportType: string) {
     const now = dayjs();
     const filePath = this.pathTemplate
-      .replace("{type}", type)
+      .replace("gs://", "")
+      .replace("{reportType}", reportType)
       .replace("{YYYY}", now.format("YYYY"))
       .replace("{MM}", now.format("MM"))
       .replace("{DD}", now.format("DD"))
@@ -44,7 +50,7 @@ export class GcsExporter implements Exporter {
     const reportJson = this.formatJsonLines(reports);
 
     this.logger.info(
-      `Uploading ${type} reports to gs://${this.bucketName}/${filePath}`
+      `Uploading ${reportType} reports to gs://${this.bucketName}/${filePath}`
     );
 
     await file.save(reportJson, {
