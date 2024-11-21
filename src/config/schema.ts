@@ -28,9 +28,17 @@ const bigqueryExporterSchema = z.object({
 });
 export type BigqueryExporterConfig = z.infer<typeof bigqueryExporterSchema>;
 
+const gcsExporterSchema = z.object({
+  project: z.string(),
+  bucket: z.string(),
+  pathTemplate: z.string(),
+});
+export type GcsExporterConfig = z.infer<typeof gcsExporterSchema>;
+
 const exporterSchema = z.object({
   local: localExporterSchema.optional(),
   bigquery: bigqueryExporterSchema.optional(),
+  gcs: gcsExporterSchema.optional(),
 });
 export type ExporterConfig = z.infer<typeof exporterSchema>;
 
