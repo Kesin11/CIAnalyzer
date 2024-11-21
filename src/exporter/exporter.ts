@@ -4,11 +4,13 @@ import type {
   ExporterConfig,
   LocalExporterConfig,
   BigqueryExporterConfig,
+  GcsExporterConfig,
 } from "../config/schema.js";
 import { BigqueryExporter } from "./bigquery_exporter.js";
 import type { CustomReportCollection } from "../custom_report_collection.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
+import { GcsExporter } from "./gcs_exporter.js";
 
 export interface Exporter {
   exportWorkflowReports(reports: WorkflowReport[]): Promise<void>;
@@ -41,7 +43,7 @@ export class CompositExporter implements Exporter {
 
     this.exporters = exporters
       .map((exporter) => {
-        let _config: LocalExporterConfig | BigqueryExporterConfig;
+        let _config: LocalExporterConfig | BigqueryExporterConfig | GcsExporterConfig;
         switch (exporter) {
           case "local":
             _config = config[exporter] ?? {};
@@ -54,6 +56,9 @@ export class CompositExporter implements Exporter {
           case "bigquery":
             _config = config[exporter] ?? {};
             return new BigqueryExporter(logger, _config, options.configDir);
+          case "gcs":
+            _config = config[exporter] ?? {};
+            return new GcsExporter(logger, _config as GcsExporterConfig);
         }
       })
       .filter((exporter) => exporter !== undefined);

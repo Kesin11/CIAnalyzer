@@ -1,16 +1,16 @@
 import { Storage } from "@google-cloud/storage";
-import { Exporter } from "./exporter";
-import { WorkflowReport, TestReport } from "../analyzer/analyzer";
-import { GcsExporterConfig } from "../config/schema";
-import { CustomReportCollection } from "../custom_report_collection";
+import { Exporter } from "./exporter.js";
+import { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
+import { GcsExporterConfig } from "../config/schema.js";
+import { CustomReportCollection } from "../custom_report_collection.js";
 import { Logger } from "tslog";
 import dayjs from "dayjs";
 
 export class GcsExporter implements Exporter {
-  private storage: Storage;
-  private bucketName: string;
-  private pathTemplate: string;
-  private logger: Logger<unknown>;
+  storage: Storage;
+  bucketName: string;
+  pathTemplate: string;
+  logger: Logger<unknown>;
 
   constructor(logger: Logger<unknown>, config: GcsExporterConfig) {
     if (!config.project || !config.bucket || !config.pathTemplate) {
