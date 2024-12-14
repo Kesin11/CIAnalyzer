@@ -34,17 +34,7 @@ export class GcsExporter implements Exporter {
   }
 
   private async export(reports: unknown[], reportType: string) {
-    const now = dayjs();
-    const filePath = this.pathTemplate
-      .replace("gs://", "")
-      .replace("{reportType}", reportType)
-      .replace("{YYYY}", now.format("YYYY"))
-      .replace("{MM}", now.format("MM"))
-      .replace("{DD}", now.format("DD"))
-      .replace("{hh}", now.format("HH"))
-      .replace("{mm}", now.format("mm"))
-      .replace("{ss}", now.format("ss"));
-
+    const filePath = this.createFilePath(reportType);
     const bucket = this.storage.bucket(this.bucketName);
     const file = bucket.file(filePath);
     const reportJson = this.formatJsonLines(reports);
@@ -58,6 +48,20 @@ export class GcsExporter implements Exporter {
     });
 
     this.logger.info(`Successfully uploaded to gs://${this.bucketName}/${filePath}`);
+  }
+
+  createFilePath(reportType: string) {
+    const now = dayjs();
+    const filePath = this.pathTemplate
+      .replace("gs://", "")
+      .replace("{reportType}", reportType)
+      .replace("{YYYY}", now.format("YYYY"))
+      .replace("{MM}", now.format("MM"))
+      .replace("{DD}", now.format("DD"))
+      .replace("{hh}", now.format("HH"))
+      .replace("{mm}", now.format("mm"))
+      .replace("{ss}", now.format("ss"));
+    return filePath;
   }
 
   async exportWorkflowReports(reports: WorkflowReport[]) {
