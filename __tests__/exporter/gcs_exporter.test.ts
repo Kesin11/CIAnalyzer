@@ -3,58 +3,97 @@ import { GcsExporter } from "../../src/exporter/gcs_exporter";
 import type { GcsExporterConfig } from "../../src/config/schema";
 import { Logger } from "tslog";
 
+const mockStorage = {
+  bucket: vi.fn().mockReturnThis(),
+  file: vi.fn().mockReturnThis(),
+  save: vi.fn(),
+};
+const logger = new Logger({ type: "hidden" });
+
 describe("GcsExporter", () => {
   const baseConfig: GcsExporterConfig = {
     project: "project",
     bucket: "bucket",
-    pathTemplate: "gs://path/{reportType}/{YYYY}/{MM}/{DD}/{hh}/{mm}/{ss}.json",
+    prefixTemplate: "ci_analyzer/{reportType}/dt={YYYY}-{MM}-{DD}/",
   };
-  const logger = new Logger({ type: "hidden" });
 
   beforeEach(() => {
     // Mock the current time for `now = dayjs()`
-    vi.useFakeTimers()
+    vi.useFakeTimers();
     vi.setSystemTime(new Date("2023-01-01T12:34:56Z"));
   });
 
   afterEach(() => {
-    vi.useRealTimers()
+    vi.useRealTimers();
   });
 
   describe("new", () => {
     it("should not throw when all required params are provided", () => {
       expect(() => {
-        new GcsExporter(logger, baseConfig);
+        new GcsExporter(logger, "github", baseConfig);
       }).not.toThrow();
     });
 
-    it("should throw when pathTemplate does not include {reportType}", () => {
-      const config = { ...baseConfig, pathTemplate: "gs://path/{YYYY}/{MM}/{DD}/{hh}/{mm}/{ss}.json" };
+    it("should throw when prefixTemplate does not include {reportType}", () => {
+      const config = {
+        ...baseConfig,
+        prefixTemplate: "ci_analyzer/dt={YYYY}-{MM}-{DD}/",
+      };
       expect(() => {
-        new GcsExporter(logger, config);
+        new GcsExporter(logger, "github", config);
       }).toThrow();
     });
   });
 
   describe("createFilePath", () => {
     it("should create file path with all placeholders", () => {
-      const exporter = new GcsExporter(logger, baseConfig);
+      const config = {
+        ...baseConfig,
+        prefixTemplate:
+          "ci_analyzer/{reportType}/dt={YYYY}-{MM}-{DD}/{hh}_{mm}_{ss}/",
+      };
+      const exporter = new GcsExporter(logger, "github", config);
       const filePath = exporter.createFilePath("workflow");
-      expect(filePath).toBe("path/workflow/2023/01/01/12/34/56.json");
+      expect(filePath).toBe(
+        "ci_analyzer/workflow/dt=2023-01-01/12_34_56/20230101-123456-workflow-github.json",
+      );
+    });
+  });
+
+  describe("export", () => {
+    const report = [{}];
+    let exporter: GcsExporter;
+
+    beforeEach(() => {
+      exporter = new GcsExporter(logger, "github", baseConfig);
+      exporter.storage = mockStorage as any;
     });
 
-    it("should create file path without gs:// prefix", () => {
-      const config = { ...baseConfig, pathTemplate: "path/{reportType}/{YYYY}/{MM}/{DD}/{hh}/{mm}/{ss}.json" };
-      const exporter = new GcsExporter(logger, config);
-      const filePath = exporter.createFilePath("test");
-      expect(filePath).toBe("path/test/2023/01/01/12/34/56.json");
+    it("exportWorkflowReports should create correct file path", async () => {
+      await exporter.exportWorkflowReports(report as any);
+
+      expect(mockStorage.file).toHaveBeenCalledWith(
+        "ci_analyzer/workflow/dt=2023-01-01/20230101-123456-workflow-github.json",
+      );
     });
 
-    it("should create file path with YYYY, MM, DD placeholders", () => {
-      const config = { ...baseConfig, pathTemplate: "gs://path/{reportType}/{YYYY}/{MM}/{DD}.json" };
-      const exporter = new GcsExporter(logger, config);
-      const filePath = exporter.createFilePath("test");
-      expect(filePath).toBe("path/test/2023/01/01.json");
+    it("exportTestReports should create correct file path", async () => {
+      await exporter.exportTestReports(report as any);
+
+      expect(mockStorage.file).toHaveBeenCalledWith(
+        "ci_analyzer/test/dt=2023-01-01/20230101-123456-test-github.json",
+      );
+    });
+
+    it("exportCustomReports should create correct file path", async () => {
+      const customReportCollection = {
+        customReports: new Map([["custom", report]]),
+      };
+      await exporter.exportCustomReports(customReportCollection as any);
+
+      expect(mockStorage.file).toHaveBeenCalledWith(
+        "ci_analyzer/custom/dt=2023-01-01/20230101-123456-custom-github.json",
+      );
     });
   });
 });

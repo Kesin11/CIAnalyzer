@@ -1,59 +1,70 @@
+import path from "node:path";
 import { Storage } from "@google-cloud/storage";
-import { Exporter } from "./exporter.js";
-import { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
-import { GcsExporterConfig } from "../config/schema.js";
-import { CustomReportCollection } from "../custom_report_collection.js";
-import { Logger } from "tslog";
+import type { Logger } from "tslog";
 import dayjs from "dayjs";
+import type { Exporter } from "./exporter.js";
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
+import type { GcsExporterConfig } from "../config/schema.js";
+import type {
+  CustomReport,
+  CustomReportCollection,
+} from "../custom_report_collection.js";
 
 export class GcsExporter implements Exporter {
+  service: string;
   storage: Storage;
   bucketName: string;
-  pathTemplate: string;
+  prefixTemplate: string;
   logger: Logger<unknown>;
 
-  constructor(logger: Logger<unknown>, config: GcsExporterConfig) {
-    if (!config.project || !config.bucket || !config.pathTemplate) {
+  constructor(
+    logger: Logger<unknown>,
+    service: string,
+    config: GcsExporterConfig,
+  ) {
+    if (!config.project || !config.bucket || !config.prefixTemplate) {
       throw new Error(
-        "Must need 'project', 'bucket', and 'pathTemplate' parameters in exporter.gcs config."
+        "Must need 'project', 'bucket', and 'prefixTemplate' parameters in exporter.gcs config.",
       );
     }
-    if (!config.pathTemplate.includes("{reportType}")) {
+    if (!config.prefixTemplate.includes("{reportType}")) {
       throw new Error(
-        "pathTemplate must include '{reportType}' placeholder."
+        "prefixTemplate must include '{reportType}' placeholder.",
       );
     }
+    this.service = service;
     this.logger = logger.getSubLogger({ name: GcsExporter.name });
     this.storage = new Storage({ projectId: config.project });
     this.bucketName = config.bucket;
-    this.pathTemplate = config.pathTemplate;
+    this.prefixTemplate = config.prefixTemplate;
   }
 
   private formatJsonLines(reports: unknown[]): string {
     return reports.map((report) => JSON.stringify(report)).join("\n");
   }
 
-  private async export(reports: unknown[], reportType: string) {
+  private async export(
+    reportType: string,
+    reports: WorkflowReport[] | TestReport[] | CustomReport[],
+  ) {
     const filePath = this.createFilePath(reportType);
-    const bucket = this.storage.bucket(this.bucketName);
-    const file = bucket.file(filePath);
+    const file = this.storage.bucket(this.bucketName).file(filePath);
     const reportJson = this.formatJsonLines(reports);
 
     this.logger.info(
-      `Uploading ${reportType} reports to gs://${this.bucketName}/${filePath}`
+      `Uploading ${reportType} reports to gs://${this.bucketName}/${filePath}`,
     );
 
-    await file.save(reportJson, {
-      contentType: "application/json",
-    });
+    await file.save(reportJson);
 
-    this.logger.info(`Successfully uploaded to gs://${this.bucketName}/${filePath}`);
+    this.logger.info(
+      `Successfully uploaded to gs://${this.bucketName}/${filePath}`,
+    );
   }
 
   createFilePath(reportType: string) {
     const now = dayjs();
-    const filePath = this.pathTemplate
-      .replace("gs://", "")
+    const dirPath = this.prefixTemplate
       .replace("{reportType}", reportType)
       .replace("{YYYY}", now.format("YYYY"))
       .replace("{MM}", now.format("MM"))
@@ -61,20 +72,24 @@ export class GcsExporter implements Exporter {
       .replace("{hh}", now.format("HH"))
       .replace("{mm}", now.format("mm"))
       .replace("{ss}", now.format("ss"));
-    return filePath;
+
+    return path.join(
+      dirPath,
+      `${now.format("YYYYMMDD-HHmmss")}-${reportType}-${this.service}.json`,
+    );
   }
 
   async exportWorkflowReports(reports: WorkflowReport[]) {
-    await this.export(reports, "workflow");
+    await this.export("workflow", reports);
   }
 
   async exportTestReports(reports: TestReport[]) {
-    await this.export(reports, "test");
+    await this.export("test", reports);
   }
 
   async exportCustomReports(customReportCollection: CustomReportCollection) {
     for (const [name, reports] of customReportCollection.customReports) {
-      await this.export(reports, name);
+      await this.export(name, reports);
     }
   }
 }

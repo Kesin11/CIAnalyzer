@@ -43,7 +43,10 @@ export class CompositExporter implements Exporter {
 
     this.exporters = exporters
       .map((exporter) => {
-        let _config: LocalExporterConfig | BigqueryExporterConfig | GcsExporterConfig;
+        let _config:
+          | LocalExporterConfig
+          | BigqueryExporterConfig
+          | GcsExporterConfig;
         switch (exporter) {
           case "local":
             _config = config[exporter] ?? {};
@@ -58,7 +61,11 @@ export class CompositExporter implements Exporter {
             return new BigqueryExporter(logger, _config, options.configDir);
           case "gcs":
             _config = config[exporter] ?? {};
-            return new GcsExporter(logger, _config as GcsExporterConfig);
+            return new GcsExporter(
+              logger,
+              service,
+              _config as GcsExporterConfig,
+            );
         }
       })
       .filter((exporter) => exporter !== undefined);
