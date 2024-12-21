@@ -28,7 +28,7 @@ export class CompositExporter implements Exporter {
     service: string,
     config?: ExporterConfig,
   ) {
-    if (options.debug || !config) {
+    if ((options.debug && options.onlyExporters === undefined) || !config) {
       this.exporters = [
         new LocalExporter(logger, service, options.configDir, {}),
       ];
