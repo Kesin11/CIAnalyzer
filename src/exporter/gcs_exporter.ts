@@ -47,36 +47,44 @@ export class GcsExporter implements Exporter {
     reportType: string,
     reports: WorkflowReport[] | TestReport[] | CustomReport[],
   ) {
-    const filePath = this.createFilePath(reportType);
-    const file = this.storage.bucket(this.bucketName).file(filePath);
-    const reportJson = this.formatJsonLines(reports);
+    // NOTE: these can replace with `Object.groupBy` from Node.js v21
+    const groupedReports = reports.reduce(
+      (acc, report) => {
+        const createdAt = dayjs(report.createdAt);
+        const dirPath = this.prefixTemplate
+          .replace("{reportType}", reportType)
+          .replace("{YYYY}", createdAt.format("YYYY"))
+          .replace("{MM}", createdAt.format("MM"))
+          .replace("{DD}", createdAt.format("DD"));
 
-    this.logger.info(
-      `Uploading ${reportType} reports to gs://${this.bucketName}/${filePath}`,
+        if (!acc[dirPath]) {
+          acc[dirPath] = [];
+        }
+        acc[dirPath].push(report);
+        return acc;
+      },
+      {} as Record<string, (WorkflowReport | TestReport | CustomReport)[]>,
     );
 
-    await file.save(reportJson);
-
-    this.logger.info(
-      `Successfully uploaded to gs://${this.bucketName}/${filePath}`,
-    );
-  }
-
-  createFilePath(reportType: string) {
     const now = dayjs();
-    const dirPath = this.prefixTemplate
-      .replace("{reportType}", reportType)
-      .replace("{YYYY}", now.format("YYYY"))
-      .replace("{MM}", now.format("MM"))
-      .replace("{DD}", now.format("DD"))
-      .replace("{hh}", now.format("HH"))
-      .replace("{mm}", now.format("mm"))
-      .replace("{ss}", now.format("ss"));
+    for (const [dirPath, reports] of Object.entries(groupedReports)) {
+      const filePath = path.join(
+        dirPath,
+        `${now.format("YYYYMMDD-HHmmss")}-${reportType}-${this.service}.json`,
+      );
+      const file = this.storage.bucket(this.bucketName).file(filePath);
+      const reportJson = this.formatJsonLines(reports);
 
-    return path.join(
-      dirPath,
-      `${now.format("YYYYMMDD-HHmmss")}-${reportType}-${this.service}.json`,
-    );
+      this.logger.info(
+        `Uploading ${reportType} reports to gs://${this.bucketName}/${filePath}`,
+      );
+
+      await file.save(reportJson);
+
+      this.logger.info(
+        `Successfully uploaded to gs://${this.bucketName}/${filePath}`,
+      );
+    }
   }
 
   async exportWorkflowReports(reports: WorkflowReport[]) {

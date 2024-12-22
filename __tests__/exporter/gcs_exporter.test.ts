@@ -45,23 +45,7 @@ describe("GcsExporter", () => {
     });
   });
 
-  describe("createFilePath", () => {
-    it("should create file path with all placeholders", () => {
-      const config = {
-        ...baseConfig,
-        prefixTemplate:
-          "ci_analyzer/{reportType}/dt={YYYY}-{MM}-{DD}/{hh}_{mm}_{ss}/",
-      };
-      const exporter = new GcsExporter(logger, "github", config);
-      const filePath = exporter.createFilePath("workflow");
-      expect(filePath).toBe(
-        "ci_analyzer/workflow/dt=2023-01-01/12_34_56/20230101-123456-workflow-github.json",
-      );
-    });
-  });
-
   describe("export", () => {
-    const report = [{}];
     let exporter: GcsExporter;
 
     beforeEach(() => {
@@ -69,7 +53,8 @@ describe("GcsExporter", () => {
       exporter.storage = mockStorage as any;
     });
 
-    it("exportWorkflowReports should create correct file path", async () => {
+    it("exportWorkflowReports should create correct file path when all reports have the same createdAt", async () => {
+      const report = [{ createdAt: "2023-01-01T12:34:56Z" }];
       await exporter.exportWorkflowReports(report as any);
 
       expect(mockStorage.file).toHaveBeenCalledWith(
@@ -77,7 +62,24 @@ describe("GcsExporter", () => {
       );
     });
 
-    it("exportTestReports should create correct file path", async () => {
+    it("exportWorkflowReports should create correct file paths when reports have different createdAt", async () => {
+      const reports = [
+        { createdAt: "2023-01-01T12:34:56Z" },
+        { createdAt: "2022-12-31T12:34:56Z" },
+        { createdAt: "2023-01-01T12:34:56Z" },
+      ];
+      await exporter.exportWorkflowReports(reports as any);
+
+      expect(mockStorage.file).toHaveBeenCalledWith(
+        "ci_analyzer/workflow/dt=2023-01-01/20230101-123456-workflow-github.json",
+      );
+      expect(mockStorage.file).toHaveBeenCalledWith(
+        "ci_analyzer/workflow/dt=2022-12-31/20230101-123456-workflow-github.json",
+      );
+    });
+
+    it("exportTestReports should create correct file path when all reports have the same createdAt", async () => {
+      const report = [{ createdAt: "2023-01-01T12:34:56Z" }];
       await exporter.exportTestReports(report as any);
 
       expect(mockStorage.file).toHaveBeenCalledWith(
@@ -85,7 +87,24 @@ describe("GcsExporter", () => {
       );
     });
 
-    it("exportCustomReports should create correct file path", async () => {
+    it("exportTestReports should create correct file paths when reports have different createdAt", async () => {
+      const reports = [
+        { createdAt: "2023-01-01T12:34:56Z" },
+        { createdAt: "2022-12-31T12:34:56Z" },
+        { createdAt: "2023-01-01T12:34:56Z" },
+      ];
+      await exporter.exportTestReports(reports as any);
+
+      expect(mockStorage.file).toHaveBeenCalledWith(
+        "ci_analyzer/test/dt=2023-01-01/20230101-123456-test-github.json",
+      );
+      expect(mockStorage.file).toHaveBeenCalledWith(
+        "ci_analyzer/test/dt=2022-12-31/20230101-123456-test-github.json",
+      );
+    });
+
+    it("exportCustomReports should create correct file path when all reports have the same createdAt", async () => {
+      const report = [{ createdAt: "2023-01-01T12:34:56Z" }];
       const customReportCollection = {
         customReports: new Map([["custom", report]]),
       };
@@ -93,6 +112,25 @@ describe("GcsExporter", () => {
 
       expect(mockStorage.file).toHaveBeenCalledWith(
         "ci_analyzer/custom/dt=2023-01-01/20230101-123456-custom-github.json",
+      );
+    });
+
+    it("exportCustomReports should create correct file paths when reports have different createdAt", async () => {
+      const reports = [
+        { createdAt: "2023-01-01T12:34:56Z" },
+        { createdAt: "2022-12-31T12:34:56Z" },
+        { createdAt: "2023-01-01T12:34:56Z" },
+      ];
+      const customReportCollection = {
+        customReports: new Map([["custom", reports]]),
+      };
+      await exporter.exportCustomReports(customReportCollection as any);
+
+      expect(mockStorage.file).toHaveBeenCalledWith(
+        "ci_analyzer/custom/dt=2023-01-01/20230101-123456-custom-github.json",
+      );
+      expect(mockStorage.file).toHaveBeenCalledWith(
+        "ci_analyzer/custom/dt=2022-12-31/20230101-123456-custom-github.json",
       );
     });
   });
