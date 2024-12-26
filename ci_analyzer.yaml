@@ -34,8 +34,8 @@ github:
     gcs:
       project: $GCP_PROJECT_ID
       bucket: $BUCKET_NAME
-      # {reportType} placeholder is Required. Others are optional.
-      # {YYYY}, {MM}, {DD}, {hh} are also supported.
+      # {reportType} placeholder is Required.
+      # {YYYY}, {MM}, {DD} placeholders are optional.
       # If you want to use BigQuery external tables, the GCS path should be in a format supported by Hive partitions like this
       prefixTemplate: ci_analyzer/{reportType}/dt={YYYY}-{MM}-{DD}/
   lastRunStore:
