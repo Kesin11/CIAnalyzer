@@ -6,13 +6,15 @@ on:
       - "**.md"
       - "renovate.json"
       - "Jenkinsfile"
+permissions:
+  contents: read
 
 jobs:
   check_generated_files:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: earthly/actions-setup@v1.0.13
+      - uses: earthly/actions-setup@43211c7a0eae5344d6d79fb4aaf209c8f8866203 # v1.0.13
         with:
           version: latest
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -43,6 +45,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: "node:lts"
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       # Setup
       - uses: actions/checkout@v4
@@ -75,14 +80,14 @@ jobs:
           path: |
             junit/*.xml
             custom_report.json
-      - uses: k1LoW/octocov-action@v1
+      - uses: k1LoW/octocov-action@1ad702b3118b6a055c00b01db68ca0d9f6641dbc # v1.4.0
         name: Upload coverage
 
   docker-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: earthly/actions-setup@v1.0.13
+      - uses: earthly/actions-setup@43211c7a0eae5344d6d79fb4aaf209c8f8866203 # v1.0.13
         with:
           version: latest
           github-token: ${{ secrets.GITHUB_TOKEN }}

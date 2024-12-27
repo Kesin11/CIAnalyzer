@@ -4,14 +4,17 @@ on:
     branches:
       - master
   workflow_dispatch:
+
 jobs:
   draft_release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       tag_name: ${{ steps.release-drafter.outputs.tag_name }}
     steps:
       # Get next version
-      - uses: release-drafter/release-drafter@v6
+      - uses: release-drafter/release-drafter@3f0f87098bd6b5c5b9a36d49c41d998ea58f9348 # v6.0.0
         id: release-drafter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -21,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     needs: draft_release
+    permissions:
+      contents: write
     steps:
       # Create version string from tag (v1.0.0 -> 1.0.0)
       - name: Create version string
@@ -44,7 +49,7 @@ jobs:
           npm version $VERSION
           git push origin master
           git push origin "v${VERSION}"
-      - uses: release-drafter/release-drafter@v6
+      - uses: release-drafter/release-drafter@3f0f87098bd6b5c5b9a36d49c41d998ea58f9348 # v6.0.0
         with:
           publish: true
           tag: v${{ env.VERSION }}
