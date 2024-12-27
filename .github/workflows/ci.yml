@@ -6,6 +6,8 @@ on:
       - "**.md"
       - "renovate.json"
       - "Jenkinsfile"
+permissions:
+  contents: read
 
 jobs:
   check_generated_files:
@@ -43,6 +45,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: "node:lts"
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       # Setup
       - uses: actions/checkout@v4
