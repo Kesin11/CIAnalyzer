@@ -1,7 +1,7 @@
 import path from "node:path";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { BigqueryExporter } from "../../src/exporter/bigquery_exporter";
-import type { BigqueryExporterConfig } from "../../src/config/config";
+import type { BigqueryExporterConfig } from "../../src/config/schema";
 import { CustomReportCollection } from "../../src/custom_report_collection";
 import { Logger } from "tslog";
 

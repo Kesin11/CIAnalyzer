@@ -31,6 +31,13 @@ github:
           table: $CUSTOM_REPORT_TABLE
           schema: ./$SCHEMA_DIR/$CUSTOM_REPORT_TABLE_SCHEMA.json # It accepts absolute path or relative path from this config yaml.
       maxBadRecords: 0 # (Optional) default: 0. If set > 0, skip bad record. This option should only be used for workaround.
+    gcs:
+      project: $GCP_PROJECT_ID
+      bucket: $BUCKET_NAME
+      # {reportType} placeholder is Required.
+      # {YYYY}, {MM}, {DD} placeholders are optional.
+      # If you want to use BigQuery external tables, the GCS path should be in a format supported by Hive partitions like this
+      prefixTemplate: ci_analyzer/{reportType}/dt={YYYY}-{MM}-{DD}/
   lastRunStore:
     backend: gcs # Recommend using 'gcs' backend
     project: $GCP_PROJECT_ID

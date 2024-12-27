@@ -71,6 +71,7 @@ See full schema: [test_report.proto](./proto/test_report.proto)
 - Export
   - BigQuery
   - Local file (output JSON or JSON Lines)
+  - Google Cloud Storage (GCS)
 
 # USAGE
 ```bash
@@ -118,8 +119,9 @@ Most recommend tag for user is `v{major}`. If you prefere more conservetive vers
 - LastRunStore
   - GOOGLE_APPLICATION_CREDENTIALS
 
-## Setup BigQuery (Recommend)
-If you want to use `bigquery_exporter`, you have to create dataset and table that CIAnalyzer will export data to it.
+## Setup Exporter
+### Setup BigQuery table (Recommend)
+If you want to use `exporter.bigquery`, you have to create dataset and table that CIAnalyzer will export data to it.
 
 ```bash
 # Prepare bigquery schema json files
@@ -153,7 +155,24 @@ bq mk \
 
 And also GCP service account used for CIAnalyzer needs some BigQuery permissions. Please attach `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. More detail, check [BigQuery access control document](https://cloud.google.com/bigquery/docs/access-control).
 
-## Setup GCS bucket (Recommend)
+### Setup GCS
+If you want to use `exporter.gcs`, you have to create a bucket that CIAnalyzer will export data to.
+
+BigQuery can also read JSONL formatted data stored in GCS as [external tables](https://cloud.google.com/bigquery/docs/external-data-cloud-storage), so it is useful to save data to GCS instead of exporting directly to a BigQuery table. In that case, it is recommended to save data in a path that includes the DATE to be recognized as a Hive partition for efficient querying from BigQuery.
+
+see: https://cloud.google.com/bigquery/docs/hive-partitioned-queries
+
+CIAnalyzer can save data to a path with date partitions by specifying a `prefixTemplate` in the configuration file as follows:
+
+```yaml
+exporter:
+  gcs:
+    project: $GCP_PROJECT_ID
+    bucket: $BUCKET_NAME
+    prefixTemplate: ci_analyzer/{reportType}/dt={YYYY}-{MM}-{DD}/
+```
+
+## Setup LastRunStore
 ### What is LastRunStore
 CIAnalyzer collects build data from each CI service API, but there may be duplicates of the previously collected data. To remove the duplicate, it is necessary to save the last build number of the previous run and output only the difference from the previous run.
 
@@ -163,7 +182,7 @@ By default, CIAnalyzer uses a local JSON file as a backend for LastRunStore. How
 
 Resolving these problems, CIAnalyzer can use GCS as LastRunStore to read/write the last build number from any machine. It inspired by [Terraform backend](https://www.terraform.io/docs/backends/index.html).
 
-### Create GCS bucket
+### Setup GCS bucket (Recommend)
 If you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket before execute CIAnalyzer.
 
 ```bash
@@ -385,15 +404,25 @@ To load your custom schema JSON from CIAnalyzer that runs inside of container, y
 
 See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 
-# Roadmap
-- [x] Collect test data
-- [x] Collect any of JSON format from build artifacts
-- [x] Support Bitrise
-- [x] Support CircleCI API v2
-- [x] Implement better logger
-- [x] Better error message
-- [x] Export commit message
-- [x] Export executor data (CircleCI, Bitrise)
+# Roadmap and features
+- Supported CI services
+  - [x] GitHub Actions
+  - [x] CircleCI API v2
+  - [x] Bitrise
+  - [x] Jenkins
+- Supported data
+  - [x] Workflow, Job
+  - [x] Test data (JUnit format)
+  - [x] Any of JSON format from build artifacts
+- Supported exporters
+  - [x] Local file
+  - [x] BigQuery
+  - [x] Google Cloud Storage
+  - [ ] S3/S3 compatible storage
+- Supported LastRunStore
+  - [x] Local file
+  - [x] Google Cloud Storage
+  - [ ] S3/S3 compatible storage
 
 # Debug options
 - Fetch only selected service
@@ -405,7 +434,7 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 - Enable debug mode
   - `--debug`
   - Limit fetching build results only 10 by each services
-  - Export result to local only
+  - Export result to local only if `--only-exporters` omitted
   - Don't loading and storing last build number
 - Enable debug log
   - `export CI_ANALYZER_DEBUG=1`

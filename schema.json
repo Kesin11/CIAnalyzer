@@ -89,6 +89,26 @@
                     }
                   },
                   "additionalProperties": false
+                },
+                "gcs": {
+                  "type": "object",
+                  "properties": {
+                    "project": {
+                      "type": "string"
+                    },
+                    "bucket": {
+                      "type": "string"
+                    },
+                    "prefixTemplate": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "project",
+                    "bucket",
+                    "prefixTemplate"
+                  ],
+                  "additionalProperties": false
                 }
               },
               "additionalProperties": false
