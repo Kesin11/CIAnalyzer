@@ -47,24 +47,14 @@ export class GcsExporter implements Exporter {
     reportType: string,
     reports: WorkflowReport[] | TestReport[] | CustomReport[],
   ) {
-    // NOTE: these can replace with `Object.groupBy` from Node.js v21
-    const groupedReports = reports.reduce(
-      (acc, report) => {
-        const createdAt = dayjs(report.createdAt);
-        const dirPath = this.prefixTemplate
-          .replace("{reportType}", reportType)
-          .replace("{YYYY}", createdAt.format("YYYY"))
-          .replace("{MM}", createdAt.format("MM"))
-          .replace("{DD}", createdAt.format("DD"));
-
-        if (!acc[dirPath]) {
-          acc[dirPath] = [];
-        }
-        acc[dirPath].push(report);
-        return acc;
-      },
-      {} as Record<string, (WorkflowReport | TestReport | CustomReport)[]>,
-    );
+    const groupedReports = Object.groupBy(reports, (report: WorkflowReport | TestReport | CustomReport) => {
+      const createdAt = dayjs(report.createdAt);
+      return this.prefixTemplate
+        .replace("{reportType}", reportType)
+        .replace("{YYYY}", createdAt.format("YYYY"))
+        .replace("{MM}", createdAt.format("MM"))
+        .replace("{DD}", createdAt.format("DD"));
+    });
 
     const now = dayjs();
     for (const [dirPath, reports] of Object.entries(groupedReports)) {
@@ -73,7 +63,7 @@ export class GcsExporter implements Exporter {
         `${now.format("YYYYMMDD-HHmmss")}-${reportType}-${this.service}.json`,
       );
       const file = this.storage.bucket(this.bucketName).file(filePath);
-      const reportJson = this.formatJsonLines(reports);
+      const reportJson = this.formatJsonLines(reports || []);
 
       this.logger.info(
         `Uploading ${reportType} reports to gs://${this.bucketName}/${filePath}`,
