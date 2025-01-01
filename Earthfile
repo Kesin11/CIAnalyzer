@@ -1,7 +1,7 @@
 VERSION 0.7
 
 # TypeScript build
-FROM node:20.18.1
+FROM node:22.12.0
 LABEL org.opencontainers.image.source=https://github.com/Kesin11/CIAnalyzer
 LABEL org.opencontainers.image.authors=kesin1202000@gmail.com
 WORKDIR /build
@@ -48,7 +48,7 @@ test:
   SAVE ARTIFACT coverage AS LOCAL ./coverage
 
 docker:
-  FROM node:20.18.1-slim
+  FROM node:22.12.0-slim
   WORKDIR /ci_analyzer
 
   COPY package.json package-lock.json .

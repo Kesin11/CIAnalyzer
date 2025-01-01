@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   lint:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:current
     steps:
       - checkout
       - run: npm ci
@@ -12,7 +12,7 @@ jobs:
           command: npm run check
   build_and_test:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:current
     steps:
       # Setup
       - checkout
@@ -32,7 +32,7 @@ jobs:
           name: Create custom json
           command: |
             OS=$(uname)
-            echo "{ \"job\": \"${CIRCLE_JOB}\", \"node\": \"\", \"os\": \"${OS}\", \"container\": \"circleci/node:lts\" }" > custom_report.json
+            echo "{ \"job\": \"${CIRCLE_JOB}\", \"node\": \"\", \"os\": \"${OS}\", \"container\": \"circleci/node:current\" }" > custom_report.json
 
       # Post actions
       - store_test_results:

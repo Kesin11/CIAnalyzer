@@ -151,7 +151,7 @@ export class GithubClient {
     return zipEntries.map((entry) => {
       return {
         path: entry.entryName,
-        data: entry.getData(),
+        data: entry.getData().buffer.slice(0) as ArrayBuffer,
       };
     });
   }
