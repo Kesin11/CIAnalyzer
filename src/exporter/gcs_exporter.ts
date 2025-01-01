@@ -47,14 +47,17 @@ export class GcsExporter implements Exporter {
     reportType: string,
     reports: WorkflowReport[] | TestReport[] | CustomReport[],
   ) {
-    const groupedReports = Object.groupBy(reports, (report: WorkflowReport | TestReport | CustomReport) => {
-      const createdAt = dayjs(report.createdAt);
-      return this.prefixTemplate
-        .replace("{reportType}", reportType)
-        .replace("{YYYY}", createdAt.format("YYYY"))
-        .replace("{MM}", createdAt.format("MM"))
-        .replace("{DD}", createdAt.format("DD"));
-    });
+    const groupedReports = Object.groupBy(
+      reports,
+      (report: WorkflowReport | TestReport | CustomReport) => {
+        const createdAt = dayjs(report.createdAt);
+        return this.prefixTemplate
+          .replace("{reportType}", reportType)
+          .replace("{YYYY}", createdAt.format("YYYY"))
+          .replace("{MM}", createdAt.format("MM"))
+          .replace("{DD}", createdAt.format("DD"));
+      },
+    );
 
     const now = dayjs();
     for (const [dirPath, reports] of Object.entries(groupedReports)) {
