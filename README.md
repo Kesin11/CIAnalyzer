@@ -121,7 +121,8 @@ Most recommend tag for user is `v{major}`. If you prefere more conservetive vers
 
 ## Setup Exporter
 ### Setup BigQuery table (Recommend)
-If you want to use `exporter.bigquery`, you have to create dataset and table that CIAnalyzer will export data to it.
+> [!IMPORTANT]
+> If you want to use `exporter.bigquery`, you have to create dataset and table that CIAnalyzer will export data to it.
 
 ```bash
 # Prepare bigquery schema json files
@@ -156,7 +157,8 @@ bq mk \
 And also GCP service account used for CIAnalyzer needs some BigQuery permissions. Please attach `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. More detail, check [BigQuery access control document](https://cloud.google.com/bigquery/docs/access-control).
 
 ### Setup GCS
-If you want to use `exporter.gcs`, you have to create a bucket that CIAnalyzer will export data to.
+> [!IMPORTANT]
+> If you want to use `exporter.gcs`, you have to create a bucket that CIAnalyzer will export data to.
 
 BigQuery can also read JSONL formatted data stored in GCS as [external tables](https://cloud.google.com/bigquery/docs/external-data-cloud-storage), so it is useful to save data to GCS instead of exporting directly to a BigQuery table. In that case, it is recommended to save data in a path that includes the DATE to be recognized as a Hive partition for efficient querying from BigQuery.
 
@@ -183,7 +185,8 @@ By default, CIAnalyzer uses a local JSON file as a backend for LastRunStore. How
 Resolving these problems, CIAnalyzer can use GCS as LastRunStore to read/write the last build number from any machine. It inspired by [Terraform backend](https://www.terraform.io/docs/backends/index.html).
 
 ### Setup GCS bucket (Recommend)
-If you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket before execute CIAnalyzer.
+> [!IMPORTANT]
+> If you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket before execute CIAnalyzer.
 
 ```bash
 gsutil mb -b on -l ${LOCATION} gs://${BUCKET_NAME}
@@ -393,7 +396,8 @@ See sample [ci_analyzer.yaml](./ci_analyzer.yaml).
 
 `bigquery.customReports[].schema` is BigQuery schema JSON created at step1. It accepts absolute path or relative path from your config YAML.
 
-**NOTICE**: When you run CIAnalyzer using docker, `bigquery.customReports[].schema` is a path that **inside of CIAnalyzer docker container**. So it's very confusing and recommends it to mount custom schema JSON at the same path as your ci_analyzer.yaml in the next step.
+> [!WARNING]
+> When you run CIAnalyzer using docker, `bigquery.customReports[].schema` is a path that **inside of CIAnalyzer docker container**. So it's very confusing and recommends it to mount custom schema JSON at the same path as your ci_analyzer.yaml in the next step.
 
 ## 4. Mount custom schema JSON at `docker run` (Only using docker)
 To load your custom schema JSON from CIAnalyzer that runs inside of container, you have to also mount your JSON with additional `docker run --mount` options if you need.
