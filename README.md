@@ -171,7 +171,7 @@ exporter:
   gcs:
     project: $GCP_PROJECT_ID
     bucket: $BUCKET_NAME
-    prefixTemplate: ci_analyzer/{reportType}/dt={YYYY}-{MM}-{DD}/
+    prefixTemplate: "ci_analyzer/{reportType}/dt={YYYY}-{MM}-{DD}/"
 ```
 
 ## Setup LastRunStore
