@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { parseConfig } from "../../src/config/bitrise_config";
+import { parseConfig } from "../../src/config/bitrise_config.ts";
 
 describe("parseConfig", () => {
   describe("apps", () => {

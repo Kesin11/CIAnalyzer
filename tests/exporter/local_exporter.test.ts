@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { LocalExporter } from "../../src/exporter/local_exporter";
+import { LocalExporter } from "../../src/exporter/local_exporter.ts";
 import path from "node:path";
-import type { LocalExporterConfig } from "../../src/config/schema";
+import type { LocalExporterConfig } from "../../src/config/schema.ts";
 import { Logger } from "tslog";
 
 const mockFsPromises = {

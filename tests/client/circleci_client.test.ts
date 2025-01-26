@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Logger } from "tslog";
-import { ArgumentOptions } from "../../src/arg_options";
-import { CircleciClient } from "../../src/client/circleci_client";
+import { ArgumentOptions } from "../../src/arg_options.ts";
+import { CircleciClient } from "../../src/client/circleci_client.ts";
 
 const logger = new Logger({ type: "hidden" });
 const options = new ArgumentOptions({

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { CircleciAnalyzerV2 } from "../../src/analyzer/circleci_analyzer_v2";
+import { CircleciAnalyzerV2 } from "../../src/analyzer/circleci_analyzer_v2.ts";
 
 describe("CircleciAnalyzerV2", () => {
   describe("htmlBaseUrl", () => {

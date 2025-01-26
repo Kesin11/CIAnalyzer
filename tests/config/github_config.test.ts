@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { parseConfig } from "../../src/config/github_config";
+import { parseConfig } from "../../src/config/github_config.ts";
 
 describe("parseConfig", () => {
   it("when repos are string", () => {

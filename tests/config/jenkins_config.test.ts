@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Logger } from "tslog";
-import { parseConfig } from "../../src/config/jenkins_config";
+import { parseConfig } from "../../src/config/jenkins_config.ts";
 
 const logger = new Logger({ type: "hidden" });
 

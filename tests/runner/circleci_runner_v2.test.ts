@@ -2,11 +2,11 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import {
   CircleciRunnerV2,
   type CircleciV2LastRunMetadata,
-} from "../../src/runner/circleci_runner_v2";
+} from "../../src/runner/circleci_runner_v2.ts";
 import { Logger } from "tslog";
-import { ArgumentOptions } from "../../src/arg_options";
-import { LastRunStore } from "../../src/last_run_store";
-import { NullStore } from "../../src/store/null_store";
+import { ArgumentOptions } from "../../src/arg_options.ts";
+import { LastRunStore } from "../../src/last_run_store.ts";
+import { NullStore } from "../../src/store/null_store.ts";
 
 const logger = new Logger({ type: "hidden" });
 const argOptions = new ArgumentOptions({

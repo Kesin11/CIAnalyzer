@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
-import { LocalStore } from "../../src/store/local_store";
+import { LocalStore } from "../../src/store/local_store.ts";
 import os from "node:os";
 import fs from "node:fs";
 import path from "node:path";
