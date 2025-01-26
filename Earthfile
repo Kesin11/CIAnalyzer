@@ -40,7 +40,7 @@ proto:
 test:
   FROM +deps
   COPY --dir src tsconfig.json \
-      __tests__ vitest.config.ts bigquery_schema ./
+      tests vitest.config.ts bigquery_schema ./
   COPY ./proto+protoc/pb_types src/pb_types
   COPY ./proto+protoc/schema bigquery_schema/
   RUN npm run test:ci
