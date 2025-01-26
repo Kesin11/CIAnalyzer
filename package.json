@@ -30,7 +30,7 @@
     "check": "tsc --noEmit",
     "check:watch": "tsc --watch --noEmit",
     "biome:ci": "biome ci .",
-    "lint:fix": "biome lint --apply-unsafe .",
+    "lint:fix": "biome lint --write --unsafe .",
     "fmt:fix": "biome format --write .",
     "test": "TZ=UTC vitest",
     "test:ci": "TZ=UTC vitest --run --coverage",
