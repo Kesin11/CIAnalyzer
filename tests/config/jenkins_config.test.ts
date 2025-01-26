@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Logger } from "tslog";
 import { parseConfig } from "../../src/config/jenkins_config.ts";
+import { validateConfig } from "../../src/config/config.ts";
 
 const logger = new Logger({ type: "hidden" });
 
@@ -13,7 +14,7 @@ describe("parseConfig", () => {
       },
     };
 
-    const actual = parseConfig(config, logger);
+    const actual = parseConfig(validateConfig(logger, config), logger);
     expect(actual).toEqual({
       baseUrl: "http://localhost:8080",
       jobs: [
@@ -39,7 +40,7 @@ describe("parseConfig", () => {
         },
       };
 
-      const actual = parseConfig(config, logger);
+      const actual = parseConfig(validateConfig(logger, config), logger);
       expect(actual).toEqual({
         baseUrl: "http://localhost:8080",
         jobs: [
@@ -65,7 +66,7 @@ describe("parseConfig", () => {
         },
       };
 
-      const actual = parseConfig(config, logger);
+      const actual = parseConfig(validateConfig(logger, config), logger);
       expect(actual).toEqual({
         baseUrl: "http://localhost:8080",
         jobs: [
@@ -91,7 +92,7 @@ describe("parseConfig", () => {
         },
       };
 
-      const actual = parseConfig(config, logger);
+      const actual = parseConfig(validateConfig(logger, config), logger);
       expect(actual).toEqual({
         baseUrl: "http://localhost:8080",
         jobs: [
@@ -136,7 +137,7 @@ describe("parseConfig", () => {
         },
       };
 
-      const actual = parseConfig(config, logger);
+      const actual = parseConfig(validateConfig(logger, config), logger);
       expect(actual).toEqual({
         ...commonActual,
         collectAllJobs: {

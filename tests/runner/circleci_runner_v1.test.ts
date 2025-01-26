@@ -7,6 +7,7 @@ import { Logger } from "tslog";
 import { ArgumentOptions } from "../../src/arg_options.ts";
 import { LastRunStore } from "../../src/last_run_store.ts";
 import { NullStore } from "../../src/store/null_store.ts";
+import { validateConfig } from "../../src/config/config.ts";
 
 const logger = new Logger({ type: "hidden" });
 const argOptions = new ArgumentOptions({
@@ -18,14 +19,18 @@ const repo = "owner/repo";
 const config = {
   circleci: {
     repos: [repo],
-    version: 1,
+    version: 1 as const,
   },
 };
 
 describe("migrateLastRun", () => {
   let runner: CircleciRunnerV1;
   beforeEach(async () => {
-    runner = new CircleciRunnerV1(logger, config, argOptions);
+    runner = new CircleciRunnerV1(
+      logger,
+      validateConfig(logger, config),
+      argOptions,
+    );
     const nullStore = new NullStore(logger);
     runner.store = new LastRunStore<CircleciV1LastRunMetadata>(nullStore);
   });
