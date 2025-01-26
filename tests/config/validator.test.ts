@@ -3,7 +3,7 @@ import { Logger } from "tslog";
 import {
   type ValidatedYamlConfig,
   validateConfig,
-} from "../../src/config/config";
+} from "../../src/config/config.ts";
 
 const logger = new Logger({ type: "hidden" });
 

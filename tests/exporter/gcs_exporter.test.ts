@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { GcsExporter } from "../../src/exporter/gcs_exporter";
-import type { GcsExporterConfig } from "../../src/config/schema";
+import { GcsExporter } from "../../src/exporter/gcs_exporter.ts";
+import type { GcsExporterConfig } from "../../src/config/schema.ts";
 import { Logger } from "tslog";
 
 const mockStorage = {

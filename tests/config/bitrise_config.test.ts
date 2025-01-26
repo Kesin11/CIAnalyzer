@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { parseConfig } from "../../src/config/bitrise_config";
+import { Logger } from "tslog";
+import { parseConfig } from "../../src/config/bitrise_config.ts";
+import { validateConfig } from "../../src/config/config.ts";
+
+const logger = new Logger({ type: "hidden" });
 
 describe("parseConfig", () => {
   describe("apps", () => {
@@ -10,7 +14,7 @@ describe("parseConfig", () => {
         },
       };
 
-      const actual = parseConfig(config);
+      const actual = parseConfig(validateConfig(logger, config));
       expect(actual).toEqual({
         apps: [
           {
@@ -35,7 +39,7 @@ describe("parseConfig", () => {
         },
       };
 
-      const actual = parseConfig(config);
+      const actual = parseConfig(validateConfig(logger, config));
       expect(actual).toEqual({
         apps: [
           {

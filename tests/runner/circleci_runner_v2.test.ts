@@ -1,12 +1,13 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import {
-  CircleciRunnerV1,
-  type CircleciV1LastRunMetadata,
-} from "../../src/runner/circleci_runner_v1";
+  CircleciRunnerV2,
+  type CircleciV2LastRunMetadata,
+} from "../../src/runner/circleci_runner_v2.ts";
 import { Logger } from "tslog";
-import { ArgumentOptions } from "../../src/arg_options";
-import { LastRunStore } from "../../src/last_run_store";
-import { NullStore } from "../../src/store/null_store";
+import { ArgumentOptions } from "../../src/arg_options.ts";
+import { LastRunStore } from "../../src/last_run_store.ts";
+import { NullStore } from "../../src/store/null_store.ts";
+import { validateConfig } from "../../src/config/config.ts";
 
 const logger = new Logger({ type: "hidden" });
 const argOptions = new ArgumentOptions({
@@ -18,30 +19,35 @@ const repo = "owner/repo";
 const config = {
   circleci: {
     repos: [repo],
-    version: 1,
+    version: 2 as const,
   },
 };
 
 describe("migrateLastRun", () => {
-  let runner: CircleciRunnerV1;
+  let runner: CircleciRunnerV2;
   beforeEach(async () => {
-    runner = new CircleciRunnerV1(logger, config, argOptions);
+    runner = new CircleciRunnerV2(
+      logger,
+      validateConfig(logger, config),
+      argOptions,
+    );
     const nullStore = new NullStore(logger);
-    runner.store = new LastRunStore<CircleciV1LastRunMetadata>(nullStore);
+    runner.store = new LastRunStore<CircleciV2LastRunMetadata>(nullStore);
   });
 
   it("new repo", async () => {
     runner.migrateLastRun(repo);
 
     expect(runner.store!.lastRun[repo]).toEqual({
+      lastRun: 0,
       updatedAt: expect.anything(),
       meta: {
-        version: 1,
+        version: 2,
       },
     });
   });
 
-  it("undefined metadata to version:1", async () => {
+  it("undefined metadata to version:2", async () => {
     runner.store!.lastRun[repo] = {
       lastRun: 1,
       updatedAt: new Date(),
@@ -50,15 +56,15 @@ describe("migrateLastRun", () => {
     runner.migrateLastRun(repo);
 
     expect(runner.store!.lastRun[repo]).toEqual({
-      lastRun: 1,
+      lastRun: 0,
       updatedAt: expect.anything(),
       meta: {
-        version: 1,
+        version: 2,
       },
     });
   });
 
-  it("version:1 to version:1", async () => {
+  it("version:1 to version:2", async () => {
     runner.store!.lastRun[repo] = {
       lastRun: 1,
       updatedAt: new Date(),
@@ -68,23 +74,30 @@ describe("migrateLastRun", () => {
     };
     runner.migrateLastRun(repo);
 
-    expect(runner.store!.getMeta(repo)).toEqual({ version: 1 });
+    expect(runner.store!.getMeta(repo)).toEqual({ version: 2 });
   });
 
-  it("version:2 to version:1", async () => {
+  it("version:2 to version:2", async () => {
+    const lastRun = 1;
     runner.store!.lastRun[repo] = {
-      lastRun: 1,
+      lastRun,
       updatedAt: new Date(),
       meta: {
         version: 2,
       },
     };
-    expect(() => {
-      runner.migrateLastRun(repo);
-    }).toThrow();
+    runner.migrateLastRun(repo);
+
+    expect(runner.store!.lastRun[repo]).toEqual({
+      lastRun,
+      updatedAt: expect.anything(),
+      meta: {
+        version: 2,
+      },
+    });
   });
 
-  it("version:>2 to version:1", async () => {
+  it("version:>2 to version:2", async () => {
     runner.store!.lastRun[repo] = {
       lastRun: 1,
       updatedAt: new Date(),

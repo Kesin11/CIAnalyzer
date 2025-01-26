@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   CustomReportCollection,
   aggregateCustomReportArtifacts,
-} from "../src/custom_report_collection";
-import type { CustomReportArtifact } from "../src/client/client";
+} from "../src/custom_report_collection.ts";
+import type { CustomReportArtifact } from "../src/client/client.ts";
 
 describe("CustomReportCollection", () => {
   let customReportCollection: CustomReportCollection;

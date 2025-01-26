@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { ArgumentOptions } from "../../src/arg_options";
-import { GithubClient } from "../../src/client/github_client";
+import { ArgumentOptions } from "../../src/arg_options.ts";
+import { GithubClient } from "../../src/client/github_client.ts";
 
 const allCompletedRuns = [
   { run_number: 2, status: "completed" },

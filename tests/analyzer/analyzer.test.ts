@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   convertToReportTestSuites,
   ReportTestSuites,
-} from "../../src/analyzer/analyzer";
+} from "../../src/analyzer/analyzer.ts";
 import type { TestSuites } from "junit2json";
 
 describe("Analyzer", () => {

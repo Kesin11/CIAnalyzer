@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { BitriseAnalyzer } from "../../src/analyzer/bitrise_analyzer";
-import type { BuildLogResponse } from "../../src/client/bitrise_client";
+import { BitriseAnalyzer } from "../../src/analyzer/bitrise_analyzer.ts";
+import type { BuildLogResponse } from "../../src/client/bitrise_client.ts";
 
 describe("BitriseAnalyzer", () => {
   let analyzer: BitriseAnalyzer;

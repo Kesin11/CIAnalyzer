@@ -27,7 +27,7 @@
       "bigquery_schema/**",
       "./src/pb_types/**",
       // Test fixtures
-      "__tests__/fixtures/**",
+      "tests/fixtures/**",
       // Others
       "tsconfig.json",
       "package.json"
@@ -35,7 +35,7 @@
   },
   "overrides": [
     {
-      "include": ["__tests__/**"],
+      "include": ["tests/**"],
       "linter": {
         "rules": {
           "suspicious": {

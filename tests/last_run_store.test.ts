@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { LastRunStore } from "../src/last_run_store";
-import type { Store, AnyObject } from "../src/store/store";
+import { LastRunStore } from "../src/last_run_store.ts";
+import type { Store, AnyObject } from "../src/store/store.ts";
 
 class MockStore implements Store {
   constructor(public data: AnyObject = {}) {}

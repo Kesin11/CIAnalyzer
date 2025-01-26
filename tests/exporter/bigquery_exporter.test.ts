@@ -1,8 +1,8 @@
 import path from "node:path";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { BigqueryExporter } from "../../src/exporter/bigquery_exporter";
-import type { BigqueryExporterConfig } from "../../src/config/schema";
-import { CustomReportCollection } from "../../src/custom_report_collection";
+import { BigqueryExporter } from "../../src/exporter/bigquery_exporter.ts";
+import type { BigqueryExporterConfig } from "../../src/config/schema.ts";
+import { CustomReportCollection } from "../../src/custom_report_collection.ts";
 import { Logger } from "tslog";
 
 const bigqueryMock = {
@@ -12,7 +12,7 @@ const bigqueryMock = {
 };
 const configDir = path.join(__dirname, "..", "..");
 const fixtureSchemaPath = {
-  custom: "./__tests__/fixture/custom_table.json",
+  custom: "./tests/fixture/custom_table.json",
 };
 const logger = new Logger({ type: "hidden" });
 
