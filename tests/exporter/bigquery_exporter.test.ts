@@ -12,7 +12,7 @@ const bigqueryMock = {
 };
 const configDir = path.join(__dirname, "..", "..");
 const fixtureSchemaPath = {
-  custom: "./__tests__/fixture/custom_table.json",
+  custom: "./tests/fixture/custom_table.json",
 };
 const logger = new Logger({ type: "hidden" });
 
