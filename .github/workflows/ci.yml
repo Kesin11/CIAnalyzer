@@ -80,7 +80,7 @@ jobs:
           path: |
             junit/*.xml
             custom_report.json
-      - uses: k1LoW/octocov-action@1ad702b3118b6a055c00b01db68ca0d9f6641dbc # v1.4.0
+      - uses: k1LoW/octocov-action@73d561f65d59e66899ed5c87e4621a913b5d5c20 # v1.5.0
         name: Upload coverage
 
   docker-build:
