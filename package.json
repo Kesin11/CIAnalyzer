@@ -39,6 +39,7 @@
     "schema": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +schema"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.787.0",
     "@google-cloud/bigquery": "7.9.3",
     "@google-cloud/storage": "7.16.0",
     "@octokit/plugin-retry": "7.2.1",

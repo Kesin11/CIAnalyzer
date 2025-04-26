@@ -1,18 +1,18 @@
 import path from "node:path";
-import { Storage } from "@google-cloud/storage";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import type { Logger } from "tslog";
 import dayjs from "dayjs";
 import type { Exporter } from "./exporter.js";
 import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
-import type { GcsExporterConfig } from "../config/schema.js";
+import type { S3ExporterConfig } from "../config/schema.js";
 import type {
   CustomReport,
   CustomReportCollection,
 } from "../custom_report_collection.js";
 
-export class GcsExporter implements Exporter {
+export class S3Exporter implements Exporter {
   service: string;
-  storage: Storage;
+  s3Client: S3Client;
   bucketName: string;
   prefixTemplate: string;
   logger: Logger<unknown>;
@@ -20,11 +20,11 @@ export class GcsExporter implements Exporter {
   constructor(
     logger: Logger<unknown>,
     service: string,
-    config: GcsExporterConfig,
+    config: S3ExporterConfig,
   ) {
-    if (!config.project || !config.bucket || !config.prefixTemplate) {
+    if (!config.region || !config.bucket || !config.prefixTemplate) {
       throw new Error(
-        "Must need 'project', 'bucket', and 'prefixTemplate' parameters in exporter.gcs config.",
+        "Must need 'region', 'bucket', and 'prefixTemplate' parameters in exporter.s3 config.",
       );
     }
     if (!config.prefixTemplate.includes("{reportType}")) {
@@ -33,8 +33,16 @@ export class GcsExporter implements Exporter {
       );
     }
     this.service = service;
-    this.logger = logger.getSubLogger({ name: GcsExporter.name });
-    this.storage = new Storage({ projectId: config.project });
+    this.logger = logger.getSubLogger({ name: S3Exporter.name });
+    this.s3Client = new S3Client({
+      region: config.region,
+      credentials: config.credentials
+        ? {
+            accessKeyId: config.credentials.accessKeyId,
+            secretAccessKey: config.credentials.secretAccessKey,
+          }
+        : undefined,
+    });
     this.bucketName = config.bucket;
     this.prefixTemplate = config.prefixTemplate;
   }
@@ -43,38 +51,21 @@ export class GcsExporter implements Exporter {
     return reports.map((report) => JSON.stringify(report)).join("\n");
   }
 
-  // 独自のグループ化関数
-  private groupByCreatedAt(
-    reports: (WorkflowReport | TestReport | CustomReport)[],
-    reportType: string,
-  ): Record<string, (WorkflowReport | TestReport | CustomReport)[]> {
-    const grouped: Record<
-      string,
-      (WorkflowReport | TestReport | CustomReport)[]
-    > = {};
-
-    for (const report of reports) {
-      const createdAt = dayjs(report.createdAt);
-      const dirPath = this.prefixTemplate
-        .replace("{reportType}", reportType)
-        .replace("{YYYY}", createdAt.format("YYYY"))
-        .replace("{MM}", createdAt.format("MM"))
-        .replace("{DD}", createdAt.format("DD"));
-
-      if (!grouped[dirPath]) {
-        grouped[dirPath] = [];
-      }
-      grouped[dirPath].push(report);
-    }
-
-    return grouped;
-  }
-
   private async export(
     reportType: string,
     reports: WorkflowReport[] | TestReport[] | CustomReport[],
   ) {
-    const groupedReports = this.groupByCreatedAt(reports, reportType);
+    const groupedReports = Object.groupBy(
+      reports,
+      (report: WorkflowReport | TestReport | CustomReport) => {
+        const createdAt = dayjs(report.createdAt);
+        return this.prefixTemplate
+          .replace("{reportType}", reportType)
+          .replace("{YYYY}", createdAt.format("YYYY"))
+          .replace("{MM}", createdAt.format("MM"))
+          .replace("{DD}", createdAt.format("DD"));
+      },
+    );
 
     const now = dayjs();
     for (const [dirPath, reports] of Object.entries(groupedReports)) {
@@ -82,17 +73,24 @@ export class GcsExporter implements Exporter {
         dirPath,
         `${now.format("YYYYMMDD-HHmmss")}-${reportType}-${this.service}.json`,
       );
-      const file = this.storage.bucket(this.bucketName).file(filePath);
       const reportJson = this.formatJsonLines(reports || []);
 
       this.logger.info(
-        `Uploading ${reportType} reports to gs://${this.bucketName}/${filePath}`,
+        `Uploading ${reportType} reports to s3://${this.bucketName}/${filePath}`,
       );
 
-      await file.save(reportJson);
+      // S3へのアップロード
+      const command = new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: filePath,
+        Body: reportJson,
+        ContentType: "application/json",
+      });
+
+      await this.s3Client.send(command);
 
       this.logger.info(
-        `Successfully uploaded to gs://${this.bucketName}/${filePath}`,
+        `Successfully uploaded to s3://${this.bucketName}/${filePath}`,
       );
     }
   }

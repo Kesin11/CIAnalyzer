@@ -35,10 +35,24 @@ const gcsExporterSchema = z.object({
 });
 export type GcsExporterConfig = z.infer<typeof gcsExporterSchema>;
 
+const s3ExporterSchema = z.object({
+  region: z.string(),
+  bucket: z.string(),
+  prefixTemplate: z.string(),
+  credentials: z
+    .object({
+      accessKeyId: z.string(),
+      secretAccessKey: z.string(),
+    })
+    .optional(),
+});
+export type S3ExporterConfig = z.infer<typeof s3ExporterSchema>;
+
 const exporterSchema = z.object({
   local: localExporterSchema.optional(),
   bigquery: bigqueryExporterSchema.optional(),
   gcs: gcsExporterSchema.optional(),
+  s3: s3ExporterSchema.optional(),
 });
 export type ExporterConfig = z.infer<typeof exporterSchema>;
 

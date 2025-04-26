@@ -5,12 +5,14 @@ import type {
   LocalExporterConfig,
   BigqueryExporterConfig,
   GcsExporterConfig,
+  S3ExporterConfig,
 } from "../config/schema.js";
 import { BigqueryExporter } from "./bigquery_exporter.js";
 import type { CustomReportCollection } from "../custom_report_collection.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
 import { GcsExporter } from "./gcs_exporter.js";
+import { S3Exporter } from "./s3_exporter.js";
 
 export interface Exporter {
   exportWorkflowReports(reports: WorkflowReport[]): Promise<void>;
@@ -46,7 +48,8 @@ export class CompositExporter implements Exporter {
         let _config:
           | LocalExporterConfig
           | BigqueryExporterConfig
-          | GcsExporterConfig;
+          | GcsExporterConfig
+          | S3ExporterConfig;
         switch (exporter) {
           case "local":
             _config = config[exporter] ?? {};
@@ -66,6 +69,9 @@ export class CompositExporter implements Exporter {
               service,
               _config as GcsExporterConfig,
             );
+          case "s3":
+            _config = config[exporter] ?? {};
+            return new S3Exporter(logger, service, _config as S3ExporterConfig);
         }
       })
       .filter((exporter) => exporter !== undefined);
