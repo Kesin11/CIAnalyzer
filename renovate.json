@@ -8,22 +8,13 @@
   ],
   "packageRules": [
     {
-      "matchDepTypes": [
-        "devDependencies"
-      ],
+      "matchDepTypes": ["devDependencies"],
       "separateMajorMinor": false,
-      "extends": [
-        ":automergeMajor",
-        "schedule:weekends"
-      ]
+      "extends": [":automergeMajor", "schedule:weekends"]
     },
     {
-      "matchPackageNames": [
-        "zod"
-      ],
-      "extends": [
-        "schedule:monthly"
-      ]
+      "matchPackageNames": ["zod"],
+      "extends": ["schedule:monthly"]
     }
   ]
 }
