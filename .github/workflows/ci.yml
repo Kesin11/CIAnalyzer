@@ -83,6 +83,30 @@ jobs:
       - uses: k1LoW/octocov-action@73d561f65d59e66899ed5c87e4621a913b5d5c20 # v1.5.0
         name: Upload coverage
 
+  smoke_test:
+    runs-on: ubuntu-latest
+    container:
+      image: "node:lts"
+    permissions:
+      contents: read
+    steps:
+      # Setup
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      # Test
+      - name: Smoke test bundled js
+        run: |
+          node --enable-source-maps dist/index.mjs --version
+          node --enable-source-maps dist/index.mjs --help
+
   docker-build:
     runs-on: ubuntu-latest
     steps:
