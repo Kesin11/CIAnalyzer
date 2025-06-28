@@ -56,7 +56,7 @@
     "utility-types": "3.11.0",
     "yargs": "17.7.2",
     "zod": "3.25.55",
-    "zod-to-json-schema": "3.24.5"
+    "zod-to-json-schema": "3.24.6"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
