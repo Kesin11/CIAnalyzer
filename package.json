@@ -70,7 +70,7 @@
     "esbuild": "0.25.8",
     "ts-proto": "2.7.5",
     "ts-protoc-gen": "0.15.0",
-    "typescript": "5.8.3",
+    "typescript": "5.9.2",
     "vitest": "3.2.4"
   }
 }
