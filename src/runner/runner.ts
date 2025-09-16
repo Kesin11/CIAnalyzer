@@ -29,22 +29,27 @@ export class CompositRunner implements Runner {
         )
       : Object.keys(config);
 
-    this.runners = services
-      .map((service) => {
-        switch (service) {
-          case "github":
-            return new GithubRunner(logger, config, options);
-          case "circleci":
-            return new CircleciRunner(logger, config, options);
-          case "jenkins":
-            return new JenkinsRunner(logger, config, options);
-          case "bitrise":
-            return new BitriseRunner(logger, config, options);
-          default:
-            return undefined;
-        }
-      })
-      .filter((runner): runner is Runner => runner !== undefined);
+    const resolvedRunners: Runner[] = [];
+    for (const service of services) {
+      switch (service) {
+        case "github":
+          resolvedRunners.push(new GithubRunner(logger, config, options));
+          break;
+        case "circleci":
+          resolvedRunners.push(new CircleciRunner(logger, config, options));
+          break;
+        case "jenkins":
+          resolvedRunners.push(new JenkinsRunner(logger, config, options));
+          break;
+        case "bitrise":
+          resolvedRunners.push(new BitriseRunner(logger, config, options));
+          break;
+        default:
+          break;
+      }
+    }
+
+    this.runners = resolvedRunners;
   }
 
   async run(): Promise<Result<unknown, Error>> {

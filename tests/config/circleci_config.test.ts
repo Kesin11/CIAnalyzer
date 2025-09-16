@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Logger } from "tslog";
 import { parseConfig } from "../../src/config/circleci_config.ts";
 import { validateConfig } from "../../src/config/config.ts";
+import type { ValidatedYamlConfig } from "../../src/config/config.ts";
 
 const logger = new Logger({ type: "hidden" });
 
