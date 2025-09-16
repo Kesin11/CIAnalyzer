@@ -66,9 +66,11 @@ export class CompositExporter implements Exporter {
               service,
               _config as GcsExporterConfig,
             );
+          default:
+            return undefined;
         }
       })
-      .filter((exporter) => exporter !== undefined);
+      .filter((exporter): exporter is Exporter => exporter !== undefined);
   }
 
   async exportWorkflowReports(reports: WorkflowReport[]) {

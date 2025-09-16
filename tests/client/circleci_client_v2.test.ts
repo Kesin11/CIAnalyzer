@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { Logger } from "tslog";
 import { ArgumentOptions } from "../../src/arg_options.ts";
 import { CircleciClientV2 } from "../../src/client/circleci_client_v2.ts";

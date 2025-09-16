@@ -91,10 +91,10 @@ export const convertToReportTestSuites = (
     delete testSuite["system-err"];
     delete testSuite.properties;
     testSuite?.testcase?.forEach((testCase: TestCase) => {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: Allow attaching computed fields to TestCase via temporary any cast
       (testCase as any).successCount =
         testCase.failure || testCase.error || testCase.skipped ? 0 : 1;
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: Allow storing derived status string on TestCase via any cast
       (testCase as any).status = testCase.failure
         ? "FAILURE"
         : testCase.error
@@ -155,6 +155,7 @@ export const convertToTestReports = async (
       console.error(
         `Error: Could not parse as JUnit XML. workflowRunId: ${workflowReport.workflowRunId}, path: ${artifact.path}`,
       );
+      console.error(error);
     }
   }
   return testReports;

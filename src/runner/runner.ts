@@ -44,7 +44,7 @@ export class CompositRunner implements Runner {
             return undefined;
         }
       })
-      .filter((runner) => runner !== undefined);
+      .filter((runner): runner is Runner => runner !== undefined);
   }
 
   async run(): Promise<Result<unknown, Error>> {
@@ -64,7 +64,9 @@ export class CompositRunner implements Runner {
         return result.value;
       }) as unknown[];
     if (errors.length > 0) {
-      errors.forEach((error) => this.handlingError(error));
+      errors.forEach((error) => {
+        this.handlingError(error);
+      });
       return failure(new Error("Some runner throws error!!"));
     }
 

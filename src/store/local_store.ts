@@ -34,6 +34,9 @@ export class LocalStore implements Store {
       this.logger.info(
         `${this.filePath} was not found, empty object is used instead.`,
       );
+      if (error instanceof Error) {
+        this.logger.debug(error);
+      }
       return {} as T;
     }
   }

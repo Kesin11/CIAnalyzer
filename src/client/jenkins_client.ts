@@ -187,7 +187,6 @@ export type TimeInQueueAction = {
 
 export class JenkinsClient {
   #axios: AxiosInstance;
-  #options: ArgumentOptions;
   constructor(
     baseUrl: string,
     logger: Logger<unknown>,
@@ -206,7 +205,6 @@ export class JenkinsClient {
           }
         : undefined;
 
-    this.#options = options;
     const axiosLogger = logger.getSubLogger({ name: JenkinsClient.name });
     this.#axios = createAxios(axiosLogger, options, {
       baseURL: baseUrl,
