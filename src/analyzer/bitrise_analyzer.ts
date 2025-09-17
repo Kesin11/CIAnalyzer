@@ -70,11 +70,6 @@ type StepReport = {
   stepDurationSec: number; // completedAt - startedAt
 };
 
-type JobParameter = {
-  name: string;
-  value: string;
-};
-
 type StepLog = {
   name: string;
   duration: string;
@@ -185,7 +180,7 @@ export class BitriseAnalyzer implements Analyzer {
       .filter((row) => row.match(/\d+\s(sec|min)/))
       .map((row) => {
         // Step name
-        // biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
+        // biome-ignore lint/suspicious/noControlCharactersInRegex: Regex must include control codes to match ANSI escape sequences
         const names = [...row.matchAll(/;1m(?<name>.+?)\u001b/g)].map(
           (match) => match.groups?.name ?? "",
         );

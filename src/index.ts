@@ -15,7 +15,7 @@ const main = async () => {
     .command(
       ["$0", "workflow"],
       "Collect workflow data from CI services",
-      (yargs) => {},
+      (_yargs) => {},
       () => {},
     )
     .options({

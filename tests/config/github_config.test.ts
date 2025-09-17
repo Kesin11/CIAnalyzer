@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { Logger } from "tslog";
 import { parseConfig } from "../../src/config/github_config.ts";
 import { validateConfig } from "../../src/config/config.ts";

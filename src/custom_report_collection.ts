@@ -41,7 +41,8 @@ export const createCustomReportCollection = async (
           console.error(
             `Error: Could not parse as JSON. workflowRunId: ${workflowReport.workflowRunId}, path: ${artifact.path}`,
           );
-          return;
+          console.error(error);
+          return undefined;
         }
 
         return {
@@ -51,7 +52,7 @@ export const createCustomReportCollection = async (
           ...data,
         } as CustomReport;
       })
-      .filter((report) => report !== undefined);
+      .filter((report): report is CustomReport => report !== undefined);
 
     reportCollection.set(reportName, reports);
   }

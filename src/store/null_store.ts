@@ -13,7 +13,7 @@ export class NullStore implements Store {
     return {} as T;
   }
 
-  async write<T extends AnyObject>(newStore: T): Promise<T> {
+  async write<T extends AnyObject>(_newStore: T): Promise<T> {
     this.#logger.info("Detect DEBUG mode, skip saving lastRun.");
     return {} as T;
   }

@@ -1,8 +1,6 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.7.1/schema.json",
-  "organizeImports": {
-    "enabled": false
-  },
+  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+  "assist": { "actions": { "source": { "organizeImports": "off" } } },
   "linter": {
     "enabled": true,
     "rules": {
@@ -21,21 +19,19 @@
   "formatter": {
     "formatWithErrors": true,
     "indentStyle": "space",
-    "ignore": [
-      // Generated file
-      "schema.json",
-      "bigquery_schema/**",
-      "./src/pb_types/**",
-      // Test fixtures
-      "tests/fixtures/**",
-      // Others
-      "tsconfig.json",
-      "package.json"
+    "includes": [
+      "**",
+      "!**/schema.json",
+      "!**/bigquery_schema/**",
+      "!src/pb_types/**",
+      "!**/tests/fixtures/**",
+      "!**/tsconfig.json",
+      "!**/package.json"
     ]
   },
   "overrides": [
     {
-      "include": ["tests/**"],
+      "includes": ["**/tests/**"],
       "linter": {
         "rules": {
           "suspicious": {

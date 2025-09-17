@@ -41,34 +41,44 @@ export class CompositExporter implements Exporter {
         )
       : Object.keys(config);
 
-    this.exporters = exporters
-      .map((exporter) => {
-        let _config:
-          | LocalExporterConfig
-          | BigqueryExporterConfig
-          | GcsExporterConfig;
-        switch (exporter) {
-          case "local":
-            _config = config[exporter] ?? {};
-            return new LocalExporter(
+    const resolvedExporters: Exporter[] = [];
+    for (const exporter of exporters) {
+      switch (exporter) {
+        case "local": {
+          const exporterConfig = (config[exporter] ??
+            {}) as LocalExporterConfig;
+          resolvedExporters.push(
+            new LocalExporter(
               logger,
               service,
               options.configDir,
-              _config,
-            );
-          case "bigquery":
-            _config = config[exporter] ?? {};
-            return new BigqueryExporter(logger, _config, options.configDir);
-          case "gcs":
-            _config = config[exporter] ?? {};
-            return new GcsExporter(
-              logger,
-              service,
-              _config as GcsExporterConfig,
-            );
+              exporterConfig,
+            ),
+          );
+          break;
         }
-      })
-      .filter((exporter) => exporter !== undefined);
+        case "bigquery": {
+          const exporterConfig = (config[exporter] ??
+            {}) as BigqueryExporterConfig;
+          resolvedExporters.push(
+            new BigqueryExporter(logger, exporterConfig, options.configDir),
+          );
+          break;
+        }
+        case "gcs": {
+          const exporterConfig = (config[exporter] ?? {}) as GcsExporterConfig;
+          resolvedExporters.push(
+            new GcsExporter(logger, service, exporterConfig),
+          );
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+    }
+
+    this.exporters = resolvedExporters;
   }
 
   async exportWorkflowReports(reports: WorkflowReport[]) {

@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { LocalStore } from "../../src/store/local_store.ts";
 import os from "node:os";
 import fs from "node:fs";
@@ -10,7 +10,6 @@ const createRandomStr = () => crypto.randomBytes(8).toString("hex");
 const logger = new Logger({ type: "hidden" });
 
 describe("LocalStore", () => {
-  const repo = "owner/repo";
   let storePath: string;
   let localStore: LocalStore;
   beforeEach(() => {

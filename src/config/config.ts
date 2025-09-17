@@ -46,7 +46,7 @@ export const loadConfig = (
 const formatErrorForLog = (error: z.ZodError): string => {
   return JSON.stringify(
     error.format(),
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: JSON.stringify replacer signature uses any for key/value pairs
     (key: any, value: any) => {
       return key === "_errors" && value.length === 0 ? undefined : value;
     },

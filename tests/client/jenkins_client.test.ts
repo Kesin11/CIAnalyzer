@@ -31,25 +31,13 @@ describe("JenkinsClient", () => {
 
     it("should throw error when only user is undeinfed", async () => {
       expect(() => {
-        const client = new JenkinsClient(
-          baseUrl,
-          logger,
-          options,
-          undefined,
-          "token",
-        );
+        new JenkinsClient(baseUrl, logger, options, undefined, "token");
       }).toThrow();
     });
 
     it("should throw error when only token is undeinfed", async () => {
       expect(() => {
-        const client = new JenkinsClient(
-          baseUrl,
-          logger,
-          options,
-          "usre",
-          undefined,
-        );
+        new JenkinsClient(baseUrl, logger, options, "usre", undefined);
       }).toThrow();
     });
   });
