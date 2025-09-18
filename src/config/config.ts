@@ -2,7 +2,6 @@ import fs from "node:fs";
 import yaml from "js-yaml";
 import type { Logger } from "tslog";
 import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
 import { bitriseYamlSchema } from "./bitrise_config.js";
 import { circleciYamlSchema } from "./circleci_config.js";
 import { githubYamlSchema } from "./github_config.js";
@@ -25,7 +24,11 @@ export type ValidatedYamlConfig = YamlConfig & {
 };
 
 export const createJsonSchema = () => {
-  return zodToJsonSchema(yamlSchema, "CIAnalyzer config schema");
+  const jsonSchema = z.toJSONSchema(yamlSchema);
+  return {
+    ...jsonSchema,
+    title: "CIAnalyzer config schema",
+  };
 };
 
 export const loadConfig = (
