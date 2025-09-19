@@ -16,6 +16,8 @@ await esbuild.build({
   //
   // ref: https://github.com/evanw/esbuild/issues/1921
   banner: {
-    js: "import { createRequire } from 'module';const require = createRequire(import.meta.url);",
+    // yargs@18 bundles its own createRequire import.
+    // Use a namespaced import to avoid redeclaration collisions.
+    js: "import * as __module from 'node:module';const require = __module.createRequire(import.meta.url);",
   },
 });
