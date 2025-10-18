@@ -522,6 +522,9 @@ when errors occur during data collection:
 ci_analyzer -c config.yaml --force-save-last-run
 ```
 
+See sample that GitHub Actions with `workflow_dispatch`
+[github_cron.yml](./sample/github_cron.yml)
+
 # Debug options
 
 - Fetch only selected service

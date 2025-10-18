@@ -2,6 +2,12 @@
 name: CIAnalyzer
 on:
   workflow_dispatch:
+    inputs:
+      force_save_last_run:
+        description: 'Force saving last run state even when errors occur'
+        required: false
+        default: false
+        type: boolean
   schedule:
   - cron:  '0 * * * *'
 concurrency: cianalyzer
@@ -26,7 +32,7 @@ jobs:
           service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
 
       - name: Run CIAnalyzer
-        run: ci_analyzer -c ./ci_analyzer.yaml
+        run: ci_analyzer -c ./ci_analyzer.yaml ${{ inputs.force_save_last_run && '--force-save-last-run' || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.YOUR_GITHUB_PAT }}
           CIRCLECI_TOKEN: ${{ secrets.YOUR_CIRCLECI_TOKEN }}
