@@ -50,6 +50,12 @@ const main = async () => {
         describe:
           "Limit http request concurrency per service. When set 0, disable concurrency limit",
       },
+      "force-save-last-run": {
+        type: "boolean",
+        default: false,
+        describe:
+          "Save last run state even when errors occur during data collection",
+      },
     })
     .strict()
     .parseSync();

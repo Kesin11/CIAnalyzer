@@ -144,6 +144,13 @@ export class GithubRunner implements Runner {
         const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`;
         this.logger.error(errorMessage);
         result = failure(new Error(errorMessage, { cause: error as Error }));
+
+        if (this.options.forceSaveLastRun) {
+          this.logger.warn(
+            `Force saving last run for '${repo.fullname}' with --force-save-last-run option.`,
+          );
+          this.setRepoLastRun(repo, repoWorkflowReports);
+        }
         continue;
       }
       this.setRepoLastRun(repo, repoWorkflowReports);

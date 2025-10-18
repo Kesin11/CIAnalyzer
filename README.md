@@ -1,20 +1,31 @@
 # CIAnalyzer
+
 [![CI](https://github.com/Kesin11/CIAnalyzer/workflows/CI/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
 [![Docker build](https://github.com/Kesin11/CIAnalyzer/workflows/Docker%20build/badge.svg)](https://github.com/Kesin11/CIAnalyzer/actions)
 [![Docker Pulls](https://img.shields.io/badge/docker%20pulls-ghcr.io-blue)](https://github.com/users/Kesin11/packages/container/ci_analyzer/versions)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kesin/ci_analyzer)](https://hub.docker.com/r/kesin/ci_analyzer)
 
-CIAnalyzer is a tool for collecting build data from CI services. You can create a dashboard to analyze your build from the collected data.
+CIAnalyzer is a tool for collecting build data from CI services. You can create
+a dashboard to analyze your build from the collected data.
 
 # Motivation
-Today, many CI services provide the ability to build applications, docker images, and many other things.
-Since some of these builds can take a long time to build, you may want to analyze your build data, average build time, success rate, etc.
 
-Unfortunately, few services provide a dashboard for analyzing build data. As far as I know Azure Pipeline provides a great feature called [Pipeline reports](https://docs.microsoft.com/en-us/azure/devops/pipelines/reports/pipelinereport?view=azure-devops), but it only shows data about builds that have been run in Azure Pipeline.
+Today, many CI services provide the ability to build applications, docker
+images, and many other things. Since some of these builds can take a long time
+to build, you may want to analyze your build data, average build time, success
+rate, etc.
 
-CIAnalyzer collects build data using each service API, then normalizes the data format and exports it. So you can create a dashboard that allows you to analyze build data across multiple CI services using your favorite BI tools.
+Unfortunately, few services provide a dashboard for analyzing build data. As far
+as I know Azure Pipeline provides a great feature called
+[Pipeline reports](https://docs.microsoft.com/en-us/azure/devops/pipelines/reports/pipelinereport?view=azure-devops),
+but it only shows data about builds that have been run in Azure Pipeline.
+
+CIAnalyzer collects build data using each service API, then normalizes the data
+format and exports it. So you can create a dashboard that allows you to analyze
+build data across multiple CI services using your favorite BI tools.
 
 # Sample dashboard
+
 [CIAnalyzer sample dashboard (DataStudio)](https://datastudio.google.com/reporting/71454c60-96f9-47e0-8dc6-2d5f98b60609/page/11yEB)
 
 It created by DataStudio with BigQuery
@@ -23,12 +34,15 @@ It created by DataStudio with BigQuery
 ![cianalyzer_test_report](https://user-images.githubusercontent.com/1324862/89435621-15380500-d780-11ea-8131-5dde21beb3fa.png)
 
 # Architecture
+
 ![CIAnalyzer Architecture](https://user-images.githubusercontent.com/1324862/128656632-de08a369-4c71-4e91-9084-626396f42a03.png)
 
-
 # Export data
+
 ## Workflow
-Workflow is a data about job that executed in CI. The items included in the workflow data are as follows.
+
+Workflow is a data about job that executed in CI. The items included in the
+workflow data are as follows.
 
 - Executed date
 - Duration time
@@ -47,7 +61,9 @@ Workflow is a data about job that executed in CI. The items included in the work
 See full schema: [workflow.proto](./proto/workflow.proto)
 
 ## Test report
-Test report is a data about test. If you output test result as JUnit format XML and store to archive, CIAnalyzer can collect from it.
+
+Test report is a data about test. If you output test result as JUnit format XML
+and store to archive, CIAnalyzer can collect from it.
 
 - Executed date
 - Duration time
@@ -60,6 +76,7 @@ Test report is a data about test. If you output test result as JUnit format XML 
 See full schema: [test_report.proto](./proto/test_report.proto)
 
 # Supported services
+
 - CI services
   - GitHub Actions
   - CircleCI (also support enterprise version)
@@ -74,6 +91,7 @@ See full schema: [test_report.proto](./proto/test_report.proto)
   - Google Cloud Storage (GCS)
 
 # USAGE
+
 ```bash
 docker run \
   --mount type=bind,src=${PWD},dst=/app/ \
@@ -88,26 +106,29 @@ docker run \
 ```
 
 ## Container tagging scheme
+
 The versioning follows [Semantic Versioning](https://semver.org/):
 
 > Given a version number MAJOR.MINOR.PATCH, increment the:
 >
 > 1. MAJOR version when you make incompatible API changes,
-> 2. MINOR version when you add functionality in a backwards-compatible manner, and
+> 2. MINOR version when you add functionality in a backwards-compatible manner,
+>    and
 > 3. PATCH version when you make backwards-compatible bug fixes.
 
-Most recommend tag for user is `v{major}`. If you prefere more conservetive versioning, `v{major}.{minor}` or `v{major}.{minor}.{patch}` are recommended.
+Most recommend tag for user is `v{major}`. If you prefere more conservetive
+versioning, `v{major}.{minor}` or `v{major}.{minor}.{patch}` are recommended.
 
-|tag|when update|for|
-|----|----|----|
-|`v{major}`|Create release|User|
-|`v{major}.{minor}`|Create release|User|
-|`v{major}.{minor}.{patch}`|Create release|User|
-|`latest`|Create release|Developer|
-|`master`|Push master|Developer|
-
+| tag                        | when update    | for       |
+| -------------------------- | -------------- | --------- |
+| `v{major}`                 | Create release | User      |
+| `v{major}.{minor}`         | Create release | User      |
+| `v{major}.{minor}.{patch}` | Create release | User      |
+| `latest`                   | Create release | Developer |
+| `master`                   | Push master    | Developer |
 
 ## Setup ENV
+
 - Services
   - GITHUB_TOKEN: GitHub auth token
   - CIRCLECI_TOKEN: CircleCI API token
@@ -120,9 +141,12 @@ Most recommend tag for user is `v{major}`. If you prefere more conservetive vers
   - GOOGLE_APPLICATION_CREDENTIALS
 
 ## Setup Exporter
+
 ### Setup BigQuery table (Recommend)
+
 > [!IMPORTANT]
-> If you want to use `exporter.bigquery`, you have to create dataset and table that CIAnalyzer will export data to it.
+> If you want to use `exporter.bigquery`, you have to create dataset and table
+> that CIAnalyzer will export data to it.
 
 ```bash
 # Prepare bigquery schema json files
@@ -154,17 +178,27 @@ bq mk \
   ./bigquery_schema/test_report.json
 ```
 
-And also GCP service account used for CIAnalyzer needs some BigQuery permissions. Please attach `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. More detail, check [BigQuery access control document](https://cloud.google.com/bigquery/docs/access-control).
+And also GCP service account used for CIAnalyzer needs some BigQuery
+permissions. Please attach `roles/bigquery.dataEditor` and
+`roles/bigquery.jobUser`. More detail, check
+[BigQuery access control document](https://cloud.google.com/bigquery/docs/access-control).
 
 ### Setup GCS
-> [!IMPORTANT]
-> If you want to use `exporter.gcs`, you have to create a bucket that CIAnalyzer will export data to.
 
-BigQuery can also read JSONL formatted data stored in GCS as [external tables](https://cloud.google.com/bigquery/docs/external-data-cloud-storage), so it is useful to save data to GCS instead of exporting directly to a BigQuery table. In that case, it is recommended to save data in a path that includes the DATE to be recognized as a Hive partition for efficient querying from BigQuery.
+> [!IMPORTANT]
+> If you want to use `exporter.gcs`, you have to create a bucket that CIAnalyzer
+> will export data to.
+
+BigQuery can also read JSONL formatted data stored in GCS as
+[external tables](https://cloud.google.com/bigquery/docs/external-data-cloud-storage),
+so it is useful to save data to GCS instead of exporting directly to a BigQuery
+table. In that case, it is recommended to save data in a path that includes the
+DATE to be recognized as a Hive partition for efficient querying from BigQuery.
 
 see: https://cloud.google.com/bigquery/docs/hive-partitioned-queries
 
-CIAnalyzer can save data to a path with date partitions by specifying a `prefixTemplate` in the configuration file as follows:
+CIAnalyzer can save data to a path with date partitions by specifying a
+`prefixTemplate` in the configuration file as follows:
 
 ```yaml
 exporter:
@@ -175,40 +209,64 @@ exporter:
 ```
 
 ## Setup LastRunStore
+
 ### What is LastRunStore
-CIAnalyzer collects build data from each CI service API, but there may be duplicates of the previously collected data. To remove the duplicate, it is necessary to save the last build number of the previous run and output only the difference from the previous run.
 
-After CIAnalyzer collects build data successfully, it save each job build number and load before next time execution. This feature called LastRunStore.
+CIAnalyzer collects build data from each CI service API, but there may be
+duplicates of the previously collected data. To remove the duplicate, it is
+necessary to save the last build number of the previous run and output only the
+difference from the previous run.
 
-By default, CIAnalyzer uses a local JSON file as a backend for LastRunStore. However, the last build number needs to be shared, for example when running CIAnalyzer on Jenkins which uses multiple nodes.
+After CIAnalyzer collects build data successfully, it save each job build number
+and load before next time execution. This feature called LastRunStore.
 
-Resolving these problems, CIAnalyzer can use GCS as LastRunStore to read/write the last build number from any machine. It inspired by [Terraform backend](https://www.terraform.io/docs/backends/index.html).
+By default, CIAnalyzer uses a local JSON file as a backend for LastRunStore.
+However, the last build number needs to be shared, for example when running
+CIAnalyzer on Jenkins which uses multiple nodes.
+
+Resolving these problems, CIAnalyzer can use GCS as LastRunStore to read/write
+the last build number from any machine. It inspired by
+[Terraform backend](https://www.terraform.io/docs/backends/index.html).
 
 ### Setup GCS bucket (Recommend)
+
 > [!IMPORTANT]
-> If you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket before execute CIAnalyzer.
+> If you want to use `lastRunStore.backend: gcs`, you have to create GCS bucket
+> before execute CIAnalyzer.
 
 ```bash
 gsutil mb -b on -l ${LOCATION} gs://${BUCKET_NAME}
 ```
 
-And also GCP service account needs to read and write permissions for the target bucket. More detail, check [GCS access control document](https://cloud.google.com/storage/docs/access-control/iam-permissions).
+And also GCP service account needs to read and write permissions for the target
+bucket. More detail, check
+[GCS access control document](https://cloud.google.com/storage/docs/access-control/iam-permissions).
 
 ## Edit config YAML
-Copy [ci_analyzer.yaml](./ci_analyzer.yaml) and edit to your preferred configuration. CIAnalyzer uses `ci_analyzer.yaml` as config file in default, but it can change with `-c` options.
 
-Also you don't forget copy Line 1 magic comment. You can given validating and completion support from [vscode-yaml](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) extension!
+Copy [ci_analyzer.yaml](./ci_analyzer.yaml) and edit to your preferred
+configuration. CIAnalyzer uses `ci_analyzer.yaml` as config file in default, but
+it can change with `-c` options.
+
+Also you don't forget copy Line 1 magic comment. You can given validating and
+completion support from
+[vscode-yaml](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)
+extension!
 
 ```
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Kesin11/CIAnalyzer/master/schema.json
 ```
 
-More detail for config file, please check [ci_analyzer.yaml](./ci_analyzer.yaml) and [sample files](./sample).
+More detail for config file, please check [ci_analyzer.yaml](./ci_analyzer.yaml)
+and [sample files](./sample).
 
 ## Execute on CI service with cron (Recommend)
-CIAnalyzer is designed as a tool that runs every time, not as an agent. It's a  good idea to run it with cron on CI services such as CircleCI or Jenkins.
 
-Please check [sample](./sample/README.md), then copy it and edit to your configuration.
+CIAnalyzer is designed as a tool that runs every time, not as an agent. It's a
+good idea to run it with cron on CI services such as CircleCI or Jenkins.
+
+Please check [sample](./sample/README.md), then copy it and edit to your
+configuration.
 
 ## Sample output JSON
 
@@ -317,6 +375,7 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
 ```
 
 ### Test report
+
 ```json
 [
   {
@@ -362,21 +421,30 @@ Please check [sample](./sample/README.md), then copy it and edit to your configu
 ```
 
 # Collect and export any JSON from build artifacts
-You can export any data related to build with `CustomReport`. CIAanalyzer can collect JSON file that has any structure from CI build artifacts. If you want to collect some data and export it to BigQuery(or others), just create JSON that includes your preferred data and store it to CI build artifacts.
+
+You can export any data related to build with `CustomReport`. CIAanalyzer can
+collect JSON file that has any structure from CI build artifacts. If you want to
+collect some data and export it to BigQuery(or others), just create JSON that
+includes your preferred data and store it to CI build artifacts.
 
 ## 1. Create schema file for your CustomReport table
-Create BigQuery schema JSON like this [sample schema json](./bigquery_schema/custom_sample.json) and save it to any path you want.
+
+Create BigQuery schema JSON like this
+[sample schema json](./bigquery_schema/custom_sample.json) and save it to any
+path you want.
 
 These columns are must need in your schema:
 
-|name|type|
-|----|----|
-|workflowId|STRING|
-|workflowRunId|STRING|
-|createdAt|TIMESTAMP|
+| name          | type      |
+| ------------- | --------- |
+| workflowId    | STRING    |
+| workflowRunId | STRING    |
+| createdAt     | TIMESTAMP |
 
 ## 2. Create BigQuery table
-As introduced before in "Setup BigQuery", create BigQuery table using `bq mk` command like this.
+
+As introduced before in "Setup BigQuery", create BigQuery table using `bq mk`
+command like this.
 
 ```
 bq mk
@@ -389,18 +457,26 @@ bq mk
 ```
 
 ## 3. Add CustomReport config
-Add your CustomReport JSON path (import target) at each repo(job)'s artifacts and BigQuery table info (export target) to your config YAML.
+
+Add your CustomReport JSON path (import target) at each repo(job)'s artifacts
+and BigQuery table info (export target) to your config YAML.
 
 See sample [ci_analyzer.yaml](./ci_analyzer.yaml).
 
-
-`bigquery.customReports[].schema` is BigQuery schema JSON created at step1. It accepts absolute path or relative path from your config YAML.
+`bigquery.customReports[].schema` is BigQuery schema JSON created at step1. It
+accepts absolute path or relative path from your config YAML.
 
 > [!WARNING]
-> When you run CIAnalyzer using docker, `bigquery.customReports[].schema` is a path that **inside of CIAnalyzer docker container**. So it's very confusing and recommends it to mount custom schema JSON at the same path as your ci_analyzer.yaml in the next step.
+> When you run CIAnalyzer using docker, `bigquery.customReports[].schema` is a
+> path that **inside of CIAnalyzer docker container**. So it's very confusing
+> and recommends it to mount custom schema JSON at the same path as your
+> ci_analyzer.yaml in the next step.
 
 ## 4. Mount custom schema JSON at `docker run` (Only using docker)
-To load your custom schema JSON from CIAnalyzer that runs inside of container, you have to also mount your JSON with additional `docker run --mount` options if you need.
+
+To load your custom schema JSON from CIAnalyzer that runs inside of container,
+you have to also mount your JSON with additional `docker run --mount` options if
+you need.
 
 ```
 --mount type=bind,src=${CUSTOM_SCHEMA_DIR_PATH},dst=/app/custom_schema
@@ -409,6 +485,7 @@ To load your custom schema JSON from CIAnalyzer that runs inside of container, y
 See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 
 # Roadmap and features
+
 - Supported CI services
   - [x] GitHub Actions
   - [x] CircleCI API v2
@@ -428,7 +505,25 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
   - [x] Google Cloud Storage
   - [ ] S3/S3 compatible storage
 
+# Tips
+
+## Partial data collection failures
+
+When running CIAnalyzer to collect data from multiple repositories/jobs, it's
+common to encounter a scenario where some succeed but others fail (e.g., network
+issues, API rate limits, or temporary service outages affecting only certain
+repositories). In such cases, CIAnalyzer by default does not update the last run
+state for repos that encountered errors.
+
+The `--force-save-last-run` option allows you to persist the last run state even
+when errors occur during data collection:
+
+```bash
+ci_analyzer -c config.yaml --force-save-last-run
+```
+
 # Debug options
+
 - Fetch only selected service
   - `--only-services`
   - ex: `--only-services github circleci`
@@ -444,16 +539,23 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
   - `export CI_ANALYZER_DEBUG=1`
 
 # Development
+
 ## Recommend to use GitHub Codespaces or VSCode Dev Container extensions
-This repository provide devcontainer that includes all dependencies for developing CIAnalyzer. So we recommend to use GitHub Codespaces that will build environment from .devcontainer or VSCode Dev Container extensions that also will build development environment in your machine.
+
+This repository provide devcontainer that includes all dependencies for
+developing CIAnalyzer. So we recommend to use GitHub Codespaces that will build
+environment from .devcontainer or VSCode Dev Container extensions that also will
+build development environment in your machine.
 
 ## Install and test
+
 ```bash
 npm ci
 npm run test
 ```
 
 ## Generate pb_types and bigquery_schema from .proto files
+
 Install [Earthly](https://earthly.dev/) first and then execute these commands.
 
 ```
@@ -461,6 +563,7 @@ npm run proto
 ```
 
 ## Docker build
+
 Install [Earthly](https://earthly.dev/) first and then execute these commands.
 
 ```
@@ -468,18 +571,20 @@ npm run docker
 ```
 
 ## Execute CIAnalyzer using nodejs
+
 ### Debugging
 
 ```bash
 npx tsx src/index.ts -c your_custom_config.yaml --debug
-
 ```
 
 ### Execute production bundled build
+
 ```bash
 npm run build
 npm run start -- -c your_custom_config.yaml
 ```
 
 # LICENSE
+
 MIT

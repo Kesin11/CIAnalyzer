@@ -86,10 +86,11 @@ export class CircleciRunnerV2 implements Runner {
     for (const repo of this.config.repos) {
       this.logger.info(`Fetching ${this.service} - ${repo.fullname} ...`);
 
+      let pipelines: Pipeline[] | undefined;
       try {
         this.migrateLastRun(repo.fullname);
         const lastRunId = this.store.getLastRun(repo.fullname);
-        const pipelines = await this.client.fetchWorkflowRuns(
+        pipelines = await this.client.fetchWorkflowRuns(
           repo.owner,
           repo.repo,
           repo.vcsType,
@@ -136,13 +137,20 @@ export class CircleciRunnerV2 implements Runner {
             customReportCollection.aggregate(runCustomReportCollection);
           }
         }
-
-        this.setRepoLastRun(repo.fullname, pipelines);
       } catch (error) {
         const errorMessage = `Some error raised in '${repo.fullname}', so it skipped.`;
         this.logger.error(errorMessage);
         result = failure(new Error(errorMessage, { cause: error as Error }));
+
+        if (this.options.forceSaveLastRun && pipelines) {
+          this.logger.warn(
+            `Force saving last run for '${repo.fullname}' with --force-save-last-run option.`,
+          );
+          this.setRepoLastRun(repo.fullname, pipelines);
+        }
+        continue;
       }
+      this.setRepoLastRun(repo.fullname, pipelines);
     }
 
     this.logger.info(`Exporting ${this.service} workflow reports ...`);

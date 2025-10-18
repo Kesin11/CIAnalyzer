@@ -13,6 +13,7 @@ export class ArgumentOptions {
   logLevel: 2 | 3; // tslog log level: "debug" | "info"
   keepAlive: boolean;
   maxConcurrentRequests?: number;
+  forceSaveLastRun: boolean;
 
   constructor(argv: Argv) {
     this.configPath = path.resolve(argv.c as string);
@@ -26,5 +27,6 @@ export class ArgumentOptions {
       (argv["max-concurrent-requests"] as number) > 0
         ? (argv["max-concurrent-requests"] as number)
         : undefined; // When user set 0, yargs parse to undefined
+    this.forceSaveLastRun = argv["force-save-last-run"] as boolean;
   }
 }
