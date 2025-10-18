@@ -58,7 +58,7 @@
     "zod": "4.1.9"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.5",
+    "@biomejs/biome": "2.2.6",
     "@google-cloud/common": "5.0.2",
     "@types/adm-zip": "0.5.7",
     "@types/js-yaml": "4.0.9",
