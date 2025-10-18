@@ -116,15 +116,22 @@ export class JenkinsRunner implements Runner {
           jobTestReports = jobTestReports.concat(testReports);
           customReportCollection.aggregate(runCustomReportCollection);
         }
-
-        this.setRepoLastRun(job.name, jobReports);
-        workflowReports = workflowReports.concat(jobReports);
-        testReports = testReports.concat(jobTestReports);
       } catch (error) {
         const errorMessage = `Some error raised in '${job.name}', so it skipped.`;
         this.logger.error(errorMessage);
         result = failure(new Error(errorMessage, { cause: error as Error }));
+
+        if (this.options.forceSaveLastRun) {
+          this.logger.warn(
+            `Force saving last run for '${job.name}' with --force-save-last-run option.`,
+          );
+          this.setRepoLastRun(job.name, jobReports);
+        }
+        continue;
       }
+      this.setRepoLastRun(job.name, jobReports);
+      workflowReports = workflowReports.concat(jobReports);
+      testReports = testReports.concat(jobTestReports);
     }
 
     this.logger.info(`Exporting ${this.service} workflow reports ...`);

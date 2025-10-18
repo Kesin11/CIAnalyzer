@@ -113,6 +113,13 @@ export class BitriseRunner implements Runner {
         const errorMessage = `Some error raised in '${configApp.fullname}', so it skipped.`;
         this.logger.error(errorMessage);
         result = failure(new Error(errorMessage, { cause: error as Error }));
+
+        if (this.options.forceSaveLastRun) {
+          this.logger.warn(
+            `Force saving last run for '${configApp.fullname}' with --force-save-last-run option.`,
+          );
+          this.setRepoLastRun(app.slug, appReports);
+        }
         continue;
       }
       this.setRepoLastRun(app.slug, appReports);

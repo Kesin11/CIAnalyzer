@@ -90,6 +90,7 @@ Required tokens per service:
 - **Service isolation**: `--only-services github` for focused development
 - **Local export only**: `--only-exporters local` for testing
 - **Concurrency**: `--max-concurrent-requests N` for API rate limiting
+- **Force save last run**: `--force-save-last-run` to persist state even if error occurred (useful for partial success scenarios)
 
 ## File Structure Conventions
 - **Strict separation**: Each service has dedicated files in all layers
