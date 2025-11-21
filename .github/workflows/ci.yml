@@ -31,7 +31,7 @@ jobs:
   lint_fmt:
     runs-on: ubuntu-latest
     container:
-      image: "node:24.11.0"
+      image: "node:24.11.1"
     steps:
       - uses: actions/checkout@v5
       - uses: actions/cache@v4
@@ -47,7 +47,7 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
     container:
-      image: "node:24.11.0"
+      image: "node:24.11.1"
     permissions:
       contents: read
       pull-requests: write
@@ -89,7 +89,7 @@ jobs:
   smoke_test:
     runs-on: ubuntu-latest
     container:
-      image: "node:24.11.0"
+      image: "node:24.11.1"
     permissions:
       contents: read
     steps:
