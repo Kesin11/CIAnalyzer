@@ -13,7 +13,7 @@ jobs:
   check_generated_files:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       # Since the version of earthly/actions-setup that supports the new GHA caches (v2) has not been released yet from v1.0.13,
       # we use a commit hash that already includes the support.
       # https://github.com/earthly/actions-setup/commit/b81a8e082d9fae6174210cfc6e54bd2feb124d94
@@ -33,7 +33,7 @@ jobs:
     container:
       image: "node:24.11.1"
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/cache@v4
         with:
           path: ~/.npm
@@ -53,7 +53,7 @@ jobs:
       pull-requests: write
     steps:
       # Setup
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/cache@v4
         with:
           path: ~/.npm
@@ -94,7 +94,7 @@ jobs:
       contents: read
     steps:
       # Setup
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/cache@v4
         with:
           path: ~/.npm
@@ -113,7 +113,7 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       # Since the version of earthly/actions-setup that supports the new GHA caches (v2) has not been released yet from v1.0.13,
       # we use a commit hash that already includes the support.
       # https://github.com/earthly/actions-setup/commit/b81a8e082d9fae6174210cfc6e54bd2feb124d94

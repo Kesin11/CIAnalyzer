@@ -32,7 +32,7 @@ jobs:
         run: |
           export TAG_NAME=${{ needs.draft_release.outputs.tag_name }}
           echo "VERSION=${TAG_NAME:1}" >> $GITHUB_ENV
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: master
