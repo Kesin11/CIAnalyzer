@@ -50,7 +50,7 @@
     "dayjs": "1.11.19",
     "js-yaml": "4.1.1",
     "junit2json": "3.2.0",
-    "lodash-es": "4.17.21",
+    "lodash-es": "4.17.22",
     "minimatch": "10.1.1",
     "tslog": "4.10.2",
     "utility-types": "3.11.0",
