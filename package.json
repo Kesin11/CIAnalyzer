@@ -55,7 +55,7 @@
     "tslog": "4.10.2",
     "utility-types": "3.11.0",
     "yargs": "18.0.0",
-    "zod": "4.1.13"
+    "zod": "4.2.1"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.10",
