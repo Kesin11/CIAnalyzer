@@ -14,7 +14,7 @@ jobs:
       tag_name: ${{ steps.release-drafter.outputs.tag_name }}
     steps:
       # Get next version
-      - uses: release-drafter/release-drafter@b1476f6e6eb133afa41ed8589daba6dc69b4d3f5 # v6.1.0
+      - uses: release-drafter/release-drafter@267d2e0268deae5d44f3ba5029dd4d6e85f9d52d # v6.1.1
         id: release-drafter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,7 +49,7 @@ jobs:
           npm version $VERSION
           git push origin master
           git push origin "v${VERSION}"
-      - uses: release-drafter/release-drafter@b1476f6e6eb133afa41ed8589daba6dc69b4d3f5 # v6.1.0
+      - uses: release-drafter/release-drafter@267d2e0268deae5d44f3ba5029dd4d6e85f9d52d # v6.1.1
         with:
           publish: true
           tag: v${{ env.VERSION }}
