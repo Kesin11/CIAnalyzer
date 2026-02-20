@@ -51,7 +51,7 @@
     "js-yaml": "4.1.1",
     "junit2json": "3.2.0",
     "lodash-es": "4.17.23",
-    "minimatch": "10.2.0",
+    "minimatch": "10.2.1",
     "tslog": "4.10.2",
     "utility-types": "3.11.0",
     "yargs": "18.0.0",
