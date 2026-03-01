@@ -76,7 +76,7 @@ jobs:
           OS: ${{ runner.os }}
         run: |
           echo "{ \"job\": \"${JOB}\", \"node\": \"ubuntu-latest\", \"os\": \"${OS}\", \"container\": \"node:lts\" }" > custom_report.json
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
           name: test_results
