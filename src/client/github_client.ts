@@ -11,6 +11,8 @@ import type { ArgumentOptions } from "../arg_options.js";
 
 const DEBUG_PER_PAGE = 10;
 
+type ThrottleRequestOptions = { method: string; url: string };
+
 export type WorkflowItem =
   RestEndpointMethodTypes["actions"]["listRepoWorkflows"]["response"]["data"]["workflows"][0];
 type WorkflowRunsItem =
@@ -33,7 +35,7 @@ export class GithubClient {
       baseUrl: baseUrl ? baseUrl : "https://api.github.com",
       log: options.debug ? console : undefined,
       throttle: {
-        onRateLimit: (retryAfter, options, _octokit, retryCount) => {
+        onRateLimit: (retryAfter: number, options: ThrottleRequestOptions, _octokit: unknown, retryCount: number) => {
           this.#octokit.log.warn(
             `Request quota exhausted for request ${options.method} ${options.url}`,
           );
@@ -43,7 +45,7 @@ export class GithubClient {
             return true;
           }
         },
-        onSecondaryRateLimit: (_retryAfter, options, _octokit, _retryCount) => {
+        onSecondaryRateLimit: (_retryAfter: number, options: ThrottleRequestOptions, _octokit: unknown, _retryCount: number) => {
           // does not retry, only logs a warning
           this.#octokit.log.warn(
             `Abuse detected for request ${options.method} ${options.url}`,
