@@ -1,11 +1,7 @@
 import { round } from "lodash-es";
-import {
-  type TestSuites,
-  type TestCase,
-  type TestSuite,
-  parse,
-} from "junit2json";
+import { type TestSuites, parse } from "junit2json";
 import type { Assign } from "utility-types";
+import { z } from "zod";
 import type { Artifact } from "../client/client.js";
 import type {
   PbWorkflowReport,
@@ -80,74 +76,59 @@ export const secRound = (sec: number) => {
   return round(sec, PRECISION);
 };
 
-const assignIfDefined = <T extends object, K extends keyof T>(
-  target: Partial<T>,
-  key: K,
-  value: T[K] | undefined,
-) => {
-  if (value !== undefined) {
-    target[key] = value;
-  }
-};
+const reportTestCaseSchema = z
+  .object({
+    time: z.number().optional(),
+    name: z.string().optional(),
+    classname: z.string().optional(),
+    assertions: z.number().optional(),
+    failure: z.unknown().optional(),
+    error: z.unknown().optional(),
+    skipped: z.unknown().optional(),
+  })
+  .transform(({ failure, error, skipped, ...testCase }) => {
+    return {
+      ...testCase,
+      successCount: failure || error || skipped ? 0 : 1,
+      status: failure
+        ? "FAILURE"
+        : error
+          ? "ERROR"
+          : skipped
+            ? "SKIPPED"
+            : "SUCCESS",
+    } as ReportTestCase;
+  });
 
-const createReportTestCase = (testCase: TestCase): ReportTestCase => {
-  const reportTestCase: Partial<ReportTestCase> = {};
+const reportTestSuiteSchema = z.object({
+  testcase: z.array(reportTestCaseSchema).optional().default([]),
+  tests: z.number().optional(),
+  time: z.number().optional(),
+  timestamp: z.coerce.date().optional(),
+  skipped: z.number().optional(),
+  failures: z.number().optional(),
+  errors: z.number().optional(),
+  name: z.string().optional(),
+  disabled: z.number().optional(),
+  hostname: z.string().optional(),
+  id: z.string().optional(),
+  package: z.string().optional(),
+});
 
-  assignIfDefined(reportTestCase, "time", testCase.time);
-  assignIfDefined(reportTestCase, "name", testCase.name);
-  assignIfDefined(reportTestCase, "classname", testCase.classname);
-  assignIfDefined(reportTestCase, "assertions", testCase.assertions);
-  reportTestCase.successCount =
-    testCase.failure || testCase.error || testCase.skipped ? 0 : 1;
-  reportTestCase.status = testCase.failure
-    ? "FAILURE"
-    : testCase.error
-      ? "ERROR"
-      : testCase.skipped
-        ? "SKIPPED"
-        : "SUCCESS";
-
-  return reportTestCase as ReportTestCase;
-};
-
-const createReportTestSuite = (testSuite: TestSuite): ReportTestSuite => {
-  const reportTestSuite: Partial<ReportTestSuite> = {
-    testcase: testSuite.testcase?.map(createReportTestCase) ?? [],
-  };
-  const timestamp = testSuite.timestamp
-    ? new Date(testSuite.timestamp)
-    : undefined;
-
-  assignIfDefined(reportTestSuite, "tests", testSuite.tests);
-  assignIfDefined(reportTestSuite, "time", testSuite.time);
-  assignIfDefined(reportTestSuite, "timestamp", timestamp);
-  assignIfDefined(reportTestSuite, "skipped", testSuite.skipped);
-  assignIfDefined(reportTestSuite, "failures", testSuite.failures);
-  assignIfDefined(reportTestSuite, "errors", testSuite.errors);
-  assignIfDefined(reportTestSuite, "name", testSuite.name);
-  assignIfDefined(reportTestSuite, "disabled", testSuite.disabled);
-  assignIfDefined(reportTestSuite, "hostname", testSuite.hostname);
-  assignIfDefined(reportTestSuite, "id", testSuite.id);
-  assignIfDefined(reportTestSuite, "package", testSuite.package);
-
-  return reportTestSuite as ReportTestSuite;
-};
+const reportTestSuitesSchema = z.object({
+  testsuite: z.array(reportTestSuiteSchema).optional().default([]),
+  failures: z.number().optional(),
+  time: z.number().optional(),
+  tests: z.number().optional(),
+  name: z.string().optional(),
+  errors: z.number().optional(),
+  disabled: z.number().optional(),
+});
 
 export const convertToReportTestSuites = (
   testSuites: TestSuites,
 ): ReportTestSuites => {
-  const reportTestSuites: Partial<ReportTestSuites> = {
-    testsuite: testSuites.testsuite?.map(createReportTestSuite) ?? [],
-  };
-
-  assignIfDefined(reportTestSuites, "failures", testSuites.failures);
-  assignIfDefined(reportTestSuites, "time", testSuites.time);
-  assignIfDefined(reportTestSuites, "tests", testSuites.tests);
-  assignIfDefined(reportTestSuites, "name", testSuites.name);
-  assignIfDefined(reportTestSuites, "errors", testSuites.errors);
-  assignIfDefined(reportTestSuites, "disabled", testSuites.disabled);
-
-  return reportTestSuites as ReportTestSuites;
+  return reportTestSuitesSchema.parse(testSuites) as ReportTestSuites;
 };
 
 export const convertToTestReports = async (

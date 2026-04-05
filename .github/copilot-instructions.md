@@ -48,6 +48,7 @@ After editing `.proto` files, **always run**: `npm run proto`
 
 ### Code Quality (Biome)
 - **Format + Lint**: `npm run fmt:fix && npm run lint:fix`
+- **Before pushing changes**: always run `npm run fmt:fix && npm run lint:fix`
 - **CI check**: `npm run biome:ci`
 - **TypeScript check**: `npm run check` (or `npm run check:watch` for watch mode)
 - No Prettier/ESLint - uses Biome exclusively

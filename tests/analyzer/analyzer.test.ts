@@ -482,7 +482,9 @@ describe("Analyzer", () => {
 </testsuites>`),
       } as any;
 
-      const reports = await convertToTestReports(workflowReport, [junitArtifact]);
+      const reports = await convertToTestReports(workflowReport, [
+        junitArtifact,
+      ]);
 
       expect(reports).toHaveLength(1);
       expect(reports[0].testSuites.testsuite[0].testcase[0]).toStrictEqual({
