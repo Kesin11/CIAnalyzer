@@ -26,7 +26,8 @@
       "!src/pb_types/**",
       "!**/tests/fixtures/**",
       "!**/tsconfig.json",
-      "!**/package.json"
+      "!**/package.json",
+      "!**/.claude/**"
     ]
   },
   "overrides": [

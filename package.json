@@ -23,6 +23,7 @@
   },
   "type": "module",
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
     "start": "node --enable-source-maps dist/index.mjs",
     "clean": "rm -rf dist",
     "build": "npx tsx scripts/esbuild.ts",
