@@ -80,36 +80,74 @@ export const secRound = (sec: number) => {
   return round(sec, PRECISION);
 };
 
+const assignIfDefined = <T extends object, K extends keyof T>(
+  target: Partial<T>,
+  key: K,
+  value: T[K] | undefined,
+) => {
+  if (value !== undefined) {
+    target[key] = value;
+  }
+};
+
+const createReportTestCase = (testCase: TestCase): ReportTestCase => {
+  const reportTestCase: Partial<ReportTestCase> = {};
+
+  assignIfDefined(reportTestCase, "time", testCase.time);
+  assignIfDefined(reportTestCase, "name", testCase.name);
+  assignIfDefined(reportTestCase, "classname", testCase.classname);
+  assignIfDefined(reportTestCase, "assertions", testCase.assertions);
+  reportTestCase.successCount =
+    testCase.failure || testCase.error || testCase.skipped ? 0 : 1;
+  reportTestCase.status = testCase.failure
+    ? "FAILURE"
+    : testCase.error
+      ? "ERROR"
+      : testCase.skipped
+        ? "SKIPPED"
+        : "SUCCESS";
+
+  return reportTestCase as ReportTestCase;
+};
+
+const createReportTestSuite = (testSuite: TestSuite): ReportTestSuite => {
+  const reportTestSuite: Partial<ReportTestSuite> = {
+    testcase: testSuite.testcase?.map(createReportTestCase) ?? [],
+  };
+  const timestamp = testSuite.timestamp
+    ? new Date(testSuite.timestamp)
+    : undefined;
+
+  assignIfDefined(reportTestSuite, "tests", testSuite.tests);
+  assignIfDefined(reportTestSuite, "time", testSuite.time);
+  assignIfDefined(reportTestSuite, "timestamp", timestamp);
+  assignIfDefined(reportTestSuite, "skipped", testSuite.skipped);
+  assignIfDefined(reportTestSuite, "failures", testSuite.failures);
+  assignIfDefined(reportTestSuite, "errors", testSuite.errors);
+  assignIfDefined(reportTestSuite, "name", testSuite.name);
+  assignIfDefined(reportTestSuite, "disabled", testSuite.disabled);
+  assignIfDefined(reportTestSuite, "hostname", testSuite.hostname);
+  assignIfDefined(reportTestSuite, "id", testSuite.id);
+  assignIfDefined(reportTestSuite, "package", testSuite.package);
+
+  return reportTestSuite as ReportTestSuite;
+};
+
 export const convertToReportTestSuites = (
   testSuites: TestSuites,
 ): ReportTestSuites => {
-  const filterd = JSON.parse(JSON.stringify(testSuites));
-  // Omit properties that may contain free and huge text data.
-  // And add successCount, status
-  filterd.testsuite.forEach((testSuite: TestSuite) => {
-    delete testSuite["system-out"];
-    delete testSuite["system-err"];
-    delete testSuite.properties;
-    testSuite?.testcase?.forEach((testCase: TestCase) => {
-      // biome-ignore lint/suspicious/noExplicitAny: Allow attaching computed fields to TestCase via temporary any cast
-      (testCase as any).successCount =
-        testCase.failure || testCase.error || testCase.skipped ? 0 : 1;
-      // biome-ignore lint/suspicious/noExplicitAny: Allow storing derived status string on TestCase via any cast
-      (testCase as any).status = testCase.failure
-        ? "FAILURE"
-        : testCase.error
-          ? "ERROR"
-          : testCase.skipped
-            ? "SKIPPED"
-            : "SUCCESS";
-      delete testCase["system-out"];
-      delete testCase["system-err"];
-      delete testCase.failure;
-      delete testCase.error;
-      delete testCase.skipped;
-    });
-  });
-  return filterd;
+  const reportTestSuites: Partial<ReportTestSuites> = {
+    testsuite: testSuites.testsuite?.map(createReportTestSuite) ?? [],
+  };
+
+  assignIfDefined(reportTestSuites, "failures", testSuites.failures);
+  assignIfDefined(reportTestSuites, "time", testSuites.time);
+  assignIfDefined(reportTestSuites, "tests", testSuites.tests);
+  assignIfDefined(reportTestSuites, "name", testSuites.name);
+  assignIfDefined(reportTestSuites, "errors", testSuites.errors);
+  assignIfDefined(reportTestSuites, "disabled", testSuites.disabled);
+
+  return reportTestSuites as ReportTestSuites;
 };
 
 export const convertToTestReports = async (
