@@ -36,15 +36,13 @@ const rawReportTestCaseSchema = z.object({
   skipped: z.unknown().optional(),
 });
 
-const reportTestCaseSchema = z.object({
-  status: testCaseStatusSchema,
-  successCount: successCountSchema,
-  time: z.number().optional(),
-  name: z.string().optional(),
-  classname: z.string().optional(),
-  assertions: z.number().optional(),
-});
-type ReportTestCase = z.infer<typeof reportTestCaseSchema>;
+const reportTestCaseSchema = rawReportTestCaseSchema.transform(
+  ({ failure, error, skipped, ...testCase }) => ({
+    ...testCase,
+    successCount: calcSuccessCount(failure || error || skipped),
+    status: calcTestCaseStatus(failure, error, skipped),
+  }),
+);
 
 const rawReportTestSuiteSchema = z.object({
   testcase: z.array(rawReportTestCaseSchema).optional().default([]),
@@ -61,21 +59,14 @@ const rawReportTestSuiteSchema = z.object({
   package: z.string().optional(),
 });
 
-const reportTestSuiteSchema = z.object({
-  testcase: z.array(reportTestCaseSchema).optional().default([]),
-  tests: z.number().optional(),
-  time: z.number().optional(),
-  timestamp: z.coerce.date().optional(),
-  skipped: z.number().optional(),
-  failures: z.number().optional(),
-  errors: z.number().optional(),
-  name: z.string().optional(),
-  disabled: z.number().optional(),
-  hostname: z.string().optional(),
-  id: z.string().optional(),
-  package: z.string().optional(),
-});
-type ReportTestSuite = z.infer<typeof reportTestSuiteSchema>;
+const reportTestSuiteSchema = rawReportTestSuiteSchema.transform(
+  ({ testcase, ...testSuite }) => ({
+    ...testSuite,
+    testcase: testcase.map((rawTestCase) =>
+      reportTestCaseSchema.parse(rawTestCase),
+    ),
+  }),
+);
 
 const rawReportTestSuitesSchema = z.object({
   testsuite: z.array(rawReportTestSuiteSchema).optional().default([]),
@@ -87,15 +78,14 @@ const rawReportTestSuitesSchema = z.object({
   disabled: z.number().optional(),
 });
 
-const reportTestSuitesSchema = z.object({
-  testsuite: z.array(reportTestSuiteSchema).optional().default([]),
-  failures: z.number().optional(),
-  time: z.number().optional(),
-  tests: z.number().optional(),
-  name: z.string().optional(),
-  errors: z.number().optional(),
-  disabled: z.number().optional(),
-});
+const reportTestSuitesSchema = rawReportTestSuitesSchema.transform(
+  ({ testsuite, ...testSuites }) => ({
+    ...testSuites,
+    testsuite: testsuite.map((rawTestSuite) =>
+      reportTestSuiteSchema.parse(rawTestSuite),
+    ),
+  }),
+);
 export type ReportTestSuites = z.infer<typeof reportTestSuitesSchema>;
 
 const testReportSchema = z.object({
@@ -118,26 +108,6 @@ export interface Analyzer {
   createTestReports(...args: unknown[]): Promise<TestReport[]>;
 }
 
-export const diffSec = (start: string | Date, end: string | Date): number => {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-
-  return (endDate.getTime() - startDate.getTime()) / 1000;
-};
-
-export const secRound = (sec: number) => {
-  const PRECISION = 3;
-  return round(sec, PRECISION);
-};
-
-const omitUndefinedValues = <T extends Record<string, unknown>>(
-  record: T,
-): Partial<T> => {
-  return Object.fromEntries(
-    Object.entries(record).filter(([, value]) => value !== undefined),
-  ) as Partial<T>;
-};
-
 const calcSuccessCount = (
   hasProblem: unknown,
 ): z.infer<typeof successCountSchema> => {
@@ -159,67 +129,22 @@ const calcTestStatus = (failures: number | undefined): TestStatus => {
   return failures && failures > 0 ? "FAILURE" : "SUCCESS";
 };
 
-const sanitizeReportTestCase = (testCase: unknown): ReportTestCase => {
-  const parsedTestCase = rawReportTestCaseSchema.parse(testCase);
-  const status = calcTestCaseStatus(
-    parsedTestCase.failure,
-    parsedTestCase.error,
-    parsedTestCase.skipped,
-  );
+export const diffSec = (start: string | Date, end: string | Date): number => {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
 
-  return reportTestCaseSchema.parse(
-    omitUndefinedValues({
-      time: parsedTestCase.time,
-      name: parsedTestCase.name,
-      classname: parsedTestCase.classname,
-      assertions: parsedTestCase.assertions,
-      successCount: calcSuccessCount(
-        parsedTestCase.failure ||
-          parsedTestCase.error ||
-          parsedTestCase.skipped,
-      ),
-      status,
-    }),
-  );
+  return (endDate.getTime() - startDate.getTime()) / 1000;
 };
 
-const sanitizeReportTestSuite = (testSuite: unknown): ReportTestSuite => {
-  const parsedTestSuite = rawReportTestSuiteSchema.parse(testSuite);
-
-  return reportTestSuiteSchema.parse(
-    omitUndefinedValues({
-      testcase: parsedTestSuite.testcase.map(sanitizeReportTestCase),
-      tests: parsedTestSuite.tests,
-      time: parsedTestSuite.time,
-      timestamp: parsedTestSuite.timestamp,
-      skipped: parsedTestSuite.skipped,
-      failures: parsedTestSuite.failures,
-      errors: parsedTestSuite.errors,
-      name: parsedTestSuite.name,
-      disabled: parsedTestSuite.disabled,
-      hostname: parsedTestSuite.hostname,
-      id: parsedTestSuite.id,
-      package: parsedTestSuite.package,
-    }),
-  );
+export const secRound = (sec: number) => {
+  const PRECISION = 3;
+  return round(sec, PRECISION);
 };
 
 export const convertToReportTestSuites = (
   testSuites: TestSuites,
 ): ReportTestSuites => {
-  const parsedTestSuites = rawReportTestSuitesSchema.parse(testSuites);
-
-  return reportTestSuitesSchema.parse(
-    omitUndefinedValues({
-      testsuite: parsedTestSuites.testsuite.map(sanitizeReportTestSuite),
-      failures: parsedTestSuites.failures,
-      time: parsedTestSuites.time,
-      tests: parsedTestSuites.tests,
-      name: parsedTestSuites.name,
-      errors: parsedTestSuites.errors,
-      disabled: parsedTestSuites.disabled,
-    }),
-  );
+  return reportTestSuitesSchema.parse(testSuites);
 };
 
 export const convertToTestReports = async (
