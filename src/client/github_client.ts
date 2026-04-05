@@ -20,6 +20,15 @@ type RunStatus = "queued" | "in_progress" | "completed";
 
 export type RepositoryTagMap = Map<string, string>;
 
+const isExpiredArtifactError = (error: unknown): error is { status: number } => {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "status" in error &&
+    (error as { status?: unknown }).status === 410
+  );
+};
+
 export class GithubClient {
   #octokit: Octokit;
   constructor(
@@ -51,6 +60,34 @@ export class GithubClient {
         },
       },
     });
+  }
+
+  private async downloadArtifact(
+    owner: string,
+    repo: string,
+    runId: number,
+    artifact: {
+      id: number;
+      name: string;
+    },
+  ): Promise<ArrayBuffer | undefined> {
+    try {
+      const response = await this.#octokit.actions.downloadArtifact({
+        owner,
+        repo,
+        artifact_id: artifact.id,
+        archive_format: "zip",
+      });
+      return response.data as ArrayBuffer;
+    } catch (error) {
+      if (isExpiredArtifactError(error)) {
+        this.#octokit.log.warn(
+          `Skip expired artifact ${owner}/${repo} run=${runId} artifact=${artifact.name}`,
+        );
+        return undefined;
+      }
+      throw error;
+    }
   }
 
   // see: https://developer.github.com/v3/actions/workflow-runs/#list-repository-workflow-runs
@@ -130,30 +167,30 @@ export class GithubClient {
       run_id: runId,
     });
 
-    const nameResponse = res.data.artifacts.map((artifact) => {
-      const response = this.#octokit.actions.downloadArtifact({
-        owner,
-        repo,
-        artifact_id: artifact.id,
-        archive_format: "zip",
-      });
-      return { name: artifact.name, response };
-    });
-
     // Unarchive zip artifacts
     const zipExtractor = new ZipExtractor();
-    for (const { name, response } of nameResponse) {
-      await zipExtractor.put(name, (await response).data as ArrayBuffer);
-    }
-    const zipEntries = await zipExtractor.extract(globs);
-    await zipExtractor.rmTmpZip();
+    try {
+      for (const artifact of res.data.artifacts) {
+        const zipData = await this.downloadArtifact(owner, repo, runId, {
+          id: artifact.id,
+          name: artifact.name,
+        });
+        if (!zipData) continue;
 
-    return zipEntries.map((entry) => {
-      return {
-        path: entry.entryName,
-        data: entry.getData().buffer.slice(0) as ArrayBuffer,
-      };
-    });
+        await zipExtractor.put(artifact.name, zipData);
+      }
+
+      const zipEntries = await zipExtractor.extract(globs);
+
+      return zipEntries.map((entry) => {
+        return {
+          path: entry.entryName,
+          data: entry.getData().buffer.slice(0) as ArrayBuffer,
+        };
+      });
+    } finally {
+      await zipExtractor.rmTmpZip();
+    }
   }
 
   async fetchTests(

@@ -32,7 +32,7 @@
     "biome:ci": "biome ci .",
     "lint:fix": "biome lint --write --unsafe .",
     "fmt:fix": "biome format --write .",
-    "test": "TZ=UTC vitest",
+    "test": "TZ=UTC vitest --run",
     "test:ci": "TZ=UTC vitest --run --coverage",
     "proto": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +proto",
     "docker": "earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker",
