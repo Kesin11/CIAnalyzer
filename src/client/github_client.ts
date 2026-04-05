@@ -20,7 +20,9 @@ type RunStatus = "queued" | "in_progress" | "completed";
 
 export type RepositoryTagMap = Map<string, string>;
 
-const isExpiredArtifactError = (error: unknown): error is { status: number } => {
+const isExpiredArtifactError = (
+  error: unknown,
+): error is { status: number } => {
   return (
     typeof error === "object" &&
     error !== null &&
@@ -170,17 +172,27 @@ export class GithubClient {
     // Unarchive zip artifacts
     const zipExtractor = new ZipExtractor();
     try {
-      for (const artifact of res.data.artifacts) {
-        const zipData = await this.downloadArtifact(owner, repo, runId, {
-          id: artifact.id,
-          name: artifact.name,
-        });
+      const artifactZipData = await Promise.all(
+        res.data.artifacts.map(async (artifact) => {
+          const zipData = await this.downloadArtifact(owner, repo, runId, {
+            id: artifact.id,
+            name: artifact.name,
+          });
+
+          return {
+            name: artifact.name,
+            zipData,
+          };
+        }),
+      );
+
+      for (const { name, zipData } of artifactZipData) {
         if (!zipData) continue;
 
-        await zipExtractor.put(artifact.name, zipData);
+        await zipExtractor.put(name, zipData);
       }
 
-      const zipEntries = await zipExtractor.extract(globs);
+      const zipEntries = zipExtractor.extract(globs);
 
       return zipEntries.map((entry) => {
         return {
