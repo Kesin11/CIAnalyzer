@@ -1,19 +1,32 @@
-import type { AxiosError } from "axios";
+import type { HttpError } from "./client/http_client.js";
 
-export const summarizeAxiosError = (error: AxiosError) => {
+export const summarizeHttpError = (error: HttpError) => {
+  const { baseURL, url, params, method } = error.request;
+  let host: string | undefined;
+  let path: string | undefined;
+  try {
+    const absolute = /^https?:\/\//i.test(url)
+      ? url
+      : baseURL
+        ? `${baseURL.replace(/\/+$/, "")}/${url.replace(/^\/+/, "")}`
+        : url;
+    const parsed = new URL(absolute);
+    host = parsed.host;
+    path = parsed.pathname;
+  } catch {
+    host = undefined;
+    path = url;
+  }
+
   return {
     message: error.message,
-    request: {
-      method: error.request?.method ?? error.request?._currentRequest.method,
-      host: error.request?.host ?? error.request?._currentRequest.host,
-      path: error.request?.path ?? error.request?._currentRequest.path,
-    },
+    request: { method, host, path },
     response: {
       status: error.response?.status,
       statusText: error.response?.statusText,
-      baseUrl: error.response?.config.baseURL,
-      url: error.response?.config.url,
-      params: error.response?.config.params,
+      baseUrl: baseURL,
+      url,
+      params,
     },
   };
 };

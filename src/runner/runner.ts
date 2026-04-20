@@ -7,8 +7,8 @@ import { BitriseRunner } from "./bitrise_runner.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
 import { ApiError } from "@google-cloud/common";
-import axios from "axios";
-import { summarizeAxiosError } from "../error.js";
+import { HttpError } from "../client/http_client.js";
+import { summarizeHttpError } from "../error.js";
 
 export interface Runner {
   run(): Promise<Result<unknown, Error>>;
@@ -79,9 +79,9 @@ export class CompositRunner implements Runner {
   }
 
   handlingError(error: unknown) {
-    if (axios.isAxiosError(error)) {
+    if (error instanceof HttpError) {
       this.#logger.error("Catch HTTP fetch error.");
-      this.#logger.error(summarizeAxiosError(error));
+      this.#logger.error(summarizeHttpError(error));
     } else if (error instanceof ApiError) {
       this.#logger.error(
         "Catch GCloud Error. Please check 'gcloud' auth status or your permission.",
