@@ -12,7 +12,7 @@ export type RequestConfig = {
   timeout?: number;
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: axios compatibility — callers expect `res.data` typed as any unless they narrow it with a generic
+// biome-ignore lint/suspicious/noExplicitAny: axios compat — callers narrow via generic
 export type HttpResponse<T = any> = {
   data: T;
   status: number;
@@ -20,7 +20,7 @@ export type HttpResponse<T = any> = {
   headers: Headers;
 };
 
-export type HttpBody = string | URLSearchParams | ArrayBuffer | Uint8Array;
+type HttpBody = string | URLSearchParams | ArrayBuffer | Uint8Array;
 
 export type InstanceConfig = {
   baseURL?: string;
@@ -30,9 +30,9 @@ export type InstanceConfig = {
 };
 
 export interface HttpClient {
-  // biome-ignore lint/suspicious/noExplicitAny: match axios' default generic so existing callers compile unchanged
+  // biome-ignore lint/suspicious/noExplicitAny: axios compat
   get<T = any>(url: string, config?: RequestConfig): Promise<HttpResponse<T>>;
-  // biome-ignore lint/suspicious/noExplicitAny: match axios' default generic so existing callers compile unchanged
+  // biome-ignore lint/suspicious/noExplicitAny: axios compat
   post<T = any>(
     url: string,
     body?: unknown,
@@ -40,23 +40,25 @@ export interface HttpClient {
   ): Promise<HttpResponse<T>>;
 }
 
-type HttpErrorInit = {
-  message: string;
-  request: {
-    method: string;
-    url: string;
-    baseURL?: string;
-    params?: Record<string, unknown>;
-  };
-  response?: { status: number; statusText: string };
-  cause?: unknown;
+type HttpErrorRequest = {
+  method: string;
+  url: string;
+  baseURL?: string;
+  params?: Record<string, unknown>;
 };
+
+type HttpErrorResponse = { status: number; statusText: string };
 
 export class HttpError extends Error {
   override readonly name = "HttpError";
-  readonly request: HttpErrorInit["request"];
-  readonly response?: HttpErrorInit["response"];
-  constructor(init: HttpErrorInit) {
+  readonly request: HttpErrorRequest;
+  readonly response?: HttpErrorResponse;
+  constructor(init: {
+    message: string;
+    request: HttpErrorRequest;
+    response?: HttpErrorResponse;
+    cause?: unknown;
+  }) {
     super(init.message, { cause: init.cause });
     this.request = init.request;
     this.response = init.response;
@@ -201,8 +203,15 @@ const executeRequest = async <T>(
     params: req.params,
   });
 
+  const requestInfo: HttpErrorRequest = {
+    method: req.method,
+    url: req.url,
+    baseURL: req.baseURL,
+    params: req.params,
+  };
+
   let lastError: unknown;
-  for (let attempt = 0; attempt <= MAX_RETRY; attempt++) {
+  for (let attempt = 1; attempt <= MAX_RETRY + 1; attempt++) {
     const timeoutSignal = AbortSignal.timeout(req.timeout);
     const signal = req.userSignal
       ? AbortSignal.any([req.userSignal, timeoutSignal])
@@ -219,12 +228,7 @@ const executeRequest = async <T>(
       if (!req.validateStatus(response.status)) {
         throw new HttpError({
           message: `Request failed with status code ${response.status}`,
-          request: {
-            method: req.method,
-            url: req.url,
-            baseURL: req.baseURL,
-            params: req.params,
-          },
+          request: requestInfo,
           response: {
             status: response.status,
             statusText: response.statusText,
@@ -241,8 +245,8 @@ const executeRequest = async <T>(
       };
     } catch (error) {
       lastError = error;
-      if (attempt < MAX_RETRY && shouldRetry(error)) {
-        await sleep(exponentialBackoffDelay(attempt + 1));
+      if (attempt <= MAX_RETRY && shouldRetry(error)) {
+        await sleep(exponentialBackoffDelay(attempt));
         continue;
       }
       break;
@@ -257,12 +261,7 @@ const executeRequest = async <T>(
             lastError instanceof Error
               ? lastError.message
               : "Unknown HTTP error",
-          request: {
-            method: req.method,
-            url: req.url,
-            baseURL: req.baseURL,
-            params: req.params,
-          },
+          request: requestInfo,
           cause: lastError,
         });
   logger.error(summarizeHttpError(wrapped));
@@ -312,10 +311,10 @@ export const createHttpClient = (
   };
 
   return {
-    // biome-ignore lint/suspicious/noExplicitAny: match HttpClient's default generic
+    // biome-ignore lint/suspicious/noExplicitAny: axios compat
     get: <T = any>(url: string, cfg?: RequestConfig) =>
       request<T>("GET", url, null, cfg),
-    // biome-ignore lint/suspicious/noExplicitAny: match HttpClient's default generic
+    // biome-ignore lint/suspicious/noExplicitAny: axios compat
     post: <T = any>(url: string, body?: unknown, cfg?: RequestConfig) => {
       const encoded = encodeBody(body);
       const extraHeaders = encoded.contentType
