@@ -46,8 +46,8 @@ beforeEach(() => {
 });
 
 describe("createHttpClient", () => {
-  describe("URL 組み立て", () => {
-    it("baseURL と相対 URL を末尾/先頭スラッシュ重複なく連結する", async () => {
+  describe("URL joining", () => {
+    it("joins baseURL and a relative URL without duplicate slashes", async () => {
       handler = (req, res) => {
         expect(req.url).toBe("/api/v1.1/project/github/owner/repo");
         res.setHeader("content-type", "application/json");
@@ -61,7 +61,7 @@ describe("createHttpClient", () => {
       expect(res.data).toEqual({ ok: true });
     });
 
-    it("baseURL 末尾スラッシュと url 先頭スラッシュが重複しても正しく連結する", async () => {
+    it("dedupes when baseURL has a trailing slash and url has a leading slash", async () => {
       handler = (req, res) => {
         expect(req.url).toBe("/api/apps/abc/builds");
         res.end("{}");
@@ -73,7 +73,7 @@ describe("createHttpClient", () => {
       expect(res.status).toBe(200);
     });
 
-    it("絶対 URL は baseURL を無視してそのまま使う", async () => {
+    it("passes absolute URLs through and ignores baseURL", async () => {
       handler = (req, res) => {
         expect(req.url).toBe("/artifacts/data.zip");
         res.end("{}");
@@ -86,8 +86,8 @@ describe("createHttpClient", () => {
     });
   });
 
-  describe("params シリアライズ", () => {
-    it("undefined と null はクエリから除外される", async () => {
+  describe("params serialization", () => {
+    it("drops undefined and null values from the query string", async () => {
       handler = (req, res) => {
         expect(req.url).toBe("/api?limit=100&shallow=true");
         res.end("{}");
@@ -103,7 +103,7 @@ describe("createHttpClient", () => {
       });
     });
 
-    it("配列は繰り返しキーで展開される", async () => {
+    it("expands arrays into repeated keys", async () => {
       handler = (req, res) => {
         expect(req.url).toBe("/api?tag=a&tag=b");
         res.end("{}");
@@ -113,8 +113,8 @@ describe("createHttpClient", () => {
     });
   });
 
-  describe("認証ヘッダ", () => {
-    it("auth から Basic 認証ヘッダを生成する", async () => {
+  describe("authorization header", () => {
+    it("generates a Basic auth header from auth credentials", async () => {
       const expected = `Basic ${Buffer.from("user:pass").toString("base64")}`;
       handler = (req, res) => {
         expect(req.headers.authorization).toBe(expected);
@@ -130,7 +130,7 @@ describe("createHttpClient", () => {
   });
 
   describe("validateStatus", () => {
-    it("カスタム validateStatus が true を返せば成功扱い", async () => {
+    it("treats the response as a success when a custom validateStatus returns true", async () => {
       handler = (_req, res) => {
         res.statusCode = 401;
         res.end(JSON.stringify({ message: "Unauthorized" }));
@@ -142,7 +142,7 @@ describe("createHttpClient", () => {
       expect(res.status).toBe(401);
     });
 
-    it("デフォルトでは 4xx で HttpError を投げる", async () => {
+    it("throws HttpError on 4xx by default", async () => {
       handler = (_req, res) => {
         res.statusCode = 404;
         res.end("{}");
@@ -153,7 +153,7 @@ describe("createHttpClient", () => {
   });
 
   describe("responseType", () => {
-    it("arraybuffer で ArrayBuffer を返す", async () => {
+    it("returns an ArrayBuffer when responseType is 'arraybuffer'", async () => {
       const bytes = Buffer.from([1, 2, 3, 4]);
       handler = (_req, res) => {
         res.setHeader("content-type", "application/octet-stream");
@@ -168,8 +168,8 @@ describe("createHttpClient", () => {
     });
   });
 
-  describe("リトライ", () => {
-    it("500 エラーは最大 3 回までリトライされる", async () => {
+  describe("retries", () => {
+    it("retries 500 responses up to 3 times", async () => {
       let count = 0;
       handler = (_req, res) => {
         count++;
@@ -186,7 +186,7 @@ describe("createHttpClient", () => {
       expect(count).toBe(3);
     });
 
-    it("400 エラーはリトライせず即失敗する", async () => {
+    it("does not retry 400 responses", async () => {
       let count = 0;
       handler = (_req, res) => {
         count++;
@@ -200,7 +200,7 @@ describe("createHttpClient", () => {
       expect(count).toBe(1);
     });
 
-    it("validateStatus で許可されたステータスはリトライされない", async () => {
+    it("does not retry statuses allowed by validateStatus", async () => {
       let count = 0;
       handler = (_req, res) => {
         count++;
@@ -216,8 +216,8 @@ describe("createHttpClient", () => {
     });
   });
 
-  describe("エラーラップ", () => {
-    it("ネットワークエラーは HttpError にラップされる", async () => {
+  describe("error wrapping", () => {
+    it("wraps network errors into HttpError", async () => {
       handler = (_req, res) => {
         res.destroy();
       };
@@ -225,7 +225,7 @@ describe("createHttpClient", () => {
       await expect(client.get("api")).rejects.toBeInstanceOf(HttpError);
     });
 
-    it("HttpError には request 情報が含まれる", async () => {
+    it("includes request details on HttpError", async () => {
       handler = (_req, res) => {
         res.statusCode = 403;
         res.end("{}");
@@ -247,7 +247,7 @@ describe("createHttpClient", () => {
   });
 
   describe("POST", () => {
-    it("URLSearchParams ボディを送信できる", async () => {
+    it("sends a URLSearchParams body", async () => {
       handler = async (req, res) => {
         expect(req.method).toBe("POST");
         expect(req.headers["content-type"]).toMatch(
