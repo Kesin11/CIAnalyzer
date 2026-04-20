@@ -1,12 +1,8 @@
 import path from "node:path";
 import { minimatch } from "minimatch";
-import type { AxiosInstance } from "axios";
 import { groupBy, max, minBy } from "lodash-es";
-import {
-  type Artifact,
-  type CustomReportArtifact,
-  createAxios,
-} from "./client.js";
+import type { Artifact, CustomReportArtifact } from "./client.js";
+import { createHttpClient, type HttpClient } from "./http_client.js";
 import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
@@ -135,7 +131,7 @@ type ArtifactsResponse = {
 }[];
 
 export class CircleciClient {
-  #axios: AxiosInstance;
+  #http: HttpClient;
   #options: ArgumentOptions;
   constructor(
     token: string,
@@ -149,8 +145,8 @@ export class CircleciClient {
       );
     }
     this.#options = options;
-    const axiosLogger = logger.getSubLogger({ name: CircleciClient.name });
-    this.#axios = createAxios(axiosLogger, options, {
+    const httpLogger = logger.getSubLogger({ name: CircleciClient.name });
+    this.#http = createHttpClient(httpLogger, options, {
       baseURL: baseUrl ?? "https://circleci.com/api/v1.1",
       auth: {
         username: token,
@@ -169,7 +165,7 @@ export class CircleciClient {
     const limit = this.#options.debug ? DEBUG_PER_PAGE : 100;
     let recentBuilds = [] as RecentBuildResponse[];
     for (let index = 0; index < FETCH_RECENT_BUILD_API_NUM; index++) {
-      const res = await this.#axios.get(`project/${vcsType}/${owner}/${repo}`, {
+      const res = await this.#http.get(`project/${vcsType}/${owner}/${repo}`, {
         params: {
           // API default is 30 and max is 100
           // ref: https://circleci.com/docs/api/#recent-builds-for-a-single-project
@@ -261,7 +257,7 @@ export class CircleciClient {
 
   // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021
   async fetchJobs(owner: string, repo: string, vcsType: string, runId: number) {
-    const res = await this.#axios.get(
+    const res = await this.#http.get(
       `project/${vcsType}/${owner}/${repo}/${runId}`,
       {},
     );
@@ -305,7 +301,7 @@ export class CircleciClient {
     vcsType: string,
     runId: number,
   ) {
-    const res = await this.#axios.get(
+    const res = await this.#http.get(
       `project/${vcsType}/${owner}/${repo}/${runId}/tests`,
     );
     return {
@@ -321,7 +317,7 @@ export class CircleciClient {
     vcsType: string,
     runId: number,
   ): Promise<ArtifactsResponse> {
-    const res = await this.#axios.get(
+    const res = await this.#http.get(
       `project/${vcsType}/${owner}/${repo}/${runId}/artifacts`,
     );
     return res.data;
@@ -331,7 +327,7 @@ export class CircleciClient {
     artifactsResponse: ArtifactsResponse,
   ): Promise<Artifact[]> {
     const pathResponses = artifactsResponse.map((artifact) => {
-      const response = this.#axios.get(artifact.url, {
+      const response = this.#http.get(artifact.url, {
         responseType: "arraybuffer",
       });
       return { path: artifact.path, response };
