@@ -1,7 +1,7 @@
 import { Octokit, type RestEndpointMethodTypes } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
 import { retry } from "@octokit/plugin-retry";
-import type { CustomReportArtifact, Artifact } from "./client.js";
+import type { CustomReportArtifact, Artifact } from "./artifact.js";
 import { minBy } from "lodash-es";
 import { ZipExtractor } from "../zip_extractor.js";
 import type { CustomReportConfig } from "../config/schema.js";

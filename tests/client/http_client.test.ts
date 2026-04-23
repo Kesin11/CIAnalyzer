@@ -3,7 +3,11 @@ import http, { type IncomingMessage, type ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
 import { Logger } from "tslog";
 import { ArgumentOptions } from "../../src/arg_options.ts";
-import { createHttpClient, HttpError } from "../../src/client/http_client.ts";
+import {
+  buildQueryString,
+  createHttpClient,
+  HttpError,
+} from "../../src/client/http_client.ts";
 
 const logger = new Logger({ type: "hidden" });
 const options = new ArgumentOptions({ c: "./dummy.yaml" });
@@ -57,8 +61,12 @@ describe("createHttpClient", () => {
         baseURL: `${origin}/api/v1.1`,
       });
       const res = await client.get("project/github/owner/repo");
-      expect(res.status).toBe(200);
-      expect(res.data).toEqual({ ok: true });
+      expect(res).toEqual(
+        expect.objectContaining({
+          status: 200,
+          data: { ok: true },
+        }),
+      );
     });
 
     it("dedupes when baseURL has a trailing slash and url has a leading slash", async () => {
@@ -237,11 +245,17 @@ describe("createHttpClient", () => {
       } catch (e) {
         expect(e).toBeInstanceOf(HttpError);
         const err = e as HttpError;
-        expect(err.request.method).toBe("GET");
-        expect(err.request.url).toBe("api");
-        expect(err.request.baseURL).toBe(origin);
-        expect(err.request.params).toEqual({ foo: "bar" });
-        expect(err.response?.status).toBe(403);
+        expect(err).toEqual(
+          expect.objectContaining({
+            request: expect.objectContaining({
+              method: "GET",
+              url: "api",
+              baseURL: origin,
+              params: { foo: "bar" },
+            }),
+            response: expect.objectContaining({ status: 403 }),
+          }),
+        );
       }
     });
   });
@@ -262,5 +276,78 @@ describe("createHttpClient", () => {
       const res = await client.post("scriptText", body);
       expect(res.status).toBe(200);
     });
+  });
+
+  describe("user-supplied AbortSignal", () => {
+    it("does not retry when the caller's signal is aborted (surfaces the error immediately)", async () => {
+      let count = 0;
+      const controller = new AbortController();
+      handler = (_req, res) => {
+        count++;
+        // Abort mid-flight so fetch rejects with an AbortError.
+        controller.abort();
+        res.destroy();
+      };
+      const client = createHttpClient(logger, options, { baseURL: origin });
+      await expect(
+        client.get("api", { signal: controller.signal }),
+      ).rejects.toBeInstanceOf(HttpError);
+      expect(count).toBe(1);
+    });
+
+    it("still retries when only the per-request timeout fires (not a user abort)", async () => {
+      let count = 0;
+      handler = (_req, res) => {
+        count++;
+        if (count < 2) {
+          // Hang the first request so timeout fires and triggers a retry.
+          return;
+        }
+        res.end(JSON.stringify({ ok: true }));
+      };
+      const client = createHttpClient(logger, options, { baseURL: origin });
+      const res = await client.get("api", { timeout: 50 });
+      expect(res.status).toBe(200);
+      expect(count).toBe(2);
+    });
+  });
+});
+
+describe("buildQueryString", () => {
+  it("returns an empty string when params is undefined", () => {
+    expect(buildQueryString(undefined)).toBe("");
+  });
+
+  it("returns an empty string when every value is undefined or null", () => {
+    expect(buildQueryString({ a: undefined, b: null })).toBe("");
+  });
+
+  it("drops undefined and null values while keeping others", () => {
+    expect(
+      buildQueryString({
+        limit: 100,
+        shallow: true,
+        "page-token": undefined,
+        cursor: null,
+      }),
+    ).toBe("?limit=100&shallow=true");
+  });
+
+  it("expands array values into repeated keys", () => {
+    expect(buildQueryString({ tag: ["a", "b"] })).toBe("?tag=a&tag=b");
+  });
+
+  it("drops undefined and null entries inside arrays", () => {
+    expect(buildQueryString({ tag: ["a", undefined, null, "b"] })).toBe(
+      "?tag=a&tag=b",
+    );
+  });
+
+  it("coerces non-string primitives to strings", () => {
+    expect(buildQueryString({ n: 42, flag: false })).toBe("?n=42&flag=false");
+  });
+
+  it("URL-encodes keys and values", () => {
+    expect(buildQueryString({ "a b": "c d" })).toBe("?a+b=c+d");
   });
 });

@@ -1,7 +1,7 @@
 import path from "node:path";
 import { minimatch } from "minimatch";
 import { minBy } from "lodash-es";
-import type { Artifact, CustomReportArtifact } from "./client.js";
+import type { Artifact, CustomReportArtifact } from "./artifact.js";
 import { createHttpClient, type HttpClient } from "./http_client.js";
 import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";

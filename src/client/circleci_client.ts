@@ -1,7 +1,7 @@
 import path from "node:path";
 import { minimatch } from "minimatch";
 import { groupBy, max, minBy } from "lodash-es";
-import type { Artifact, CustomReportArtifact } from "./client.js";
+import type { Artifact, CustomReportArtifact } from "./artifact.js";
 import { createHttpClient, type HttpClient } from "./http_client.js";
 import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";
@@ -165,17 +165,20 @@ export class CircleciClient {
     const limit = this.#options.debug ? DEBUG_PER_PAGE : 100;
     let recentBuilds = [] as RecentBuildResponse[];
     for (let index = 0; index < FETCH_RECENT_BUILD_API_NUM; index++) {
-      const res = await this.#http.get(`project/${vcsType}/${owner}/${repo}`, {
-        params: {
-          // API default is 30 and max is 100
-          // ref: https://circleci.com/docs/api/#recent-builds-for-a-single-project
-          limit: limit,
-          // limit: 3,
-          offset: index * limit,
-          // filter: "completed"
-          shallow: true,
+      const res = await this.#http.get<RecentBuildResponse[]>(
+        `project/${vcsType}/${owner}/${repo}`,
+        {
+          params: {
+            // API default is 30 and max is 100
+            // ref: https://circleci.com/docs/api/#recent-builds-for-a-single-project
+            limit: limit,
+            // limit: 3,
+            offset: index * limit,
+            // filter: "completed"
+            shallow: true,
+          },
         },
-      });
+      );
       recentBuilds.push(...res.data);
     }
     recentBuilds = lastRunId
@@ -257,7 +260,7 @@ export class CircleciClient {
 
   // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021
   async fetchJobs(owner: string, repo: string, vcsType: string, runId: number) {
-    const res = await this.#http.get(
+    const res = await this.#http.get<SingleBuildResponse>(
       `project/${vcsType}/${owner}/${repo}/${runId}`,
       {},
     );
@@ -266,7 +269,7 @@ export class CircleciClient {
     if (!build.workflows) {
       build.workflows = this.createDefaultWorkflow(build);
     }
-    return build as SingleBuildResponse;
+    return build;
   }
 
   // Create default params for old type job that is not using workflow
@@ -301,13 +304,13 @@ export class CircleciClient {
     vcsType: string,
     runId: number,
   ) {
-    const res = await this.#http.get(
+    const res = await this.#http.get<Omit<TestResponse, "run_id">>(
       `project/${vcsType}/${owner}/${repo}/${runId}/tests`,
     );
     return {
       ...res.data,
       run_id: runId,
-    } as TestResponse;
+    };
   }
 
   // ex: https://circleci.com/api/v1.1/project/github/Kesin11/CIAnalyzer/1021/artifacts
@@ -317,7 +320,7 @@ export class CircleciClient {
     vcsType: string,
     runId: number,
   ): Promise<ArtifactsResponse> {
-    const res = await this.#http.get(
+    const res = await this.#http.get<ArtifactsResponse>(
       `project/${vcsType}/${owner}/${repo}/${runId}/artifacts`,
     );
     return res.data;

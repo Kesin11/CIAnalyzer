@@ -12,8 +12,7 @@ export type RequestConfig = {
   timeout?: number;
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: axios compat — callers narrow via generic
-export type HttpResponse<T = any> = {
+export type HttpResponse<T = unknown> = {
   data: T;
   status: number;
   statusText: string;
@@ -30,10 +29,11 @@ export type InstanceConfig = {
 };
 
 export interface HttpClient {
-  // biome-ignore lint/suspicious/noExplicitAny: axios compat
-  get<T = any>(url: string, config?: RequestConfig): Promise<HttpResponse<T>>;
-  // biome-ignore lint/suspicious/noExplicitAny: axios compat
-  post<T = any>(
+  get<T = unknown>(
+    url: string,
+    config?: RequestConfig,
+  ): Promise<HttpResponse<T>>;
+  post<T = unknown>(
     url: string,
     body?: unknown,
     config?: RequestConfig,
@@ -91,7 +91,25 @@ const joinUrl = (baseURL: string | undefined, url: string): string => {
   return `${baseURL.replace(/\/+$/, "")}/${url.replace(/^\/+/, "")}`;
 };
 
-const buildQueryString = (params?: Record<string, unknown>): string => {
+/**
+ * Serializes a params object into a URL query string (including the leading `?`).
+ *
+ * Behavior:
+ * - Returns an empty string when `params` is undefined, null, or has no
+ *   serializable entries (i.e. every value is undefined/null).
+ * - Drops entries whose value is `undefined` or `null` (matching axios's
+ *   `paramsSerializer` default behavior; `URLSearchParams` would otherwise
+ *   stringify them as "undefined"/"null").
+ * - Expands array values into repeated keys, e.g. `{ tag: ["a", "b"] }`
+ *   becomes `tag=a&tag=b`. Array entries that are undefined/null are also
+ *   dropped.
+ * - All other values (number, boolean, string, object) are coerced with
+ *   `String(value)`.
+ *
+ * @param params Optional record of query parameters.
+ * @returns `"?key=value&..."` or an empty string when there is nothing to serialize.
+ */
+export const buildQueryString = (params?: Record<string, unknown>): string => {
   if (!params) return "";
   const usp = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
@@ -125,10 +143,27 @@ const defaultValidateStatus = (status: number): boolean =>
 const exponentialBackoffDelay = (attempt: number): number =>
   2 ** attempt * 100 + Math.floor(Math.random() * 100);
 
-const sleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number, signal?: AbortSignal): Promise<void> =>
+  new Promise((resolve) => {
+    if (signal?.aborted) {
+      resolve();
+      return;
+    }
+    const timer = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => {
+      clearTimeout(timer);
+      resolve();
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
 
-const shouldRetry = (error: unknown): boolean => {
+const shouldRetry = (error: unknown, userAborted: boolean): boolean => {
+  // If the caller-supplied AbortSignal has fired, it is an explicit user
+  // cancellation. Do not waste retries on it; surface the error immediately.
+  if (userAborted) return false;
   if (error instanceof HttpError) {
     const status = error.response?.status ?? 0;
     return status >= 500 || status === 429;
@@ -245,8 +280,14 @@ const executeRequest = async <T>(
       };
     } catch (error) {
       lastError = error;
-      if (attempt <= MAX_RETRY && shouldRetry(error)) {
-        await sleep(exponentialBackoffDelay(attempt));
+      if (
+        attempt <= MAX_RETRY &&
+        shouldRetry(error, !!req.userSignal?.aborted)
+      ) {
+        await sleep(exponentialBackoffDelay(attempt), req.userSignal);
+        // The user may have aborted while we were sleeping; bail out instead
+        // of issuing another fetch.
+        if (req.userSignal?.aborted) break;
         continue;
       }
       break;
@@ -311,11 +352,9 @@ export const createHttpClient = (
   };
 
   return {
-    // biome-ignore lint/suspicious/noExplicitAny: axios compat
-    get: <T = any>(url: string, cfg?: RequestConfig) =>
+    get: <T = unknown>(url: string, cfg?: RequestConfig) =>
       request<T>("GET", url, null, cfg),
-    // biome-ignore lint/suspicious/noExplicitAny: axios compat
-    post: <T = any>(url: string, body?: unknown, cfg?: RequestConfig) => {
+    post: <T = unknown>(url: string, body?: unknown, cfg?: RequestConfig) => {
       const encoded = encodeBody(body);
       const extraHeaders = encoded.contentType
         ? { "Content-Type": encoded.contentType }

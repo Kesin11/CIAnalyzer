@@ -1,4 +1,4 @@
-import type { Artifact, CustomReportArtifact } from "./client.js";
+import type { Artifact, CustomReportArtifact } from "./artifact.js";
 import { createHttpClient, type HttpClient } from "./http_client.js";
 import { minBy } from "lodash-es";
 import { minimatch } from "minimatch";
@@ -228,10 +228,10 @@ println builder.toString()
     `;
     const params = new URLSearchParams({ script: script });
     const res = isRecursively
-      ? await this.#http.post("scriptText", params)
-      : await this.#http.get("api/json");
+      ? await this.#http.post<{ jobs: JobResponse[] }>("scriptText", params)
+      : await this.#http.get<{ jobs: JobResponse[] }>("api/json");
 
-    const jobs = res.data.jobs as JobResponse[];
+    const jobs = res.data.jobs;
     return jobs.filter((job) => {
       return job._class === "org.jenkinsci.plugins.workflow.job.WorkflowJob";
     });
@@ -241,7 +241,7 @@ println builder.toString()
     const url = encodeURI(`job/${jobName}/wfapi/runs`);
     let runs: WfapiRunResponse[];
     try {
-      const res = await this.#http.get(url, {
+      const res = await this.#http.get<WfapiRunResponse[]>(url, {
         params: {
           fullStages: "true",
         },
@@ -277,23 +277,23 @@ println builder.toString()
 
   async fetchJobRun(jobName: string, runId: number) {
     const url = encodeURI(`job/${jobName}/${runId}/wfapi/describe`);
-    const res = await this.#http.get(url);
+    const res = await this.#http.get<WfapiRunResponse>(url);
 
-    return res.data as WfapiRunResponse;
+    return res.data;
   }
 
   async fetchBuild(jobName: string, runId: number) {
     const url = encodeURI(`job/${jobName}/${runId}/api/json`);
-    const res = await this.#http.get(url);
+    const res = await this.#http.get<BuildResponse>(url);
 
-    return res.data as BuildResponse;
+    return res.data;
   }
 
   async fetchLastBuild(jobName: string) {
     const url = encodeURI(`/job/${jobName}/lastBuild/api/json`);
-    const res = await this.#http.get(url);
+    const res = await this.#http.get<BuildResponse>(url);
 
-    return res.data as BuildResponse;
+    return res.data;
   }
 
   async fetchArtifacts(

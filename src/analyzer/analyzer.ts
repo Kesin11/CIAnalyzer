@@ -2,7 +2,7 @@ import { round } from "lodash-es";
 import { type TestSuites, parse } from "junit2json";
 import type { Assign } from "utility-types";
 import { z } from "zod";
-import type { Artifact } from "../client/client.js";
+import type { Artifact } from "../client/artifact.js";
 import type {
   PbWorkflowReport,
   PbWorkflowParams,
