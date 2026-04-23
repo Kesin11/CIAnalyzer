@@ -33,6 +33,7 @@ beforeAll(async () => {
   server = http.createServer((req, res) => {
     Promise.resolve(handler(req, res)).catch((err) => {
       res.statusCode = 500;
+      res.setHeader("content-type", "text/plain");
       res.end(String(err));
     });
   });
