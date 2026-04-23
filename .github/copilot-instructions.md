@@ -73,7 +73,7 @@ Required tokens per service:
 
 ## Error Handling Patterns
 - **Result types**: Use `src/result.ts` for explicit error handling
-- **HTTP errors**: Axios errors automatically retry and get formatted in `CompositRunner`
+- **HTTP errors**: `HttpError` from `src/client/http_client.ts` automatically retries and gets formatted in `CompositRunner`
 - **API errors**: GCP errors are caught and formatted with detailed context
 
 ## Docker Usage

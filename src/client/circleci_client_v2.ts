@@ -1,12 +1,8 @@
 import path from "node:path";
 import { minimatch } from "minimatch";
-import type { AxiosInstance } from "axios";
 import { minBy } from "lodash-es";
-import {
-  type Artifact,
-  type CustomReportArtifact,
-  createAxios,
-} from "./client.js";
+import type { Artifact, CustomReportArtifact } from "./artifact.js";
+import { createHttpClient, type HttpClient } from "./http_client.js";
 import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
@@ -217,7 +213,7 @@ type ArtifactsResponse = {
 type ArtifactItem = ArtifactsResponse["items"][0];
 
 export class CircleciClientV2 {
-  #axios: AxiosInstance;
+  #http: HttpClient;
   #baseUrl: string;
   #options: ArgumentOptions;
   constructor(
@@ -231,10 +227,10 @@ export class CircleciClientV2 {
         `${CircleciClientV2.name} accepts only "/api/" But your baseUrl is ${baseUrl}`,
       );
     }
-    const axiosLogger = logger.getSubLogger({ name: CircleciClientV2.name });
+    const httpLogger = logger.getSubLogger({ name: CircleciClientV2.name });
     this.#baseUrl = baseUrl ?? "https://circleci.com/api";
     this.#options = options;
-    this.#axios = createAxios(axiosLogger, options, {
+    this.#http = createHttpClient(httpLogger, options, {
       baseURL: this.#baseUrl,
       auth: {
         username: token,
@@ -245,7 +241,7 @@ export class CircleciClientV2 {
 
   async isHostAvailableVersion(): Promise<Result<unknown, Error>> {
     try {
-      await this.#axios.get("v2/me", {
+      await this.#http.get("v2/me", {
         validateStatus: (status) => {
           return (
             (status >= 200 && status < 300) || // default
@@ -270,7 +266,7 @@ export class CircleciClientV2 {
   ): Promise<T["items"]> {
     const items: T["items"] = [];
     for (let pageToken = undefined; pageToken !== null; ) {
-      const res = await this.#axios.get(url, {
+      const res = await this.#http.get(url, {
         params: {
           ...requestParams,
           "page-token": pageToken,
@@ -294,7 +290,7 @@ export class CircleciClientV2 {
     const limit = this.#options.debug ? DEBUG_FETCH_LIMIT : FETCH_LIMIT;
     let recentPipelines = [] as ListPipelinesForProjectResponse["items"];
     for (let length = 0, pageToken = undefined; length < limit; ) {
-      const res = await this.#axios.get(
+      const res = await this.#http.get(
         `v2/project/${vcsType}/${owner}/${repo}/pipeline`,
         {
           params: {
@@ -412,7 +408,7 @@ export class CircleciClientV2 {
 
   // https://circleci.com/docs/api/v2/#operation/getJobDetails
   private async fetchJob(jobNumber: number, projectSlug: string) {
-    const res = await this.#axios.get(
+    const res = await this.#http.get(
       `v2/project/${projectSlug}/job/${jobNumber}`,
       {},
     );
@@ -421,7 +417,7 @@ export class CircleciClientV2 {
 
   // https://circleci.com/docs/api/v1/#single-job
   private async fetchJobSteps(jobNumber: number, projectSlug: string) {
-    const res = await this.#axios.get(
+    const res = await this.#http.get(
       `v1.1/project/${projectSlug}/${jobNumber}`,
       {},
     );
@@ -505,7 +501,7 @@ export class CircleciClientV2 {
     artifactItems: ArtifactItem[],
   ): Promise<Artifact[]> {
     const pathResponses = artifactItems.map((artifactItem) => {
-      const response = this.#axios.get(artifactItem.url, {
+      const response = this.#http.get(artifactItem.url, {
         responseType: "arraybuffer",
       });
       return { path: artifactItem.path, response };

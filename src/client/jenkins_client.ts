@@ -1,9 +1,5 @@
-import type { AxiosInstance } from "axios";
-import {
-  type Artifact,
-  type CustomReportArtifact,
-  createAxios,
-} from "./client.js";
+import type { Artifact, CustomReportArtifact } from "./artifact.js";
+import { createHttpClient, type HttpClient } from "./http_client.js";
 import { minBy } from "lodash-es";
 import { minimatch } from "minimatch";
 import type { CustomReportConfig } from "../config/schema.js";
@@ -186,7 +182,7 @@ export type TimeInQueueAction = {
 };
 
 export class JenkinsClient {
-  #axios: AxiosInstance;
+  #http: HttpClient;
   constructor(
     baseUrl: string,
     logger: Logger<unknown>,
@@ -205,8 +201,8 @@ export class JenkinsClient {
           }
         : undefined;
 
-    const axiosLogger = logger.getSubLogger({ name: JenkinsClient.name });
-    this.#axios = createAxios(axiosLogger, options, {
+    const httpLogger = logger.getSubLogger({ name: JenkinsClient.name });
+    this.#http = createHttpClient(httpLogger, options, {
       baseURL: baseUrl,
       auth,
     });
@@ -232,10 +228,10 @@ println builder.toString()
     `;
     const params = new URLSearchParams({ script: script });
     const res = isRecursively
-      ? await this.#axios.post("scriptText", params)
-      : await this.#axios.get("api/json");
+      ? await this.#http.post<{ jobs: JobResponse[] }>("scriptText", params)
+      : await this.#http.get<{ jobs: JobResponse[] }>("api/json");
 
-    const jobs = res.data.jobs as JobResponse[];
+    const jobs = res.data.jobs;
     return jobs.filter((job) => {
       return job._class === "org.jenkinsci.plugins.workflow.job.WorkflowJob";
     });
@@ -245,7 +241,7 @@ println builder.toString()
     const url = encodeURI(`job/${jobName}/wfapi/runs`);
     let runs: WfapiRunResponse[];
     try {
-      const res = await this.#axios.get(url, {
+      const res = await this.#http.get<WfapiRunResponse[]>(url, {
         params: {
           fullStages: "true",
         },
@@ -281,23 +277,23 @@ println builder.toString()
 
   async fetchJobRun(jobName: string, runId: number) {
     const url = encodeURI(`job/${jobName}/${runId}/wfapi/describe`);
-    const res = await this.#axios.get(url);
+    const res = await this.#http.get<WfapiRunResponse>(url);
 
-    return res.data as WfapiRunResponse;
+    return res.data;
   }
 
   async fetchBuild(jobName: string, runId: number) {
     const url = encodeURI(`job/${jobName}/${runId}/api/json`);
-    const res = await this.#axios.get(url);
+    const res = await this.#http.get<BuildResponse>(url);
 
-    return res.data as BuildResponse;
+    return res.data;
   }
 
   async fetchLastBuild(jobName: string) {
     const url = encodeURI(`/job/${jobName}/lastBuild/api/json`);
-    const res = await this.#axios.get(url);
+    const res = await this.#http.get<BuildResponse>(url);
 
-    return res.data as BuildResponse;
+    return res.data;
   }
 
   async fetchArtifacts(
@@ -307,7 +303,7 @@ println builder.toString()
   ): Promise<Artifact[]> {
     const pathResponses = paths.map((path) => {
       const url = encodeURI(`job/${jobName}/${runId}/artifact/${path}`);
-      const response = this.#axios.get(url, { responseType: "arraybuffer" });
+      const response = this.#http.get(url, { responseType: "arraybuffer" });
       return { path, response };
     });
 

@@ -9,7 +9,7 @@ import {
   convertToTestReports,
 } from "./analyzer.js";
 import type { RepositoryTagMap } from "../client/github_client.js";
-import type { Artifact } from "../client/client.js";
+import type { Artifact } from "../client/artifact.js";
 export type WorkflowRunsItem =
   RestEndpointMethodTypes["actions"]["listWorkflowRunsForRepo"]["response"]["data"]["workflow_runs"][0];
 export type JobsItem =

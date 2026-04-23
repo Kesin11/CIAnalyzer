@@ -3,7 +3,7 @@ import {
   CustomReportCollection,
   aggregateCustomReportArtifacts,
 } from "../src/custom_report_collection.ts";
-import type { CustomReportArtifact } from "../src/client/client.ts";
+import type { CustomReportArtifact } from "../src/client/artifact.ts";
 
 describe("CustomReportCollection", () => {
   let customReportCollection: CustomReportCollection;
