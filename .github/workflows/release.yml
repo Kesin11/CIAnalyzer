@@ -40,6 +40,8 @@ jobs:
           # see: https://github.community/t/action-does-not-trigger-another-on-push-tag-action/17148/4
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - uses: actions/setup-node@v6
+        with:
+          node-version: 22
       - name: Setup git config
         run: |
           git config user.name "github-actions"
