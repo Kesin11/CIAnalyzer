@@ -41,7 +41,7 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - uses: actions/setup-node@v6
         with:
-          node-version: 22.22.2
+          node-version: 24.15.0
       - name: Setup git config
         run: |
           git config user.name "github-actions"
