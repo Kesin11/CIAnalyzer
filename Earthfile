@@ -14,7 +14,7 @@ all:
 
 deps:
   COPY package.json package-lock.json .
-  RUN --mount=type=cache,target=/root/.npm npm ci
+  RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts
 
   ENV TINI_VERSION v0.19.0
   RUN curl -sSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini -o /tini
@@ -60,17 +60,14 @@ docker:
   FROM node:24.15.0-slim
   WORKDIR /ci_analyzer
 
-  COPY +build/package.json ./package.json
-  COPY +build/package-lock.json ./package-lock.json
-  COPY +build/README.md ./README.md
-  COPY +build/LICENSE ./LICENSE
-  COPY +build/ci_analyzer.yaml ./ci_analyzer.yaml
+  COPY +build/package.json +build/package-lock.json ./
+  RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts
+  COPY +build/README.md +build/LICENSE +build/ci_analyzer.yaml ./
   COPY +build/bin ./bin
   COPY +build/src ./src
   COPY +build/bigquery_schema ./bigquery_schema
-  COPY +deps/node_modules ./node_modules
   COPY --chmod=755 +deps/tini /tini
-  ENTRYPOINT [ "/tini", "--", "node", "--import", "tsx", "/ci_analyzer/src/index.ts" ]
+  ENTRYPOINT [ "/tini", "--", "/ci_analyzer/node_modules/.bin/tsx", "/ci_analyzer/src/index.ts" ]
   WORKDIR /app
 
   SAVE IMAGE ghcr.io/kesin11/ci_analyzer:latest
