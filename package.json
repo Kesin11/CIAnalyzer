@@ -16,17 +16,17 @@
   },
   "homepage": "https://github.com/Kesin11/CIAnalyzer#readme",
   "engines": {
-    "node": "^22.22.2"
+    "node": "^24.15.0"
   },
   "bin": {
-    "ci_analyzer": "dist/index.js"
+    "ci_analyzer": "bin/ci_analyzer.js"
   },
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .githooks || true",
-    "start": "node --enable-source-maps dist/index.mjs",
+    "start": "node ./bin/ci_analyzer.js",
     "clean": "rm -rf dist",
-    "build": "npx tsx scripts/esbuild.ts",
+    "build": "node ./bin/ci_analyzer.js --version && node ./bin/ci_analyzer.js --help > /dev/null",
     "build:clean": "npm run clean && npm run build",
     "check": "tsc --noEmit",
     "check:watch": "tsc --watch --noEmit",
@@ -66,9 +66,9 @@
     "@types/node": "24.12.2",
     "@types/yargs": "17.0.35",
     "@vitest/coverage-v8": "^4.1.5",
-    "esbuild": "0.28.0",
     "ts-proto": "2.11.6",
     "ts-protoc-gen": "0.15.0",
+    "tsx": "4.21.0",
     "typescript": "6.0.3",
     "vitest": "4.1.5"
   }
