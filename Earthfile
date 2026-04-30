@@ -28,7 +28,6 @@ build:
   COPY --dir bin src ./
   COPY ./proto+protoc/pb_types src/pb_types
   COPY ./proto+protoc/schema bigquery_schema/
-  RUN npm run build
   SAVE ARTIFACT package.json
   SAVE ARTIFACT package-lock.json
   SAVE ARTIFACT README.md
