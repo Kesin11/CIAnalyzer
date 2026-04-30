@@ -25,9 +25,6 @@
   "scripts": {
     "prepare": "git config core.hooksPath .githooks || true",
     "start": "node ./bin/ci_analyzer.js",
-    "clean": "rm -rf dist",
-    "build": "node ./bin/ci_analyzer.js --version && node ./bin/ci_analyzer.js --help > /dev/null",
-    "build:clean": "npm run clean && npm run build",
     "check": "tsc --noEmit",
     "check:watch": "tsc --watch --noEmit",
     "biome:ci": "biome ci .",
