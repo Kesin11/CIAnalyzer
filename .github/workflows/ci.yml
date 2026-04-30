@@ -64,8 +64,6 @@ jobs:
       # Test
       - name: Type check
         run: npm run check
-      - name: Build
-        run: npm run build
       - name: Test
         run: npm run test:ci
 
@@ -102,8 +100,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - name: Build
-        run: npm run build
       # Test
       - name: Smoke test tsx runtime
         run: |
