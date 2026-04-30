@@ -61,7 +61,7 @@ docker:
   WORKDIR /ci_analyzer
 
   COPY +build/package.json +build/package-lock.json ./
-  RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts
+  RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --ignore-scripts
   COPY +build/README.md +build/LICENSE +build/ci_analyzer.yaml ./
   COPY +build/bin ./bin
   COPY +build/src ./src
