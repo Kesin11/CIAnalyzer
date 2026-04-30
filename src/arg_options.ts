@@ -72,6 +72,10 @@ const optionDescriptions = [
     names: "--help",
     description: "Show help",
   },
+  {
+    names: "--version",
+    description: "Show version number",
+  },
 ];
 
 type ParsedArgs = {
@@ -117,6 +121,10 @@ const optionConfig: ParseArgsOptionsConfig = {
     default: false,
   },
   help: {
+    type: "boolean",
+    default: false,
+  },
+  version: {
     type: "boolean",
     default: false,
   },

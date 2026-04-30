@@ -66,6 +66,12 @@ describe("parseCliArgs", () => {
     expect(options.maxConcurrentRequests).toBeUndefined();
   });
 
+  it("parses version option", () => {
+    const argv = parseCliArgs(["--version"]);
+
+    expect(argv.version).toBe(true);
+  });
+
   it("throws for unknown positional arguments", () => {
     expect(() => parseCliArgs(["unknown"])).toThrow("Unknown argument");
   });
@@ -83,5 +89,6 @@ describe("createHelpMessage", () => {
     expect(help).toContain("--only-exporters <exporters...>");
     expect(help).toContain("--force-save-last-run");
     expect(help).toContain("--help");
+    expect(help).toContain("--version");
   });
 });
