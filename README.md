@@ -581,10 +581,9 @@ npm run docker
 npx tsx src/index.ts -c your_custom_config.yaml --debug
 ```
 
-### Execute production bundled build
+### Execute CIAnalyzer with tsx runtime
 
 ```bash
-npm run build
 npm run start -- -c your_custom_config.yaml
 ```
 
