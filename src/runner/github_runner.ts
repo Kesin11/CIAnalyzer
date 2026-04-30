@@ -1,4 +1,3 @@
-import { groupBy, maxBy } from "lodash-es";
 import type { Runner } from "./runner.js";
 import type { ValidatedYamlConfig } from "../config/config.js";
 import { GithubClient, type WorkflowItem } from "../client/github_client.js";
@@ -17,6 +16,7 @@ import {
 import { failure, type Result, success } from "../result.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
+import { groupBy, maxBy } from "../collection.js";
 
 type GithubConfigRepo = GithubConfig["repos"][0];
 

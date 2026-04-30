@@ -1,5 +1,5 @@
 import { URL } from "node:url";
-import { sumBy, sortBy, first } from "lodash-es";
+import { sumBy, sortBy, first } from "../collection.js";
 import {
   type Status,
   diffSec,

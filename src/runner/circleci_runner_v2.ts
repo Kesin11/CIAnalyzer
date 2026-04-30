@@ -1,4 +1,3 @@
-import { max } from "lodash-es";
 import type { Runner } from "./runner.js";
 import type { ValidatedYamlConfig } from "../config/config.js";
 import { type CircleciConfig, parseConfig } from "../config/circleci_config.js";
@@ -18,6 +17,7 @@ import {
   CircleciClientV2,
   type Pipeline,
 } from "../client/circleci_client_v2.js";
+import { max } from "../collection.js";
 import { CircleciAnalyzerV2 } from "../analyzer/circleci_analyzer_v2.js";
 
 const META_VERSION = 2;

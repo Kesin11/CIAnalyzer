@@ -1,5 +1,5 @@
 import type { RestEndpointMethodTypes } from "@octokit/rest";
-import { sumBy, min, max } from "lodash-es";
+import { sumBy, min, max } from "../collection.js";
 import {
   type Analyzer,
   diffSec,

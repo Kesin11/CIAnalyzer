@@ -1,10 +1,10 @@
-import { minBy } from "lodash-es";
 import type { Artifact, CustomReportArtifact } from "./artifact.js";
 import { createHttpClient, type HttpClient } from "./http_client.js";
 import { minimatch } from "minimatch";
 import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
+import { minBy } from "../collection.js";
 
 const DEBUG_PER_PAGE = 10;
 const NOT_FINISHED_STATUS = 0;

@@ -13,7 +13,7 @@ import type {
   App,
   BitriseStatus,
 } from "../client/bitrise_client.js";
-import { dropWhile, maxBy, sumBy, takeWhile } from "lodash-es";
+import { dropWhile, maxBy, sumBy, takeWhile } from "../collection.js";
 import type { Artifact } from "../client/artifact.js";
 
 type WorkflowReport = {

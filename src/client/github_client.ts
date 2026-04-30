@@ -2,10 +2,10 @@ import { Octokit, type RestEndpointMethodTypes } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
 import { retry } from "@octokit/plugin-retry";
 import type { CustomReportArtifact, Artifact } from "./artifact.js";
-import { minBy } from "lodash-es";
 import { ZipExtractor } from "../zip_extractor.js";
 import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";
+import { minBy } from "../collection.js";
 
 // Oktokit document: https://octokit.github.io/rest.js/v18#actions
 

@@ -17,7 +17,7 @@ import type {
   ParametersAction,
   TimeInQueueAction,
 } from "../client/jenkins_client.js";
-import { sumBy, first } from "lodash-es";
+import { sumBy, first } from "../collection.js";
 import type { Artifact } from "../client/artifact.js";
 
 type WorkflowReport = {

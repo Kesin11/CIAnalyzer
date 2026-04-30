@@ -1,4 +1,3 @@
-import { maxBy } from "lodash-es";
 import type { Logger } from "tslog";
 import type { TestReport, WorkflowReport } from "../analyzer/analyzer.js";
 import { BitriseAnalyzer } from "../analyzer/bitrise_analyzer.js";
@@ -14,6 +13,7 @@ import { CompositExporter } from "../exporter/exporter.js";
 import { LastRunStore } from "../last_run_store.js";
 import { type Result, success, failure } from "../result.js";
 import type { Runner } from "./runner.js";
+import { maxBy } from "../collection.js";
 
 const BITRISE_DEPRECATION_WARNING =
   "Bitrise support is DEPRECATED and will be removed in the next major release.";

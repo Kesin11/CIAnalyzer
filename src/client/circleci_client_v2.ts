@@ -6,8 +6,7 @@ import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
 import { failure, type Result, success } from "../result.js";
-import { minBy } from "lodash-es";
-import type { Overwrite } from "utility-types";
+import { minBy } from "../collection.js";
 
 export type CircleciStatus =
   | "retried"
@@ -119,10 +118,10 @@ type ListWorkflowJobsResponse = {
   next_page_token: string | null;
 };
 
-type FilteredWorkflowJob = Overwrite<
+type FilteredWorkflowJob = Omit<
   ListWorkflowJobsResponse["items"][0],
-  { job_number: number; started_at: string }
->;
+  "job_number" | "started_at"
+> & { job_number: number; started_at: string };
 
 type GetJobDetailsResponse = {
   web_url: string; // "https://circleci.com/gh/Kesin11/CIAnalyzer/3405",

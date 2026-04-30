@@ -1,4 +1,3 @@
-import { maxBy } from "lodash-es";
 import type { Runner } from "./runner.js";
 import type { ValidatedYamlConfig } from "../config/config.js";
 import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
@@ -14,6 +13,7 @@ import {
 import { failure, type Result, success } from "../result.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
+import { maxBy } from "../collection.js";
 
 export class JenkinsRunner implements Runner {
   service = "jenkins";
