@@ -45,11 +45,12 @@ jobs:
           - ~/.npm
   docker_build:
     docker:
-      - image: earthly/earthly
+      - image: cimg/base:stable
     steps:
       - checkout
       - setup_remote_docker
-      - run: earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker
+      - run: docker buildx create --use
+      - run: docker buildx build --tag ghcr.io/kesin11/ci_analyzer:latest .
 
 workflows:
   version: 2

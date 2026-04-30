@@ -10,24 +10,6 @@ permissions:
   contents: read
 
 jobs:
-  check_generated_files:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      # Since the version of earthly/actions-setup that supports the new GHA caches (v2) has not been released yet from v1.0.13,
-      # we use a commit hash that already includes the support.
-      # https://github.com/earthly/actions-setup/commit/b81a8e082d9fae6174210cfc6e54bd2feb124d94
-      - uses: earthly/actions-setup@b81a8e082d9fae6174210cfc6e54bd2feb124d94
-        with:
-          version: latest
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Generate files
-        run: |
-          npm run proto
-          npm run schema
-      - name: Check uncommited generated files are exists
-        run: git diff --exit-code
-
   lint_fmt:
     runs-on: ubuntu-latest
     container:
@@ -110,12 +92,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      # Since the version of earthly/actions-setup that supports the new GHA caches (v2) has not been released yet from v1.0.13,
-      # we use a commit hash that already includes the support.
-      # https://github.com/earthly/actions-setup/commit/b81a8e082d9fae6174210cfc6e54bd2feb124d94
-      - uses: earthly/actions-setup@b81a8e082d9fae6174210cfc6e54bd2feb124d94
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
         with:
-          version: latest
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Docker build
-        run: npm run docker
+          context: .
+          push: false
+          tags: ghcr.io/kesin11/ci_analyzer:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -58,7 +58,7 @@ workflow data are as follows.
 - Workflow URL
 - Executor data
 
-See full schema: [workflow.proto](./proto/workflow.proto)
+See full BigQuery schema: [workflow_report.json](./bigquery_schema/workflow_report.json)
 
 ## Test report
 
@@ -73,7 +73,7 @@ and store to archive, CIAnalyzer can collect from it.
 - Failure test num
 - Branch
 
-See full schema: [test_report.proto](./proto/test_report.proto)
+See full BigQuery schema: [test_report.json](./bigquery_schema/test_report.json)
 
 # Supported services
 
@@ -565,17 +565,12 @@ npm ci
 npm run test
 ```
 
-## Generate pb_types and bigquery_schema from .proto files
+## Report schemas
 
-Install [Earthly](https://earthly.dev/) first and then execute these commands.
-
-```
-npm run proto
-```
+Report TypeScript types and BigQuery schema JSON files are maintained as static
+source files. There is no proto/schema generation step.
 
 ## Docker build
-
-Install [Earthly](https://earthly.dev/) first and then execute these commands.
 
 ```
 npm run docker
