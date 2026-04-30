@@ -80,6 +80,7 @@ jenkins:
   exporter: *exporter
   # If 'lastRunStore' is omitted, local backend is used
 
+# DEPRECATED: Bitrise support will be removed in the next major release.
 bitrise:
   baseUrl: https://api.bitrise.io/v0.1 # default
   apps:
