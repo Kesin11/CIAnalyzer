@@ -29,10 +29,7 @@
   "postStartCommand": "npm install",
   "customizations": {
     "vscode": {
-      "extensions": [
-        "redhat.vscode-yaml",
-        "biomejs.biome"
-      ]
+      "extensions": ["redhat.vscode-yaml", "biomejs.biome"]
     }
   }
   // Configure tool-specific properties.
