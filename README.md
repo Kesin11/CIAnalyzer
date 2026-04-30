@@ -92,8 +92,7 @@ See full schema: [test_report.proto](./proto/test_report.proto)
 
 > [!WARNING]
 > Bitrise support is **DEPRECATED** and will be removed in the next major
-> release. Existing Bitrise configurations continue to work for now, but please
-> migrate to another supported CI service.
+> release. Existing Bitrise configurations continue to work for now.
 
 # USAGE
 

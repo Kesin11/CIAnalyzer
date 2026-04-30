@@ -15,8 +15,8 @@ import { LastRunStore } from "../last_run_store.js";
 import { type Result, success, failure } from "../result.js";
 import type { Runner } from "./runner.js";
 
-export const BITRISE_DEPRECATION_WARNING =
-  "Bitrise support is DEPRECATED and will be removed in the next major release. Please migrate to another supported CI service.";
+const BITRISE_DEPRECATION_WARNING =
+  "Bitrise support is DEPRECATED and will be removed in the next major release.";
 
 export class BitriseRunner implements Runner {
   service = "bitrise";
