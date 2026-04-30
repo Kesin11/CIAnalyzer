@@ -139,18 +139,6 @@ describe("parseConfig", () => {
 
   describe("version", () => {
     describe("it valid according to the schema", () => {
-      it("should 1 when version: 1(Number)", () => {
-        const config = {
-          circleci: {
-            repos: ["owner/repo"],
-            version: 1 as const,
-          },
-        };
-
-        const actual = parseConfig(validateConfig(logger, config));
-        expect(actual!.version).toEqual(1);
-      });
-
       it("should 2 when version: 2(Number)", () => {
         const config = {
           circleci: {
@@ -165,7 +153,7 @@ describe("parseConfig", () => {
     });
 
     describe("it invalid according to the schema", () => {
-      it("should migrate to 1 when empty", () => {
+      it("should undefined when empty", () => {
         const config = {
           circleci: {
             repos: ["owner/repo"],
@@ -173,43 +161,7 @@ describe("parseConfig", () => {
         } as ValidatedYamlConfig; // for testing cast;
 
         const actual = parseConfig(config);
-        expect(actual!.version).toEqual(1);
-      });
-
-      it("should migrate to 1 when version: 1(String)", () => {
-        const config = {
-          circleci: {
-            repos: ["owner/repo"],
-            version: "1",
-          },
-        } as unknown as ValidatedYamlConfig; // for testing cast;
-
-        const actual = parseConfig(config);
-        expect(actual!.version).toEqual(1);
-      });
-
-      it("should migrate to 2 when version: 2(String)", () => {
-        const config = {
-          circleci: {
-            repos: ["owner/repo"],
-            version: "2",
-          },
-        } as unknown as ValidatedYamlConfig; // for testing cast;
-
-        const actual = parseConfig(config);
-        expect(actual!.version).toEqual(2);
-      });
-
-      it("should 1 when unknown value", () => {
-        const config = {
-          circleci: {
-            repos: ["owner/repo"],
-            version: "1000",
-          },
-        } as unknown as ValidatedYamlConfig; // for testing cast;
-
-        const actual = parseConfig(config);
-        expect(actual!.version).toEqual(1);
+        expect(actual!.version).toBeUndefined();
       });
     });
   });
