@@ -19,7 +19,7 @@ export const circleciYamlSchema = commonSchema.merge(
         github: z.string().optional(),
       })
       .optional(),
-    version: z.union([z.literal(1), z.literal(2)]),
+    version: z.literal(2).optional(),
   }),
 );
 
@@ -43,7 +43,6 @@ export const parseConfig = (
 ): CircleciConfig | undefined => {
   if (!config.circleci) return;
 
-  // overwrite repos and version
   const circleciConfig = {
     ...config.circleci,
     repos: config.circleci.repos.map((repoYaml): CircleciConfig["repos"][0] => {
@@ -66,7 +65,6 @@ export const parseConfig = (
         customReports: repoYaml.customReports ?? [],
       };
     }),
-    version: String(config.circleci.version) === "2" ? 2 : 1,
   } as CircleciConfig;
 
   return circleciConfig;
