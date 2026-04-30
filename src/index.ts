@@ -1,64 +1,47 @@
 #!/usr/bin/env node
+import { readFileSync } from "node:fs";
 import { Logger } from "tslog";
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
-import { ArgumentOptions } from "./arg_options.js";
+import {
+  ArgumentOptions,
+  createHelpMessage,
+  parseCliArgs,
+} from "./arg_options.js";
 import { loadConfig } from "./config/config.js";
 import { CompositRunner } from "./runner/runner.js";
 import { validateConfig } from "./config/config.js";
 
-const defaultConfigPath = "./ci_analyzer.yaml";
 const baseLoggerForStyles = new Logger();
 
+const readPackageVersion = (): string => {
+  const packageJson = JSON.parse(
+    readFileSync(new URL("../package.json", import.meta.url), "utf-8"),
+  ) as { version: string };
+
+  return packageJson.version;
+};
+
 const main = async () => {
-  const argv = yargs(hideBin(process.argv))
-    .command(
-      ["$0", "workflow"],
-      "Collect workflow data from CI services",
-      (_yargs) => {},
-      () => {},
-    )
-    .options({
-      c: {
-        type: "string",
-        alias: "config",
-        default: defaultConfigPath,
-        describe: "Path to config yaml",
-      },
-      v: { type: "count", alias: "verbose" },
-      debug: { type: "boolean", default: false, describe: "Enable debug mode" },
-      "only-services": {
-        type: "string",
-        array: true,
-        describe:
-          "Exec only selected services. ex: --only-services circleci github",
-      },
-      "only-exporters": {
-        type: "string",
-        array: true,
-        describe:
-          "Export data using only selected exporters. ex: --only-exporters local",
-      },
-      keepalive: {
-        type: "boolean",
-        default: true,
-        describe: "Enable http/https keepalive",
-      },
-      "max-concurrent-requests": {
-        type: "number",
-        default: 10,
-        describe:
-          "Limit http request concurrency per service. When set 0, disable concurrency limit",
-      },
-      "force-save-last-run": {
-        type: "boolean",
-        default: false,
-        describe:
-          "Save last run state even when errors occur during data collection",
-      },
-    })
-    .strict()
-    .parseSync();
+  let argv: ReturnType<typeof parseCliArgs>;
+  try {
+    argv = parseCliArgs();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Error: ${message}`);
+    console.error(createHelpMessage());
+    process.exitCode = 1;
+    return;
+  }
+
+  if (argv.help) {
+    console.log(createHelpMessage());
+    return;
+  }
+
+  if (argv.version) {
+    console.log(readPackageVersion());
+    return;
+  }
+
   const argOptions = new ArgumentOptions(argv);
   const logger = new Logger({
     minLevel: argOptions.logLevel,
