@@ -7,8 +7,22 @@ import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
 import { failure, type Result, success } from "../result.js";
-import type { CircleciStatus } from "./circleci_client.js";
 import type { Overwrite } from "utility-types";
+
+export type CircleciStatus =
+  | "retried"
+  | "canceled"
+  | "infrastructure_fail"
+  | "timedout"
+  | "not_run"
+  | "running"
+  | "failed"
+  | "queued"
+  | "scheduled"
+  | "not_running"
+  | "no_tests"
+  | "fixed"
+  | "success";
 
 const DEBUG_FETCH_LIMIT = 5;
 const FETCH_LIMIT = 100;

@@ -11,8 +11,11 @@ import {
 } from "./analyzer.js";
 import type { JobTest } from "../client/circleci_client_v2.js";
 import type { TestSuite, TestCase } from "junit2json";
-import type { Pipeline, Workflow } from "../client/circleci_client_v2.js";
-import type { CircleciStatus } from "../client/circleci_client.js";
+import type {
+  Pipeline,
+  Workflow,
+  CircleciStatus,
+} from "../client/circleci_client_v2.js";
 
 type WorkflowReport = {
   service: "circleci";
