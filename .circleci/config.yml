@@ -49,6 +49,12 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - run:
+          name: Install Docker Buildx
+          command: |
+            mkdir -p ~/.docker/cli-plugins
+            curl -sSL https://github.com/docker/buildx/releases/download/v0.21.2/buildx-v0.21.2.linux-amd64 -o ~/.docker/cli-plugins/docker-buildx
+            chmod +x ~/.docker/cli-plugins/docker-buildx
       - run: docker buildx create --use
       - run: docker buildx build --tag ghcr.io/kesin11/ci_analyzer:latest .
 
