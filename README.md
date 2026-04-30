@@ -84,11 +84,16 @@ See full schema: [test_report.proto](./proto/test_report.proto)
     - Collecting some metrics need to install these plugins
     - [GitHub Pull Request Builder](https://plugins.jenkins.io/ghprb/)
     - [Metrics](https://plugins.jenkins.io/metrics/)
-  - Bitrise
+  - Bitrise (**DEPRECATED**: will be removed in the next major release)
 - Export
   - BigQuery
   - Local file (output JSON or JSON Lines)
   - Google Cloud Storage (GCS)
+
+> [!WARNING]
+> Bitrise support is **DEPRECATED** and will be removed in the next major
+> release. Existing Bitrise configurations continue to work for now, but please
+> migrate to another supported CI service.
 
 # USAGE
 
@@ -134,7 +139,8 @@ versioning, `v{major}.{minor}` or `v{major}.{minor}.{patch}` are recommended.
   - CIRCLECI_TOKEN: CircleCI API token
   - JENKINS_USER: Username for login to your Jenkins
   - JENKINS_TOKEN: Jenkins user API token
-  - BITRISE_TOKEN: Bitrise personal access token
+  - BITRISE_TOKEN: Bitrise personal access token (**DEPRECATED**: only needed
+    until Bitrise support is removed in the next major release)
 - Exporter
   - GOOGLE_APPLICATION_CREDENTIALS: GCP service account json path
 - LastRunStore
@@ -259,6 +265,9 @@ extension!
 
 More detail for config file, please check [ci_analyzer.yaml](./ci_analyzer.yaml)
 and [sample files](./sample).
+
+The Bitrise section in [ci_analyzer.yaml](./ci_analyzer.yaml) is also marked as
+**DEPRECATED** and scheduled for removal in the next major release.
 
 ## Execute on CI service with cron (Recommend)
 
@@ -489,7 +498,7 @@ See sample [cron.jenkinsfile](./sample/cron.jenkinsfile).
 - Supported CI services
   - [x] GitHub Actions
   - [x] CircleCI API v2
-  - [x] Bitrise
+  - [x] Bitrise (**DEPRECATED**: removal planned for the next major release)
   - [x] Jenkins
 - Supported data
   - [x] Workflow, Job
