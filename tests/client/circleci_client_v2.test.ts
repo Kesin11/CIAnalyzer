@@ -294,6 +294,9 @@ describe("CircleciClient", () => {
       } as never);
 
       expect(workflows[0].jobs.map((job) => job.job_number)).toEqual([124]);
+      expect(workflows[0].fetchableJobs.map((job) => job.job_number)).toEqual([
+        123, 124,
+      ]);
 
       const tests = await client.fetchWorkflowsTests(workflows);
       expect(tests.map((job) => job.jobNumber)).toEqual([123, 124]);
