@@ -1,7 +1,7 @@
 import path from "node:path";
 import { minimatch } from "minimatch";
 import type { Artifact, CustomReportArtifact } from "./artifact.js";
-import { createHttpClient, HttpError, type HttpClient } from "./http_client.js";
+import { createHttpClient, type HttpClient } from "./http_client.js";
 import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
@@ -194,6 +194,7 @@ function hasJobDetail(job: {
 
 export type Workflow = ListWorkflowsByPipelineIdResponse["items"][0] & {
   jobs: Job[];
+  fetchableJobs: FilteredWorkflowJob[];
 };
 
 type Job = FilteredWorkflowJob & {
@@ -428,7 +429,11 @@ export class CircleciClientV2 {
         },
       );
 
-      workflows.push({ ...workflow, jobs });
+      workflows.push({
+        ...workflow,
+        jobs,
+        fetchableJobs: filteredWorkflowJobs,
+      });
     }
 
     return workflows;
@@ -447,21 +452,21 @@ export class CircleciClientV2 {
     jobNumber: number,
     projectSlug: string,
   ): Promise<GetJobDetailsResponse | undefined> {
-    try {
-      const res = await this.#http.get(
-        `v2/project/${projectSlug}/job/${jobNumber}`,
-        {},
+    const res = await this.#http.get(
+      `v2/project/${projectSlug}/job/${jobNumber}`,
+      {
+        validateStatus: (status) => {
+          return (status >= 200 && status < 300) || status === 404;
+        },
+      },
+    );
+    if (res.status === 404) {
+      this.#logger.warn(
+        `Skip CircleCI job ${projectSlug}/${jobNumber} because job details returned 404.`,
       );
-      return res.data as GetJobDetailsResponse;
-    } catch (error) {
-      if (error instanceof HttpError && error.response?.status === 404) {
-        this.#logger.warn(
-          `Skip CircleCI job ${projectSlug}/${jobNumber} because job details returned 404.`,
-        );
-        return undefined;
-      }
-      throw error;
+      return undefined;
     }
+    return res.data as GetJobDetailsResponse;
   }
 
   // https://circleci.com/docs/api/v1/#single-job
@@ -474,7 +479,7 @@ export class CircleciClientV2 {
   }
 
   async fetchWorkflowsTests(workflows: Workflow[]): Promise<JobTest[]> {
-    const jobs = workflows.flatMap((workflow) => workflow.jobs);
+    const jobs = workflows.flatMap((workflow) => workflow.fetchableJobs);
     return Promise.all(
       jobs.map((job) => {
         return this.fetchTests(job.job_number, job.project_slug);
@@ -495,7 +500,7 @@ export class CircleciClientV2 {
     customReportConfigs: CustomReportConfig[],
   ) {
     return await Promise.all(
-      workflow.jobs.map((job) => {
+      workflow.fetchableJobs.map((job) => {
         return this.fetchCustomReports(
           job.job_number,
           job.project_slug,
