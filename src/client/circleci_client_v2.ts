@@ -455,9 +455,8 @@ export class CircleciClientV2 {
     const res = await this.#http.get(
       `v2/project/${projectSlug}/job/${jobNumber}`,
       {
-        validateStatus: (status) => {
-          return (status >= 200 && status < 300) || status === 404;
-        },
+        validateStatus: (status) =>
+          (status >= 200 && status < 300) || status === 404,
       },
     );
     if (res.status === 404) {

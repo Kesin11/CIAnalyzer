@@ -297,6 +297,9 @@ describe("CircleciClient", () => {
 
       const tests = await client.fetchWorkflowsTests(workflows);
       expect(tests.map((job) => job.jobNumber)).toEqual([123, 124]);
+      expect(
+        tests.flatMap((job) => job.tests.map((test) => test.name)),
+      ).toEqual(["still exported", "also exported"]);
 
       const customReports = await client.fetchWorkflowCustomReports(
         workflows[0],
@@ -308,6 +311,13 @@ describe("CircleciClient", () => {
           (jobReports.get("report") ?? []).map((artifact) => artifact.path),
         ),
       ).toEqual([["reports/job-123.json"], ["reports/job-124.json"]]);
+      expect(
+        customReports.map((jobReports) =>
+          (jobReports.get("report") ?? []).map((artifact) =>
+            JSON.parse(new TextDecoder().decode(artifact.data)),
+          ),
+        ),
+      ).toEqual([[{ job: 123 }], [{ job: 124 }]]);
     });
   });
 });
