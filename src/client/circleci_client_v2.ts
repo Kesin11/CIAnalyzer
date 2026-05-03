@@ -318,6 +318,31 @@ export class CircleciClientV2 {
     return items;
   }
 
+  private async fetchV2ApiOrEmptyOn404<T extends V2ApiResponse>(
+    url: string,
+    notFoundMessage: string,
+  ): Promise<T["items"]> {
+    const items: T["items"] = [];
+    let pageToken: T["next_page_token"] | undefined;
+    while (pageToken !== null) {
+      const res = await this.#http.get(url, {
+        params: {
+          "page-token": pageToken,
+        },
+        validateStatus: (status) =>
+          (status >= 200 && status < 300) || status === 404,
+      });
+      if (res.status === 404) {
+        this.#logger.warn(notFoundMessage);
+        return [];
+      }
+      const data = res.data as T;
+      items.push(...data.items);
+      pageToken = data.next_page_token;
+    }
+    return items;
+  }
+
   // https://circleci.com/docs/api/v2/#operation/listPipelines
   // https://circleci.com/docs/api/v2/#operation/listWorkflowsByPipelineId
   async fetchWorkflowRuns(
@@ -488,8 +513,9 @@ export class CircleciClientV2 {
 
   // https://circleci.com/docs/api/v2/#operation/getTests
   async fetchTests(jobNumber: number, projectSlug: string): Promise<JobTest> {
-    const tests = await this.fetchV2Api<TestResponse>(
+    const tests = await this.fetchV2ApiOrEmptyOn404<TestResponse>(
       `v2/project/${projectSlug}/${jobNumber}/tests`,
+      `Skip CircleCI tests for job ${projectSlug}/${jobNumber} because tests returned 404.`,
     );
     return { tests, jobNumber };
   }
@@ -544,8 +570,9 @@ export class CircleciClientV2 {
     jobNumber: number,
     projectSlug: string,
   ): Promise<ArtifactItem[]> {
-    const artifacts = await this.fetchV2Api<ArtifactsResponse>(
+    const artifacts = await this.fetchV2ApiOrEmptyOn404<ArtifactsResponse>(
       `v2/project/${projectSlug}/${jobNumber}/artifacts`,
+      `Skip CircleCI artifacts for job ${projectSlug}/${jobNumber} because artifacts returned 404.`,
     );
     return artifacts;
   }

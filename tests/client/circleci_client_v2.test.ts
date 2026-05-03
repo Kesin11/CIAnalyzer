@@ -322,5 +322,72 @@ describe("CircleciClient", () => {
         ),
       ).toEqual([[{ job: 123 }], [{ job: 124 }]]);
     });
+
+    it("returns empty tests and warns when CircleCI tests return 404", async () => {
+      const fetch = vi.fn(async (input: string | URL | Request) => {
+        const url = String(input);
+
+        if (url.includes("/v2/project/gh/owner/repo/123/tests")) {
+          return new Response(JSON.stringify({ message: "Not Found" }), {
+            status: 404,
+            statusText: "Not Found",
+          });
+        }
+
+        throw new Error(`Unexpected request: ${url}`);
+      });
+      vi.stubGlobal("fetch", fetch);
+
+      const circleciLogger = logger.getSubLogger({
+        name: CircleciClientV2.name,
+      });
+      const warn = vi
+        .spyOn(circleciLogger, "warn")
+        .mockImplementation(() => undefined);
+      vi.spyOn(logger, "getSubLogger").mockReturnValue(circleciLogger);
+
+      const client = new CircleciClientV2("DUMMY_TOKEN", logger, options);
+      const tests = await client.fetchTests(123, "gh/owner/repo");
+      expect(tests).toEqual({ tests: [], jobNumber: 123 });
+      expect(warn).toHaveBeenCalledWith(
+        "Skip CircleCI tests for job gh/owner/repo/123 because tests returned 404.",
+      );
+    });
+
+    it("returns empty custom reports and warns when CircleCI artifacts return 404", async () => {
+      const fetch = vi.fn(async (input: string | URL | Request) => {
+        const url = String(input);
+
+        if (url.includes("/v2/project/gh/owner/repo/123/artifacts")) {
+          return new Response(JSON.stringify({ message: "Not Found" }), {
+            status: 404,
+            statusText: "Not Found",
+          });
+        }
+
+        throw new Error(`Unexpected request: ${url}`);
+      });
+      vi.stubGlobal("fetch", fetch);
+
+      const circleciLogger = logger.getSubLogger({
+        name: CircleciClientV2.name,
+      });
+      const warn = vi
+        .spyOn(circleciLogger, "warn")
+        .mockImplementation(() => undefined);
+      vi.spyOn(logger, "getSubLogger").mockReturnValue(circleciLogger);
+
+      const client = new CircleciClientV2("DUMMY_TOKEN", logger, options);
+      const customReports = await client.fetchWorkflowCustomReports(
+        {
+          fetchableJobs: [{ job_number: 123, project_slug: "gh/owner/repo" }],
+        } as never,
+        [{ name: "report", paths: ["reports/*.json"] }] as never,
+      );
+      expect(customReports).toEqual([new Map([["report", []]])]);
+      expect(warn).toHaveBeenCalledWith(
+        "Skip CircleCI artifacts for job gh/owner/repo/123 because artifacts returned 404.",
+      );
+    });
   });
 });
