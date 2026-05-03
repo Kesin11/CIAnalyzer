@@ -24,8 +24,8 @@ When adding services, follow this pattern with identical interfaces.
 - **Config schema**: `schema.json` is maintained as a static source file
 
 ## Data Model
-**Critical**: Report TypeScript types and BigQuery schemas are maintained as
-static source files. Do not regenerate them from proto/protoc.
+**Critical**: In the past, these files were generated from proto/protoc, but
+now they are maintained as static source files.
 
 Key schemas:
 - `bigquery_schema/workflow_report.json`: Build/job execution data

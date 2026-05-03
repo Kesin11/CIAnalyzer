@@ -32,7 +32,7 @@
     "fmt:fix": "biome format --write .",
     "test": "TZ=UTC vitest --run",
     "test:ci": "TZ=UTC vitest --run --coverage",
-    "docker": "docker buildx build --tag ghcr.io/kesin11/ci_analyzer:latest ."
+    "docker": "docker buildx build --load --tag ghcr.io/kesin11/ci_analyzer:latest ."
   },
   "dependencies": {
     "@google-cloud/bigquery": "7.9.4",

@@ -567,8 +567,8 @@ npm run test
 
 ## Report schemas
 
-Report TypeScript types and BigQuery schema JSON files are maintained as static
-source files. There is no proto/schema generation step.
+In the past, these files were generated from proto/protoc, but now they are
+maintained as static source files.
 
 ## Docker build
 
