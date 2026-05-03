@@ -1,7 +1,11 @@
 import path from "node:path";
 import { minimatch } from "minimatch";
 import type { Artifact, CustomReportArtifact } from "./artifact.js";
-import { createHttpClient, type HttpClient } from "./http_client.js";
+import {
+  createHttpClient,
+  type HttpClient,
+  type RequestConfig,
+} from "./http_client.js";
 import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
@@ -31,6 +35,28 @@ type V2ApiResponse = {
   items: unknown[];
   next_page_token: string | null;
 };
+
+type FetchV2ApiOptions = {
+  validateStatus?: RequestConfig["validateStatus"];
+  notFoundMessage?: string;
+};
+
+function isSuccessfulStatus(status: number): boolean {
+  return status >= 200 && status < 300;
+}
+
+function getFetchV2ApiValidateStatus(
+  options?: FetchV2ApiOptions,
+): RequestConfig["validateStatus"] | undefined {
+  if (!options?.notFoundMessage) {
+    return options?.validateStatus;
+  }
+
+  const validateStatus = options.validateStatus ?? isSuccessfulStatus;
+  return function validateStatusOrNotFound(status: number): boolean {
+    return validateStatus(status) || status === 404;
+  };
+}
 
 type ListPipelinesForProjectResponse = {
   items: {
@@ -302,38 +328,21 @@ export class CircleciClientV2 {
   private async fetchV2Api<T extends V2ApiResponse>(
     url: string,
     requestParams?: { [key: string]: unknown },
+    options?: FetchV2ApiOptions,
   ): Promise<T["items"]> {
     const items: T["items"] = [];
-    for (let pageToken = undefined; pageToken !== null; ) {
+    const validateStatus = getFetchV2ApiValidateStatus(options);
+    let pageToken: T["next_page_token"] | undefined;
+    while (pageToken !== null) {
       const res = await this.#http.get(url, {
         params: {
           ...requestParams,
           "page-token": pageToken,
         },
+        validateStatus,
       });
-      const data = res.data as T;
-      items.push(...data.items);
-      pageToken = data.next_page_token;
-    }
-    return items;
-  }
-
-  private async fetchV2ApiOrEmptyOn404<T extends V2ApiResponse>(
-    url: string,
-    notFoundMessage: string,
-  ): Promise<T["items"]> {
-    const items: T["items"] = [];
-    let pageToken: T["next_page_token"] | undefined;
-    while (pageToken !== null) {
-      const res = await this.#http.get(url, {
-        params: {
-          "page-token": pageToken,
-        },
-        validateStatus: (status) =>
-          (status >= 200 && status < 300) || status === 404,
-      });
-      if (res.status === 404) {
-        this.#logger.warn(notFoundMessage);
+      if (res.status === 404 && options?.notFoundMessage) {
+        this.#logger.warn(options.notFoundMessage);
         return [];
       }
       const data = res.data as T;
@@ -513,9 +522,12 @@ export class CircleciClientV2 {
 
   // https://circleci.com/docs/api/v2/#operation/getTests
   async fetchTests(jobNumber: number, projectSlug: string): Promise<JobTest> {
-    const tests = await this.fetchV2ApiOrEmptyOn404<TestResponse>(
+    const tests = await this.fetchV2Api<TestResponse>(
       `v2/project/${projectSlug}/${jobNumber}/tests`,
-      `Skip CircleCI tests for job ${projectSlug}/${jobNumber} because tests returned 404.`,
+      undefined,
+      {
+        notFoundMessage: `Skip CircleCI tests for job ${projectSlug}/${jobNumber} because tests returned 404.`,
+      },
     );
     return { tests, jobNumber };
   }
@@ -570,9 +582,12 @@ export class CircleciClientV2 {
     jobNumber: number,
     projectSlug: string,
   ): Promise<ArtifactItem[]> {
-    const artifacts = await this.fetchV2ApiOrEmptyOn404<ArtifactsResponse>(
+    const artifacts = await this.fetchV2Api<ArtifactsResponse>(
       `v2/project/${projectSlug}/${jobNumber}/artifacts`,
-      `Skip CircleCI artifacts for job ${projectSlug}/${jobNumber} because artifacts returned 404.`,
+      undefined,
+      {
+        notFoundMessage: `Skip CircleCI artifacts for job ${projectSlug}/${jobNumber} because artifacts returned 404.`,
+      },
     );
     return artifacts;
   }
