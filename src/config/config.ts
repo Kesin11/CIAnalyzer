@@ -23,14 +23,6 @@ export type ValidatedYamlConfig = YamlConfig & {
   _configValidated: true;
 };
 
-export const createJsonSchema = () => {
-  const jsonSchema = z.toJSONSchema(yamlSchema);
-  return {
-    ...jsonSchema,
-    title: "CIAnalyzer config schema",
-  };
-};
-
 export const loadConfig = (
   logger: Logger<unknown>,
   configPath: string,

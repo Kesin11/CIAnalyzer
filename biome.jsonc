@@ -23,7 +23,6 @@
       "**",
       "!**/schema.json",
       "!**/bigquery_schema/**",
-      "!src/pb_types/**",
       "!**/tests/fixtures/**",
       "!**/tsconfig.json",
       "!**/package.json",

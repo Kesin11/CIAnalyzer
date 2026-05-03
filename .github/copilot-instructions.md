@@ -21,25 +21,21 @@ When adding services, follow this pattern with identical interfaces.
 ### Configuration System
 - **YAML schema validation**: Uses Zod with strict validation in `src/config/`
 - **Magic comment**: `# yaml-language-server: $schema=https://raw.githubusercontent.com/Kesin11/CIAnalyzer/master/schema.json`
-- **Generated schema**: `npm run schema` creates `schema.json` from Zod schemas
+- **Config schema**: `schema.json` is maintained as a static source file
 
-## Data Model (Protocol Buffers)
-**Critical**: All data types are defined in `proto/*.proto` and generate:
-- TypeScript types in `src/pb_types/` 
-- BigQuery schemas in `bigquery_schema/`
+## Data Model
+**Critical**: In the past, these files were generated from proto/protoc, but
+now they are maintained as static source files.
 
 Key schemas:
-- `workflow.proto`: Build/job execution data
-- `test_report.proto`: JUnit test results  
-
-After editing `.proto` files, **always run**: `npm run proto`
+- `bigquery_schema/workflow_report.json`: Build/job execution data
+- `bigquery_schema/test_report.json`: JUnit test results
 
 ## Development Workflows
 
-### Build System (Earthly)
-- **Local development**: `npm run build` (uses esbuild via `scripts/esbuild.ts`)
-- **CI builds**: `earthly +all` (handles proto generation, testing, Docker builds)
-- **Schema generation**: `npm run schema` / `earthly +schema`
+### Build System
+- **Local development**: `npm run check` and `npm test`
+- **CI builds**: GitHub Actions run type checks, tests, and Docker Buildx builds
 
 ### Testing with Vitest
 - **Run tests**: `npm test` (uses UTC timezone)
@@ -97,4 +93,4 @@ Required tokens per service:
 - **Strict separation**: Each service has dedicated files in all layers
 - **Config validation**: Use Zod schemas in `src/config/` with `.strict()` 
 - **Type exports**: Export only `ValidatedYamlConfig`, never raw types
-- **Proto imports**: Import from `src/pb_types/`, never directly from proto files
+- **Report schemas**: Keep TypeScript report schemas/types and BigQuery schema JSON in sync manually

@@ -43,14 +43,6 @@ jobs:
           name: Save npm cache
           paths:
           - ~/.npm
-  docker_build:
-    docker:
-      - image: earthly/earthly
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: earthly --strict --remote-cache=ghcr.io/kesin11/ci_analyzer_earthly:cache +docker
-
 workflows:
   version: 2
   ci:
@@ -59,6 +51,3 @@ workflows:
       - build_and_test:
           requires:
             - lint
-  docker:
-    jobs:
-      - docker_build
