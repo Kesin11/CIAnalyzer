@@ -1,12 +1,12 @@
 import path from "node:path";
 import { minimatch } from "minimatch";
-import { minBy } from "lodash-es";
 import type { Artifact, CustomReportArtifact } from "./artifact.js";
 import { createHttpClient, type HttpClient } from "./http_client.js";
 import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";
 import type { Logger } from "tslog";
 import { failure, type Result, success } from "../result.js";
+import { minBy } from "lodash-es";
 import type { Overwrite } from "utility-types";
 
 export type CircleciStatus =
@@ -170,8 +170,31 @@ type GetJobDetailsResponse = {
   stopped_at?: string; // "2021-09-04T19:59:30.346Z"
 };
 
+type WorkflowJobWithDetail = {
+  workflowJob: FilteredWorkflowJob;
+  detail: GetJobDetailsResponse;
+};
+
+function isFetchableWorkflowJob(
+  jobResponse: ListWorkflowJobsResponse["items"][0],
+): jobResponse is FilteredWorkflowJob {
+  return (
+    jobResponse.status !== "blocked" &&
+    jobResponse.job_number !== undefined &&
+    jobResponse.type !== "approval"
+  );
+}
+
+function hasJobDetail(job: {
+  workflowJob: FilteredWorkflowJob;
+  detail: GetJobDetailsResponse | undefined;
+}): job is WorkflowJobWithDetail {
+  return job.detail !== undefined;
+}
+
 export type Workflow = ListWorkflowsByPipelineIdResponse["items"][0] & {
   jobs: Job[];
+  fetchableJobs: FilteredWorkflowJob[];
 };
 
 type Job = FilteredWorkflowJob & {
@@ -230,6 +253,7 @@ export class CircleciClientV2 {
   #http: HttpClient;
   #baseUrl: string;
   #options: ArgumentOptions;
+  #logger: Logger<unknown>;
   constructor(
     token: string,
     logger: Logger<unknown>,
@@ -244,6 +268,7 @@ export class CircleciClientV2 {
     const httpLogger = logger.getSubLogger({ name: CircleciClientV2.name });
     this.#baseUrl = baseUrl ?? "https://circleci.com/api";
     this.#options = options;
+    this.#logger = httpLogger;
     this.#http = createHttpClient(httpLogger, options, {
       baseURL: this.#baseUrl,
       auth: {
@@ -368,45 +393,47 @@ export class CircleciClientV2 {
     const workflows: Workflow[] = [];
     for (const workflow of pipeline.workflows) {
       const jobResponses = await this.fetchWorkflowJobs(workflow.id);
-      // Filter jobs that this.fetchJob will be failed
-      const filterdWorkflowJobs = jobResponses.filter((jobResponse) => {
-        return (
-          jobResponse.status !== "blocked" &&
-          jobResponse.job_number !== undefined &&
-          jobResponse.type !== "approval"
-        );
-      }) as FilteredWorkflowJob[];
+      const filteredWorkflowJobs = jobResponses.filter(isFetchableWorkflowJob);
 
       // Fetch jobDetail and steps in parallel and then Combine to job
       const jobDetails = await Promise.all(
-        filterdWorkflowJobs.map((workflowJob) => {
+        filteredWorkflowJobs.map((workflowJob) => {
           return this.fetchJob(
             workflowJob.job_number,
             workflowJob.project_slug,
           );
         }),
       );
+      const fetchableWorkflowJobs = filteredWorkflowJobs
+        .map((workflowJob, index) => {
+          return { workflowJob, detail: jobDetails[index] };
+        })
+        .filter(hasJobDetail);
       const jobSteps = await Promise.all(
-        filterdWorkflowJobs.map((workflowJob) => {
+        fetchableWorkflowJobs.map(({ workflowJob }) => {
           return this.fetchJobSteps(
             workflowJob.job_number,
             workflowJob.project_slug,
           );
         }),
       );
-      const jobs: Job[] = filterdWorkflowJobs.map((workflowJobs) => {
-        return {
-          ...workflowJobs,
-          detail: jobDetails.find(
-            (detail) => detail.number === workflowJobs.job_number,
-          )!,
-          steps:
-            jobSteps.find((step) => step.build_num === workflowJobs.job_number)
-              ?.steps ?? [],
-        };
-      });
+      const jobs: Job[] = fetchableWorkflowJobs.map(
+        ({ workflowJob, detail }) => {
+          return {
+            ...workflowJob,
+            detail,
+            steps:
+              jobSteps.find((step) => step.build_num === workflowJob.job_number)
+                ?.steps ?? [],
+          };
+        },
+      );
 
-      workflows.push({ ...workflow, jobs });
+      workflows.push({
+        ...workflow,
+        jobs,
+        fetchableJobs: filteredWorkflowJobs,
+      });
     }
 
     return workflows;
@@ -421,11 +448,23 @@ export class CircleciClientV2 {
   }
 
   // https://circleci.com/docs/api/v2/#operation/getJobDetails
-  private async fetchJob(jobNumber: number, projectSlug: string) {
+  private async fetchJob(
+    jobNumber: number,
+    projectSlug: string,
+  ): Promise<GetJobDetailsResponse | undefined> {
     const res = await this.#http.get(
       `v2/project/${projectSlug}/job/${jobNumber}`,
-      {},
+      {
+        validateStatus: (status) =>
+          (status >= 200 && status < 300) || status === 404,
+      },
     );
+    if (res.status === 404) {
+      this.#logger.warn(
+        `Skip CircleCI job ${projectSlug}/${jobNumber} because job details returned 404.`,
+      );
+      return undefined;
+    }
     return res.data as GetJobDetailsResponse;
   }
 
@@ -439,7 +478,7 @@ export class CircleciClientV2 {
   }
 
   async fetchWorkflowsTests(workflows: Workflow[]): Promise<JobTest[]> {
-    const jobs = workflows.flatMap((workflow) => workflow.jobs);
+    const jobs = workflows.flatMap((workflow) => workflow.fetchableJobs);
     return Promise.all(
       jobs.map((job) => {
         return this.fetchTests(job.job_number, job.project_slug);
@@ -460,7 +499,7 @@ export class CircleciClientV2 {
     customReportConfigs: CustomReportConfig[],
   ) {
     return await Promise.all(
-      workflow.jobs.map((job) => {
+      workflow.fetchableJobs.map((job) => {
         return this.fetchCustomReports(
           job.job_number,
           job.project_slug,
