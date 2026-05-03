@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@google-cloud/bigquery": "7.9.4",
+    "@google-cloud/common": "6.0.0",
     "@google-cloud/storage": "7.19.0",
     "@octokit/plugin-retry": "8.0.3",
     "@octokit/plugin-throttling": "11.0.3",
@@ -54,7 +55,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.13",
-    "@google-cloud/common": "6.0.0",
     "@types/adm-zip": "0.5.8",
     "@types/js-yaml": "4.0.9",
     "@types/lodash-es": "4.17.12",
