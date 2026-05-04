@@ -1,5 +1,5 @@
-import { commonSchema, customReportSchema } from "./schema.js";
-import type { ValidatedYamlConfig } from "./config.js";
+import { commonSchema, customReportSchema } from "./schema.ts";
+import type { ValidatedYamlConfig } from "./config.ts";
 import { z } from "zod";
 
 export const bitriseYamlSchema = commonSchema.merge(

@@ -8,14 +8,14 @@ import {
   type TestReport,
   type WorkflowParams,
   convertToReportTestSuites,
-} from "./analyzer.js";
-import type { JobTest } from "../client/circleci_client_v2.js";
+} from "./analyzer.ts";
+import type { JobTest } from "../client/circleci_client_v2.ts";
 import type { TestSuite, TestCase } from "junit2json";
 import type {
   Pipeline,
   Workflow,
   CircleciStatus,
-} from "../client/circleci_client_v2.js";
+} from "../client/circleci_client_v2.ts";
 
 type WorkflowReport = {
   service: "circleci";

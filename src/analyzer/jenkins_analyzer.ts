@@ -6,7 +6,7 @@ import {
   type TestReport,
   type WorkflowParams,
   convertToTestReports,
-} from "./analyzer.js";
+} from "./analyzer.ts";
 import type {
   WfapiRunResponse,
   JenkinsStatus,
@@ -16,9 +16,9 @@ import type {
   BuildData,
   ParametersAction,
   TimeInQueueAction,
-} from "../client/jenkins_client.js";
+} from "../client/jenkins_client.ts";
 import { sumBy, first } from "lodash-es";
-import type { Artifact } from "../client/artifact.js";
+import type { Artifact } from "../client/artifact.ts";
 
 type WorkflowReport = {
   // workflow

@@ -1,16 +1,16 @@
 import path from "node:path";
 import { minimatch } from "minimatch";
-import type { Artifact, CustomReportArtifact } from "./artifact.js";
+import { minBy } from "lodash-es";
+import type { Artifact, CustomReportArtifact } from "./artifact.ts";
 import {
   createHttpClient,
   type HttpClient,
   type RequestConfig,
-} from "./http_client.js";
-import type { CustomReportConfig } from "../config/schema.js";
-import type { ArgumentOptions } from "../arg_options.js";
+} from "./http_client.ts";
+import type { CustomReportConfig } from "../config/schema.ts";
+import type { ArgumentOptions } from "../arg_options.ts";
 import type { Logger } from "tslog";
-import { failure, type Result, success } from "../result.js";
-import { minBy } from "lodash-es";
+import { failure, type Result, success } from "../result.ts";
 import type { Overwrite } from "utility-types";
 
 export type CircleciStatus =

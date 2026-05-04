@@ -2,13 +2,13 @@ import path from "node:path";
 import { Storage } from "@google-cloud/storage";
 import type { Logger } from "tslog";
 import dayjs from "dayjs";
-import type { Exporter } from "./exporter.js";
-import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
-import type { GcsExporterConfig } from "../config/schema.js";
+import type { Exporter } from "./exporter.ts";
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.ts";
+import type { GcsExporterConfig } from "../config/schema.ts";
 import type {
   CustomReport,
   CustomReportCollection,
-} from "../custom_report_collection.js";
+} from "../custom_report_collection.ts";
 
 export class GcsExporter implements Exporter {
   service: string;

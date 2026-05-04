@@ -4,7 +4,10 @@ export const failure = <T, E>(value: E): Failure<T, E> => new Failure(value);
 
 export class Success<T, E> {
   type = "success" as const;
-  constructor(readonly value: T) {}
+  readonly value: T;
+  constructor(value: T) {
+    this.value = value;
+  }
   isSuccess(): this is Success<T, E> {
     return true;
   }
@@ -15,7 +18,10 @@ export class Success<T, E> {
 
 export class Failure<T, E> {
   type = "failure" as const;
-  constructor(readonly value: E) {}
+  readonly value: E;
+  constructor(value: E) {
+    this.value = value;
+  }
   isSuccess(): this is Success<T, E> {
     return false;
   }

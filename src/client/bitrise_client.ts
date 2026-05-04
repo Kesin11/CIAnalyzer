@@ -1,9 +1,9 @@
 import { minBy } from "lodash-es";
-import type { Artifact, CustomReportArtifact } from "./artifact.js";
-import { createHttpClient, type HttpClient } from "./http_client.js";
+import type { Artifact, CustomReportArtifact } from "./artifact.ts";
+import { createHttpClient, type HttpClient } from "./http_client.ts";
 import { minimatch } from "minimatch";
-import type { CustomReportConfig } from "../config/schema.js";
-import type { ArgumentOptions } from "../arg_options.js";
+import type { CustomReportConfig } from "../config/schema.ts";
+import type { ArgumentOptions } from "../arg_options.ts";
 import type { Logger } from "tslog";
 
 const DEBUG_PER_PAGE = 10;

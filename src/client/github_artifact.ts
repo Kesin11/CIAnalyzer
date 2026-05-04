@@ -1,5 +1,5 @@
 import { minimatch } from "minimatch";
-import type { Artifact } from "./artifact.js";
+import type { Artifact } from "./artifact.ts";
 
 const ZIP_SIGNATURES = [
   [0x50, 0x4b, 0x03, 0x04],

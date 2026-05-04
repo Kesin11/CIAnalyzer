@@ -5,10 +5,10 @@ import {
   ArgumentOptions,
   createHelpMessage,
   parseCliArgs,
-} from "./arg_options.js";
-import { loadConfig } from "./config/config.js";
-import { CompositRunner } from "./runner/runner.js";
-import { validateConfig } from "./config/config.js";
+} from "./arg_options.ts";
+import { loadConfig } from "./config/config.ts";
+import { CompositRunner } from "./runner/runner.ts";
+import { validateConfig } from "./config/config.ts";
 
 const baseLoggerForStyles = new Logger();
 

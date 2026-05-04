@@ -6,15 +6,15 @@ import {
   type WorkflowParams,
   secRound,
   convertToTestReports,
-} from "./analyzer.js";
+} from "./analyzer.ts";
 import type {
   BuildResponse,
   BuildLogResponse,
   App,
   BitriseStatus,
-} from "../client/bitrise_client.js";
+} from "../client/bitrise_client.ts";
 import { dropWhile, maxBy, sumBy, takeWhile } from "lodash-es";
-import type { Artifact } from "../client/artifact.js";
+import type { Artifact } from "../client/artifact.ts";
 
 type WorkflowReport = {
   // workflow

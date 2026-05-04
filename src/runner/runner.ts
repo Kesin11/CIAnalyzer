@@ -1,14 +1,14 @@
-import type { ValidatedYamlConfig } from "../config/config.js";
-import { GithubRunner } from "./github_runner.js";
-import { CircleciRunner } from "./circleci_runner.js";
-import { JenkinsRunner } from "./jenkins_runner.js";
-import { Failure, failure, type Result, success } from "../result.js";
-import { BitriseRunner } from "./bitrise_runner.js";
-import type { ArgumentOptions } from "../arg_options.js";
+import type { ValidatedYamlConfig } from "../config/config.ts";
+import { GithubRunner } from "./github_runner.ts";
+import { CircleciRunner } from "./circleci_runner.ts";
+import { JenkinsRunner } from "./jenkins_runner.ts";
+import { Failure, failure, type Result, success } from "../result.ts";
+import { BitriseRunner } from "./bitrise_runner.ts";
+import type { ArgumentOptions } from "../arg_options.ts";
 import type { Logger } from "tslog";
 import { ApiError } from "@google-cloud/common";
-import { HttpError } from "../client/http_client.js";
-import { summarizeHttpError } from "../error.js";
+import { HttpError } from "../client/http_client.ts";
+import { summarizeHttpError } from "../error.ts";
 
 export interface Runner {
   run(): Promise<Result<unknown, Error>>;
@@ -17,11 +17,15 @@ export interface Runner {
 export class CompositRunner implements Runner {
   runners: Runner[];
   #logger: Logger<unknown>;
+  config: ValidatedYamlConfig;
+  options: ArgumentOptions;
   constructor(
     logger: Logger<unknown>,
-    public config: ValidatedYamlConfig,
-    public options: ArgumentOptions,
+    config: ValidatedYamlConfig,
+    options: ArgumentOptions,
   ) {
+    this.config = config;
+    this.options = options;
     this.#logger = logger;
     const services = options.onlyServices
       ? Object.keys(config).filter((service) =>

@@ -1,10 +1,10 @@
-import type { Artifact, CustomReportArtifact } from "./artifact.js";
-import { createHttpClient, type HttpClient } from "./http_client.js";
+import type { Artifact, CustomReportArtifact } from "./artifact.ts";
+import { createHttpClient, type HttpClient } from "./http_client.ts";
 import { minBy } from "lodash-es";
 import { minimatch } from "minimatch";
-import type { CustomReportConfig } from "../config/schema.js";
+import type { CustomReportConfig } from "../config/schema.ts";
 import type { Logger } from "tslog";
-import type { ArgumentOptions } from "../arg_options.js";
+import type { ArgumentOptions } from "../arg_options.ts";
 
 // ref: https://github.com/jenkinsci/pipeline-stage-view-plugin/blob/master/rest-api/src/main/java/com/cloudbees/workflow/rest/external/StatusExt.java
 export type JenkinsStatus =

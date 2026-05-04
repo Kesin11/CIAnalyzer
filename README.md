@@ -581,10 +581,10 @@ npm run docker
 ### Debugging
 
 ```bash
-npx tsx src/index.ts -c your_custom_config.yaml --debug
+node src/index.ts -c your_custom_config.yaml --debug
 ```
 
-### Execute CIAnalyzer with tsx runtime
+### Execute CIAnalyzer with Node TypeScript runtime
 
 ```bash
 npm run start -- -c your_custom_config.yaml

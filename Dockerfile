@@ -19,5 +19,5 @@ COPY bin ./bin
 COPY src ./src
 COPY bigquery_schema ./bigquery_schema
 
-ENTRYPOINT ["/usr/bin/tini", "--", "/ci_analyzer/node_modules/.bin/tsx", "/ci_analyzer/src/index.ts"]
+ENTRYPOINT ["/usr/bin/tini", "--", "node", "/ci_analyzer/src/index.ts"]
 WORKDIR /app

@@ -1,7 +1,7 @@
 import { round } from "lodash-es";
 import { type TestSuites, parse } from "junit2json";
 import { z } from "zod";
-import type { Artifact } from "../client/artifact.js";
+import type { Artifact } from "../client/artifact.ts";
 
 export type Status = "SUCCESS" | "FAILURE" | "ABORTED" | "OTHER";
 const statusSchema = z.enum(["SUCCESS", "FAILURE", "ABORTED", "OTHER"]);

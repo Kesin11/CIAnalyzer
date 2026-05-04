@@ -83,7 +83,7 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm ci
       # Test
-      - name: Smoke test tsx runtime
+      - name: Smoke test Node TypeScript runtime
         run: |
           node ./bin/ci_analyzer.js --version
           node ./bin/ci_analyzer.js --help

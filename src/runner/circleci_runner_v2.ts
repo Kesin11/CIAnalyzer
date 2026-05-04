@@ -1,24 +1,24 @@
 import { max } from "lodash-es";
-import type { Runner } from "./runner.js";
-import type { ValidatedYamlConfig } from "../config/config.js";
-import { type CircleciConfig, parseConfig } from "../config/circleci_config.js";
-import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
-import { CompositExporter } from "../exporter/exporter.js";
-import { LastRunStore } from "../last_run_store.js";
-import { GithubClient } from "../client/github_client.js";
+import type { Runner } from "./runner.ts";
+import type { ValidatedYamlConfig } from "../config/config.ts";
+import { type CircleciConfig, parseConfig } from "../config/circleci_config.ts";
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.ts";
+import { CompositExporter } from "../exporter/exporter.ts";
+import { LastRunStore } from "../last_run_store.ts";
+import { GithubClient } from "../client/github_client.ts";
 import {
   CustomReportCollection,
   createCustomReportCollection,
   aggregateCustomReportArtifacts,
-} from "../custom_report_collection.js";
-import { failure, type Result, success } from "../result.js";
-import type { ArgumentOptions } from "../arg_options.js";
+} from "../custom_report_collection.ts";
+import { failure, type Result, success } from "../result.ts";
+import type { ArgumentOptions } from "../arg_options.ts";
 import type { Logger } from "tslog";
 import {
   CircleciClientV2,
   type Pipeline,
-} from "../client/circleci_client_v2.js";
-import { CircleciAnalyzerV2 } from "../analyzer/circleci_analyzer_v2.js";
+} from "../client/circleci_client_v2.ts";
+import { CircleciAnalyzerV2 } from "../analyzer/circleci_analyzer_v2.ts";
 
 const META_VERSION = 2;
 export type CircleciV2LastRunMetadata = {
@@ -33,12 +33,16 @@ export class CircleciRunnerV2 implements Runner {
   store?: LastRunStore<CircleciV2LastRunMetadata>;
   githubClient: GithubClient;
   logger: Logger<unknown>;
+  yamlConfig: ValidatedYamlConfig;
+  options: ArgumentOptions;
 
   constructor(
     logger: Logger<unknown>,
-    public yamlConfig: ValidatedYamlConfig,
-    public options: ArgumentOptions,
+    yamlConfig: ValidatedYamlConfig,
+    options: ArgumentOptions,
   ) {
+    this.yamlConfig = yamlConfig;
+    this.options = options;
     const CIRCLECI_TOKEN = process.env.CIRCLECI_TOKEN || "";
     this.config = parseConfig(yamlConfig);
     this.logger = logger.getSubLogger({ name: `${CircleciRunnerV2.name}` });

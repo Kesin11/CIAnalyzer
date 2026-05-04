@@ -1,18 +1,18 @@
 import { maxBy } from "lodash-es";
-import type { Runner } from "./runner.js";
-import type { ValidatedYamlConfig } from "../config/config.js";
-import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
-import { CompositExporter } from "../exporter/exporter.js";
-import { JenkinsClient } from "../client/jenkins_client.js";
-import { JenkinsAnalyzer } from "../analyzer/jenkins_analyzer.js";
-import { type JenkinsConfig, parseConfig } from "../config/jenkins_config.js";
-import { LastRunStore } from "../last_run_store.js";
+import type { Runner } from "./runner.ts";
+import type { ValidatedYamlConfig } from "../config/config.ts";
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.ts";
+import { CompositExporter } from "../exporter/exporter.ts";
+import { JenkinsClient } from "../client/jenkins_client.ts";
+import { JenkinsAnalyzer } from "../analyzer/jenkins_analyzer.ts";
+import { type JenkinsConfig, parseConfig } from "../config/jenkins_config.ts";
+import { LastRunStore } from "../last_run_store.ts";
 import {
   CustomReportCollection,
   createCustomReportCollection,
-} from "../custom_report_collection.js";
-import { failure, type Result, success } from "../result.js";
-import type { ArgumentOptions } from "../arg_options.js";
+} from "../custom_report_collection.ts";
+import { failure, type Result, success } from "../result.ts";
+import type { ArgumentOptions } from "../arg_options.ts";
 import type { Logger } from "tslog";
 
 export class JenkinsRunner implements Runner {
@@ -22,12 +22,16 @@ export class JenkinsRunner implements Runner {
   config?: JenkinsConfig;
   store?: LastRunStore;
   logger: Logger<unknown>;
+  yamlConfig: ValidatedYamlConfig;
+  options: ArgumentOptions;
 
   constructor(
     logger: Logger<unknown>,
-    public yamlConfig: ValidatedYamlConfig,
-    public options: ArgumentOptions,
+    yamlConfig: ValidatedYamlConfig,
+    options: ArgumentOptions,
   ) {
+    this.yamlConfig = yamlConfig;
+    this.options = options;
     this.logger = logger.getSubLogger({ name: `${JenkinsRunner.name}` });
     this.config = parseConfig(yamlConfig, this.logger);
 
