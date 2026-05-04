@@ -6,6 +6,12 @@ import { minBy } from "lodash-es";
 import { ZipExtractor } from "../zip_extractor.js";
 import type { CustomReportConfig } from "../config/schema.js";
 import type { ArgumentOptions } from "../arg_options.js";
+import {
+  detectGithubArtifactFormat,
+  resolveGithubArtifactPath,
+  toDirectArtifact,
+  type GithubArtifactFormat,
+} from "./github_artifact.js";
 
 // Oktokit document: https://octokit.github.io/rest.js/v18#actions
 
@@ -20,6 +26,40 @@ type RunStatus = "queued" | "in_progress" | "completed";
 
 export type RepositoryTagMap = Map<string, string>;
 
+type GithubOctokit = Pick<Octokit, "log"> & {
+  actions: Pick<
+    Octokit["actions"],
+    | "listWorkflowRuns"
+    | "listRepoWorkflows"
+    | "listJobsForWorkflowRun"
+    | "listWorkflowRunArtifacts"
+  >;
+  repos: Pick<Octokit["repos"], "listTags">;
+};
+
+type DownloadedArtifactResponse = {
+  data: ArrayBuffer;
+  headers: Headers;
+};
+
+type DownloadedArtifact = {
+  data: ArrayBuffer;
+  format: GithubArtifactFormat;
+  path: string;
+};
+
+type WorkflowArtifactToDownload = {
+  name: string;
+  archiveDownloadUrl: string;
+};
+
+type GithubClientDependencies = {
+  octokit?: GithubOctokit;
+  artifactDownloader?: (
+    archiveDownloadUrl: string,
+  ) => Promise<DownloadedArtifactResponse>;
+};
+
 const isExpiredArtifactError = (
   error: unknown,
 ): error is { status: number } => {
@@ -32,55 +72,107 @@ const isExpiredArtifactError = (
 };
 
 export class GithubClient {
-  #octokit: Octokit;
+  #artifactDownloader: (
+    archiveDownloadUrl: string,
+  ) => Promise<DownloadedArtifactResponse>;
+  #octokit: GithubOctokit;
+  #token: string;
   constructor(
     token: string,
     private options: ArgumentOptions,
     baseUrl?: string,
+    deps: GithubClientDependencies = {},
   ) {
     const MyOctokit = Octokit.plugin(throttling, retry);
-    this.#octokit = new MyOctokit({
-      auth: token,
-      baseUrl: baseUrl ? baseUrl : "https://api.github.com",
-      log: options.debug ? console : undefined,
-      throttle: {
-        onRateLimit: (retryAfter, options, _octokit, retryCount) => {
-          this.#octokit.log.warn(
-            `Request quota exhausted for request ${options.method} ${options.url}`,
-          );
-          // Retry twice after hitting a rate limit error, then give up
-          if (retryCount <= 2) {
-            this.#octokit.log.warn(`Retrying after ${retryAfter} seconds!`);
-            return true;
-          }
+    this.#token = token;
+    this.#octokit =
+      deps.octokit ??
+      new MyOctokit({
+        auth: token,
+        baseUrl: baseUrl ?? "https://api.github.com",
+        log: options.debug ? console : undefined,
+        throttle: {
+          onRateLimit: (retryAfter, options, _octokit, retryCount) => {
+            this.#octokit.log.warn(
+              `Request quota exhausted for request ${options.method} ${options.url}`,
+            );
+            // Retry twice after hitting a rate limit error, then give up
+            if (retryCount <= 2) {
+              this.#octokit.log.warn(`Retrying after ${retryAfter} seconds!`);
+              return true;
+            }
+          },
+          onSecondaryRateLimit: (
+            _retryAfter,
+            options,
+            _octokit,
+            _retryCount,
+          ) => {
+            // does not retry, only logs a warning
+            this.#octokit.log.warn(
+              `Abuse detected for request ${options.method} ${options.url}`,
+            );
+          },
         },
-        onSecondaryRateLimit: (_retryAfter, options, _octokit, _retryCount) => {
-          // does not retry, only logs a warning
-          this.#octokit.log.warn(
-            `Abuse detected for request ${options.method} ${options.url}`,
-          );
-        },
-      },
+      });
+    this.#artifactDownloader =
+      deps.artifactDownloader ?? this.downloadArtifactFromUrl.bind(this);
+  }
+
+  private createArtifactDownloadHeaders(): Headers {
+    const headers = new Headers({
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
     });
+    if (this.#token) {
+      headers.set("Authorization", `Bearer ${this.#token}`);
+    }
+
+    return headers;
+  }
+
+  private toDownloadedArtifact(
+    artifactName: string,
+    response: DownloadedArtifactResponse,
+  ): DownloadedArtifact {
+    return {
+      data: response.data,
+      format: detectGithubArtifactFormat(response.data),
+      path: resolveGithubArtifactPath(response.headers, artifactName),
+    };
+  }
+
+  private async downloadArtifactFromUrl(
+    archiveDownloadUrl: string,
+  ): Promise<DownloadedArtifactResponse> {
+    const response = await fetch(archiveDownloadUrl, {
+      headers: this.createArtifactDownloadHeaders(),
+    });
+    if (!response.ok) {
+      const error = new Error(
+        `Failed to download artifact: ${response.status} ${response.statusText}`,
+      ) as Error & { status?: number };
+      error.status = response.status;
+      throw error;
+    }
+
+    return {
+      data: await response.arrayBuffer(),
+      headers: response.headers,
+    };
   }
 
   private async downloadArtifact(
     owner: string,
     repo: string,
     runId: number,
-    artifact: {
-      id: number;
-      name: string;
-    },
-  ): Promise<ArrayBuffer | undefined> {
+    artifact: WorkflowArtifactToDownload,
+  ): Promise<DownloadedArtifact | undefined> {
     try {
-      const response = await this.#octokit.actions.downloadArtifact({
-        owner,
-        repo,
-        artifact_id: artifact.id,
-        archive_format: "zip",
-      });
-      return response.data as ArrayBuffer;
+      const response = await this.#artifactDownloader(
+        artifact.archiveDownloadUrl,
+      );
+      return this.toDownloadedArtifact(artifact.name, response);
     } catch (error) {
       if (isExpiredArtifactError(error)) {
         this.#octokit.log.warn(
@@ -163,43 +255,65 @@ export class GithubClient {
     runId: number,
     globs: string[],
   ): Promise<Artifact[]> {
-    const res = await this.#octokit.actions.listWorkflowRunArtifacts({
-      owner,
-      repo,
-      run_id: runId,
-    });
+    const artifactsResponse =
+      await this.#octokit.actions.listWorkflowRunArtifacts({
+        owner,
+        repo,
+        run_id: runId,
+      });
 
     // Unarchive zip artifacts
     const zipExtractor = new ZipExtractor();
     try {
-      const artifactZipData = await Promise.all(
-        res.data.artifacts.map(async (artifact) => {
-          const zipData = await this.downloadArtifact(owner, repo, runId, {
-            id: artifact.id,
-            name: artifact.name,
-          });
+      const downloadedArtifacts = await Promise.all(
+        artifactsResponse.data.artifacts.map(async (artifact) => {
+          const downloadedArtifact = await this.downloadArtifact(
+            owner,
+            repo,
+            runId,
+            {
+              name: artifact.name,
+              archiveDownloadUrl: artifact.archive_download_url,
+            },
+          );
 
           return {
             name: artifact.name,
-            zipData,
+            downloadedArtifact,
           };
         }),
       );
 
-      for (const { name, zipData } of artifactZipData) {
-        if (!zipData) continue;
+      const directArtifacts: Artifact[] = [];
+      for (const { name, downloadedArtifact } of downloadedArtifacts) {
+        if (!downloadedArtifact) continue;
 
-        await zipExtractor.put(name, zipData);
+        if (downloadedArtifact.format === "zip") {
+          await zipExtractor.put(name, downloadedArtifact.data);
+          continue;
+        }
+
+        const directArtifact = toDirectArtifact(
+          downloadedArtifact.path,
+          downloadedArtifact.data,
+          globs,
+        );
+        if (directArtifact) {
+          directArtifacts.push(directArtifact);
+        }
       }
 
       const zipEntries = zipExtractor.extract(globs);
 
-      return zipEntries.map((entry) => {
-        return {
-          path: entry.entryName,
-          data: entry.getData().buffer.slice(0) as ArrayBuffer,
-        };
-      });
+      return [
+        ...zipEntries.map((entry) => {
+          return {
+            path: entry.entryName,
+            data: entry.getData().buffer.slice(0) as ArrayBuffer,
+          };
+        }),
+        ...directArtifacts,
+      ];
     } finally {
       await zipExtractor.rmTmpZip();
     }
