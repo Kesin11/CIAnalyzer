@@ -39,6 +39,8 @@ type GithubOctokit = Pick<Octokit, "log"> & {
   request: Octokit["request"];
 };
 
+type ArtifactDownloadOctokit = Pick<Octokit, "request">;
+
 type DownloadedArtifactResponse = {
   data: ArrayBuffer;
   headers: Headers;
@@ -61,14 +63,10 @@ type ArtifactDownloadUrlResolver = (
   artifactId: number,
 ) => Promise<string>;
 
-type ArtifactDownloader = (
-  artifactDownloadUrl: string,
-) => Promise<DownloadedArtifactResponse>;
-
 type GithubClientDependencies = {
   octokit?: GithubOctokit;
+  artifactDownloadOctokit?: ArtifactDownloadOctokit;
   artifactDownloadUrlResolver?: ArtifactDownloadUrlResolver;
-  artifactDownloader?: ArtifactDownloader;
 };
 
 const isExpiredArtifactError = (
@@ -84,7 +82,7 @@ const isExpiredArtifactError = (
 
 export class GithubClient {
   #artifactDownloadUrlResolver: ArtifactDownloadUrlResolver;
-  #artifactDownloader: ArtifactDownloader;
+  #artifactDownloadOctokit: ArtifactDownloadOctokit;
   #octokit: GithubOctokit;
   constructor(
     token: string,
@@ -123,11 +121,15 @@ export class GithubClient {
           },
         },
       });
+    const RetryableBlobOctokit = Octokit.plugin(retry);
+    this.#artifactDownloadOctokit =
+      deps.artifactDownloadOctokit ??
+      new RetryableBlobOctokit({
+        log: options.debug ? console : undefined,
+      });
     this.#artifactDownloadUrlResolver =
       deps.artifactDownloadUrlResolver ??
       this.resolveArtifactDownloadUrl.bind(this);
-    this.#artifactDownloader =
-      deps.artifactDownloader ?? this.downloadArtifactFromUrl.bind(this);
   }
 
   private async resolveArtifactDownloadUrl(
@@ -162,12 +164,6 @@ export class GithubClient {
     return location;
   }
 
-  private createArtifactDownloadHeaders(): Headers {
-    return new Headers({
-      Accept: "application/octet-stream",
-    });
-  }
-
   private toDownloadedArtifact(
     artifactName: string,
     response: DownloadedArtifactResponse,
@@ -182,20 +178,12 @@ export class GithubClient {
   private async downloadArtifactFromUrl(
     artifactDownloadUrl: string,
   ): Promise<DownloadedArtifactResponse> {
-    const response = await fetch(artifactDownloadUrl, {
-      headers: this.createArtifactDownloadHeaders(),
-    });
-    if (!response.ok) {
-      const error = new Error(
-        `Failed to download artifact: ${response.status} ${response.statusText}`,
-      ) as Error & { status?: number };
-      error.status = response.status;
-      throw error;
-    }
-
+    const { data, headers } = await this.#artifactDownloadOctokit.request(
+      `GET ${artifactDownloadUrl}`,
+    );
     return {
-      data: await response.arrayBuffer(),
-      headers: response.headers,
+      data: data as ArrayBuffer,
+      headers: new Headers(headers as Record<string, string>),
     };
   }
 
@@ -212,8 +200,10 @@ export class GithubClient {
         repo,
         id,
       );
-      const response = await this.#artifactDownloader(artifactDownloadUrl);
-      return this.toDownloadedArtifact(name, response);
+      return this.toDownloadedArtifact(
+        name,
+        await this.downloadArtifactFromUrl(artifactDownloadUrl),
+      );
     } catch (error) {
       if (isExpiredArtifactError(error)) {
         this.#octokit.log.warn(

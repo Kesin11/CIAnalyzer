@@ -37,6 +37,10 @@ type MockDownloadedArtifactResponse = {
   headers: Headers;
 };
 
+type MockArtifactDownloadOctokit = {
+  request: ReturnType<typeof vi.fn>;
+};
+
 const defaultOptions = new ArgumentOptions({
   c: "./dummy.yaml",
 });
@@ -90,19 +94,35 @@ function createGithubClient(
   artifacts: MockArtifact[],
   downloadedArtifact: MockDownloadedArtifactResponse,
 ): {
+  artifactDownloadOctokit: MockArtifactDownloadOctokit;
   client: GithubClient;
   octokit: ReturnType<typeof createMockOctokit>;
 } {
   const octokit = createMockOctokit(artifacts);
+  const artifactDownloadOctokit = {
+    request: vi.fn(async () => ({
+      data: downloadedArtifact.data,
+      headers: Object.fromEntries(downloadedArtifact.headers.entries()),
+    })),
+  };
   const client = new GithubClient("DUMMY_TOKEN", defaultOptions, undefined, {
+    artifactDownloadOctokit: artifactDownloadOctokit as any,
     octokit,
-    artifactDownloader: vi.fn(async () => downloadedArtifact),
   });
 
   return {
+    artifactDownloadOctokit,
     client,
     octokit,
   };
+}
+
+function expectArtifactBlobDownloadRequested(
+  artifactDownloadOctokit: MockArtifactDownloadOctokit,
+): void {
+  expect(artifactDownloadOctokit.request).toHaveBeenCalledWith(
+    "GET https://example.test/download",
+  );
 }
 
 describe("GithubClient", () => {
@@ -189,7 +209,7 @@ describe("GithubClient", () => {
 
   describe("fetchArtifacts", () => {
     it("extracts files from zip artifacts", async () => {
-      const { client } = createGithubClient(
+      const { artifactDownloadOctokit, client } = createGithubClient(
         [
           {
             id: 1,
@@ -214,10 +234,11 @@ describe("GithubClient", () => {
 
       expect(artifacts).toHaveLength(1);
       expect(artifacts[0]?.path).toBe("reports/junit.xml");
+      expectArtifactBlobDownloadRequested(artifactDownloadOctokit);
     });
 
     it("treats matching non-zip artifacts as direct files", async () => {
-      const { client, octokit } = createGithubClient(
+      const { artifactDownloadOctokit, client, octokit } = createGithubClient(
         [
           {
             id: 1,
@@ -246,6 +267,7 @@ describe("GithubClient", () => {
           data: expect.any(ArrayBuffer),
         },
       ]);
+      expectArtifactBlobDownloadRequested(artifactDownloadOctokit);
       expect(octokit.request).toHaveBeenCalledWith(
         "GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}",
         {
@@ -266,7 +288,7 @@ describe("GithubClient", () => {
     });
 
     it("skips non-zip artifacts quietly even when headers say zip", async () => {
-      const { client, octokit } = createGithubClient(
+      const { artifactDownloadOctokit, client, octokit } = createGithubClient(
         [
           {
             id: 1,
@@ -291,11 +313,12 @@ describe("GithubClient", () => {
       );
 
       expect(artifacts).toEqual([]);
+      expectArtifactBlobDownloadRequested(artifactDownloadOctokit);
       expect(octokit.log.warn).not.toHaveBeenCalled();
     });
 
     it("falls back to payload sniffing when zip content-type is missing", async () => {
-      const { client } = createGithubClient(
+      const { artifactDownloadOctokit, client } = createGithubClient(
         [
           {
             id: 1,
@@ -320,6 +343,7 @@ describe("GithubClient", () => {
 
       expect(artifacts).toHaveLength(1);
       expect(artifacts[0]?.path).toBe("reports/junit.xml");
+      expectArtifactBlobDownloadRequested(artifactDownloadOctokit);
     });
   });
 });
