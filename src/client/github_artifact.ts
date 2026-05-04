@@ -6,6 +6,8 @@ const ZIP_SIGNATURES = [
   [0x50, 0x4b, 0x05, 0x06],
   [0x50, 0x4b, 0x07, 0x08],
 ] as const;
+const UTF8_FILENAME_PATTERN = /filename\*\s*=\s*UTF-8''([^;]+)/i;
+const FILENAME_PATTERN = /filename\s*=\s*([^;]+)/i;
 
 export type GithubArtifactFormat = "zip" | "file";
 
@@ -17,33 +19,56 @@ function hasZipSignature(data: ArrayBuffer): boolean {
 }
 
 function stripQuotes(value: string): string {
-  return value.replace(/^"(.*)"$/, "$1").trim();
+  const trimmed = value.trim();
+  if (!trimmed.startsWith('"') || !trimmed.endsWith('"')) {
+    return trimmed;
+  }
+
+  return trimmed.slice(1, -1);
+}
+
+function getContentDispositionFilename(
+  contentDisposition: string,
+  pattern: RegExp,
+): string | undefined {
+  const filename = contentDisposition.match(pattern)?.[1];
+  if (!filename) {
+    return undefined;
+  }
+
+  return stripQuotes(filename);
 }
 
 function parseContentDispositionFilename(
   contentDisposition: string,
 ): string | undefined {
-  const utf8FilenameMatch = contentDisposition.match(
-    /filename\*\s*=\s*UTF-8''([^;]+)/i,
+  const utf8Filename = getContentDispositionFilename(
+    contentDisposition,
+    UTF8_FILENAME_PATTERN,
   );
-  if (utf8FilenameMatch?.[1]) {
-    return decodeURIComponent(stripQuotes(utf8FilenameMatch[1]));
+  if (utf8Filename) {
+    return decodeURIComponent(utf8Filename);
   }
 
-  const filenameMatch = contentDisposition.match(/filename\s*=\s*([^;]+)/i);
-  if (filenameMatch?.[1]) {
-    return stripQuotes(filenameMatch[1]);
-  }
-
-  return undefined;
+  return getContentDispositionFilename(contentDisposition, FILENAME_PATTERN);
 }
 
+/**
+ * GitHub's artifact metadata and headers are not reliable enough to identify
+ * whether a payload is really a ZIP, so inspect the payload bytes directly
+ * before deciding whether it is safe to pass to AdmZip.
+ */
 export function detectGithubArtifactFormat(
   data: ArrayBuffer,
 ): GithubArtifactFormat {
   return hasZipSignature(data) ? "zip" : "file";
 }
 
+/**
+ * Non-ZIP artifacts should still be matched against the existing path globs.
+ * Prefer the download response filename because GitHub can return a more
+ * specific name than the artifact's logical name from the listing API.
+ */
 export function resolveGithubArtifactPath(
   headers: Headers,
   fallbackName: string,
@@ -58,6 +83,10 @@ function matchesGithubArtifactPath(path: string, globs: string[]): boolean {
   return globs.some((glob) => minimatch(path, glob));
 }
 
+/**
+ * Reuse the current path-glob configuration for non-ZIP artifacts instead of
+ * introducing a separate artifact-name config surface.
+ */
 export function toDirectArtifact(
   path: string,
   data: ArrayBuffer,

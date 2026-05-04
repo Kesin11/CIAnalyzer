@@ -28,8 +28,8 @@ const hasQueuedRuns = [
 ] as any;
 
 type MockArtifact = {
+  id: number;
   name: string;
-  archive_download_url: string;
 };
 
 type MockDownloadedArtifactResponse = {
@@ -78,6 +78,11 @@ function createMockOctokit(artifacts: MockArtifact[] = []) {
     repos: {
       listTags: vi.fn(),
     },
+    request: vi.fn(async () => ({
+      headers: {
+        location: "https://example.test/download",
+      },
+    })),
   } as any;
 }
 
@@ -187,8 +192,8 @@ describe("GithubClient", () => {
       const { client } = createGithubClient(
         [
           {
+            id: 1,
             name: "test_results",
-            archive_download_url: "https://example.test/artifacts/1",
           },
         ],
         {
@@ -215,8 +220,8 @@ describe("GithubClient", () => {
       const { client, octokit } = createGithubClient(
         [
           {
+            id: 1,
             name: "artifact",
-            archive_download_url: "https://example.test/artifacts/1",
           },
         ],
         {
@@ -241,6 +246,22 @@ describe("GithubClient", () => {
           data: expect.any(ArrayBuffer),
         },
       ]);
+      expect(octokit.request).toHaveBeenCalledWith(
+        "GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}",
+        {
+          owner: "owner",
+          repo: "repo",
+          artifact_id: 1,
+          archive_format: "zip",
+          headers: {
+            "X-GitHub-Api-Version": "2022-11-28",
+          },
+          request: {
+            parseSuccessResponseBody: false,
+            redirect: "manual",
+          },
+        },
+      );
       expect(octokit.log.warn).not.toHaveBeenCalled();
     });
 
@@ -248,8 +269,8 @@ describe("GithubClient", () => {
       const { client, octokit } = createGithubClient(
         [
           {
+            id: 1,
             name: "artifact",
-            archive_download_url: "https://example.test/artifacts/1",
           },
         ],
         {
@@ -277,8 +298,8 @@ describe("GithubClient", () => {
       const { client } = createGithubClient(
         [
           {
+            id: 1,
             name: "artifact",
-            archive_download_url: "https://example.test/artifacts/1",
           },
         ],
         {

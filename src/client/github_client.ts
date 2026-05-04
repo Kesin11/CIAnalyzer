@@ -16,6 +16,7 @@ import {
 // Oktokit document: https://octokit.github.io/rest.js/v18#actions
 
 const DEBUG_PER_PAGE = 10;
+const GITHUB_API_VERSION = "2022-11-28";
 
 export type WorkflowItem =
   RestEndpointMethodTypes["actions"]["listRepoWorkflows"]["response"]["data"]["workflows"][0];
@@ -35,6 +36,7 @@ type GithubOctokit = Pick<Octokit, "log"> & {
     | "listWorkflowRunArtifacts"
   >;
   repos: Pick<Octokit["repos"], "listTags">;
+  request: Octokit["request"];
 };
 
 type DownloadedArtifactResponse = {
@@ -49,15 +51,24 @@ type DownloadedArtifact = {
 };
 
 type WorkflowArtifactToDownload = {
+  id: number;
   name: string;
-  archiveDownloadUrl: string;
 };
+
+type ArtifactDownloadUrlResolver = (
+  owner: string,
+  repo: string,
+  artifactId: number,
+) => Promise<string>;
+
+type ArtifactDownloader = (
+  artifactDownloadUrl: string,
+) => Promise<DownloadedArtifactResponse>;
 
 type GithubClientDependencies = {
   octokit?: GithubOctokit;
-  artifactDownloader?: (
-    archiveDownloadUrl: string,
-  ) => Promise<DownloadedArtifactResponse>;
+  artifactDownloadUrlResolver?: ArtifactDownloadUrlResolver;
+  artifactDownloader?: ArtifactDownloader;
 };
 
 const isExpiredArtifactError = (
@@ -72,11 +83,9 @@ const isExpiredArtifactError = (
 };
 
 export class GithubClient {
-  #artifactDownloader: (
-    archiveDownloadUrl: string,
-  ) => Promise<DownloadedArtifactResponse>;
+  #artifactDownloadUrlResolver: ArtifactDownloadUrlResolver;
+  #artifactDownloader: ArtifactDownloader;
   #octokit: GithubOctokit;
-  #token: string;
   constructor(
     token: string,
     private options: ArgumentOptions,
@@ -84,7 +93,6 @@ export class GithubClient {
     deps: GithubClientDependencies = {},
   ) {
     const MyOctokit = Octokit.plugin(throttling, retry);
-    this.#token = token;
     this.#octokit =
       deps.octokit ??
       new MyOctokit({
@@ -115,20 +123,49 @@ export class GithubClient {
           },
         },
       });
+    this.#artifactDownloadUrlResolver =
+      deps.artifactDownloadUrlResolver ??
+      this.resolveArtifactDownloadUrl.bind(this);
     this.#artifactDownloader =
       deps.artifactDownloader ?? this.downloadArtifactFromUrl.bind(this);
   }
 
-  private createArtifactDownloadHeaders(): Headers {
-    const headers = new Headers({
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-    });
-    if (this.#token) {
-      headers.set("Authorization", `Bearer ${this.#token}`);
+  private async resolveArtifactDownloadUrl(
+    owner: string,
+    repo: string,
+    artifactId: number,
+  ): Promise<string> {
+    const response = await this.#octokit.request(
+      "GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}",
+      {
+        owner,
+        repo,
+        artifact_id: artifactId,
+        archive_format: "zip",
+        headers: {
+          "X-GitHub-Api-Version": GITHUB_API_VERSION,
+        },
+        request: {
+          parseSuccessResponseBody: false,
+          redirect: "manual",
+        },
+      },
+    );
+
+    const location = response.headers.location;
+    if (!location) {
+      throw new Error(
+        `Artifact download URL was missing for ${owner}/${repo} artifact=${artifactId}`,
+      );
     }
 
-    return headers;
+    return location;
+  }
+
+  private createArtifactDownloadHeaders(): Headers {
+    return new Headers({
+      Accept: "application/octet-stream",
+    });
   }
 
   private toDownloadedArtifact(
@@ -143,9 +180,9 @@ export class GithubClient {
   }
 
   private async downloadArtifactFromUrl(
-    archiveDownloadUrl: string,
+    artifactDownloadUrl: string,
   ): Promise<DownloadedArtifactResponse> {
-    const response = await fetch(archiveDownloadUrl, {
+    const response = await fetch(artifactDownloadUrl, {
       headers: this.createArtifactDownloadHeaders(),
     });
     if (!response.ok) {
@@ -169,10 +206,14 @@ export class GithubClient {
     artifact: WorkflowArtifactToDownload,
   ): Promise<DownloadedArtifact | undefined> {
     try {
-      const response = await this.#artifactDownloader(
-        artifact.archiveDownloadUrl,
+      const { id, name } = artifact;
+      const artifactDownloadUrl = await this.#artifactDownloadUrlResolver(
+        owner,
+        repo,
+        id,
       );
-      return this.toDownloadedArtifact(artifact.name, response);
+      const response = await this.#artifactDownloader(artifactDownloadUrl);
+      return this.toDownloadedArtifact(name, response);
     } catch (error) {
       if (isExpiredArtifactError(error)) {
         this.#octokit.log.warn(
@@ -272,8 +313,8 @@ export class GithubClient {
             repo,
             runId,
             {
+              id: artifact.id,
               name: artifact.name,
-              archiveDownloadUrl: artifact.archive_download_url,
             },
           );
 
