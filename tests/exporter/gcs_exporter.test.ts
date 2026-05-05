@@ -8,6 +8,10 @@ const mockStorage = {
   file: vi.fn().mockReturnThis(),
   save: vi.fn(),
 };
+const mockLogger = {
+  info: vi.fn(),
+  warn: vi.fn(),
+};
 const logger = new Logger({ type: "hidden" });
 
 describe("GcsExporter", () => {
@@ -49,8 +53,10 @@ describe("GcsExporter", () => {
     let exporter: GcsExporter;
 
     beforeEach(() => {
+      vi.clearAllMocks();
       exporter = new GcsExporter(logger, "github", baseConfig);
       exporter.storage = mockStorage as any;
+      exporter.logger = mockLogger as any;
     });
 
     it("exportWorkflowReports should create correct file path when all reports have the same createdAt", async () => {
@@ -131,6 +137,17 @@ describe("GcsExporter", () => {
       );
       expect(mockStorage.file).toHaveBeenCalledWith(
         "ci_analyzer/custom/dt=2022-12-31/20230101-123456-custom-github.json",
+      );
+    });
+
+    it("warns and falls back to the current time when createdAt is missing", async () => {
+      await exporter.exportWorkflowReports([{}] as any);
+
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        "Missing createdAt in workflow report. Using current time for export prefix.",
+      );
+      expect(mockStorage.file).toHaveBeenCalledWith(
+        "ci_analyzer/workflow/dt=2023-01-01/20230101-123456-workflow-github.json",
       );
     });
   });
