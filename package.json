@@ -19,12 +19,12 @@
     "node": "^24.15.0"
   },
   "bin": {
-    "ci_analyzer": "bin/ci_analyzer.js"
+    "ci_analyzer": "src/index.ts"
   },
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .githooks || true",
-    "start": "node ./bin/ci_analyzer.js",
+    "start": "node ./src/index.ts",
     "check": "tsc --noEmit",
     "check:watch": "tsc --watch --noEmit",
     "biome:ci": "biome ci .",
