@@ -18,5 +18,7 @@ COPY README.md LICENSE ci_analyzer.yaml ./
 COPY src ./src
 COPY bigquery_schema ./bigquery_schema
 
+RUN ln -s /ci_analyzer/src/index.ts /usr/local/bin/ci_analyzer
+
 ENTRYPOINT ["/usr/bin/tini", "--", "/ci_analyzer/src/index.ts"]
 WORKDIR /app
