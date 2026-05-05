@@ -50,6 +50,11 @@ export class GcsExporter implements Exporter {
     const groupedReports = Object.groupBy(
       reports,
       (report: WorkflowReport | TestReport | CustomReport) => {
+        if (!report.createdAt) {
+          this.logger.warn(
+            `Missing createdAt in ${reportType} report. Using current time for export prefix.`,
+          );
+        }
         return formatDateTemplate(
           this.prefixTemplate.replace("{reportType}", reportType),
           report.createdAt ?? new Date(),
