@@ -100,3 +100,9 @@ jobs:
           tags: ghcr.io/kesin11/ci_analyzer:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Smoke test container CLI command
+        run: |
+          docker run --rm --entrypoint sh ghcr.io/kesin11/ci_analyzer:latest -c '
+            ci_analyzer --version &&
+            ci_analyzer --help >/dev/null
+          '
