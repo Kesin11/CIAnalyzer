@@ -6,6 +6,9 @@ function toDate(date: Date | string): Date {
   return typeof date === "string" ? new Date(date) : date;
 }
 
+/**
+ * Example: `workflow/dt={YYYY}-{MM}-{DD}` becomes `workflow/dt=2026-05-05`.
+ */
 export function formatDateTemplate(
   template: string,
   date: Date | string,
