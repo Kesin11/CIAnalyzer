@@ -6,9 +6,29 @@ import { Failure, failure, type Result, success } from "../result.ts";
 import { BitriseRunner } from "./bitrise_runner.ts";
 import type { ArgumentOptions } from "../arg_options.ts";
 import type { Logger } from "tslog";
-import { ApiError } from "@google-cloud/common";
 import { HttpError } from "../client/http_client.ts";
 import { summarizeHttpError } from "../error.ts";
+
+type GcpApiError = Error & {
+  code?: number;
+  errors?: unknown[];
+  response?: {
+    body?: unknown;
+  };
+};
+
+function isGcpApiError(error: unknown): error is GcpApiError {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const candidate = error as GcpApiError;
+  return (
+    candidate.response !== undefined ||
+    candidate.errors !== undefined ||
+    candidate.code !== undefined
+  );
+}
 
 export interface Runner {
   run(): Promise<Result<unknown, Error>>;
@@ -86,7 +106,7 @@ export class CompositRunner implements Runner {
     if (error instanceof HttpError) {
       this.#logger.error("Catch HTTP fetch error.");
       this.#logger.error(summarizeHttpError(error));
-    } else if (error instanceof ApiError) {
+    } else if (isGcpApiError(error)) {
       this.#logger.error(
         "Catch GCloud Error. Please check 'gcloud' auth status or your permission.",
       );
