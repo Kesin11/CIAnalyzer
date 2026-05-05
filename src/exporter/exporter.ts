@@ -1,16 +1,16 @@
-import { LocalExporter } from "./local_exporter.js";
-import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
+import { LocalExporter } from "./local_exporter.ts";
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.ts";
 import type {
   ExporterConfig,
   LocalExporterConfig,
   BigqueryExporterConfig,
   GcsExporterConfig,
-} from "../config/schema.js";
-import { BigqueryExporter } from "./bigquery_exporter.js";
-import type { CustomReportCollection } from "../custom_report_collection.js";
-import type { ArgumentOptions } from "../arg_options.js";
+} from "../config/schema.ts";
+import { BigqueryExporter } from "./bigquery_exporter.ts";
+import type { CustomReportCollection } from "../custom_report_collection.ts";
+import type { ArgumentOptions } from "../arg_options.ts";
 import type { Logger } from "tslog";
-import { GcsExporter } from "./gcs_exporter.js";
+import { GcsExporter } from "./gcs_exporter.ts";
 
 export interface Exporter {
   exportWorkflowReports(reports: WorkflowReport[]): Promise<void>;

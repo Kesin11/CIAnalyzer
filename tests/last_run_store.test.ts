@@ -3,7 +3,10 @@ import { LastRunStore } from "../src/last_run_store.ts";
 import type { Store, AnyObject } from "../src/store/store.ts";
 
 class MockStore implements Store {
-  constructor(public data: AnyObject = {}) {}
+  data: AnyObject;
+  constructor(data: AnyObject = {}) {
+    this.data = data;
+  }
   async read<T extends AnyObject>(): Promise<T> {
     return this.data as T;
   }

@@ -1,19 +1,19 @@
 import { maxBy } from "lodash-es";
 import type { Logger } from "tslog";
-import type { TestReport, WorkflowReport } from "../analyzer/analyzer.js";
-import { BitriseAnalyzer } from "../analyzer/bitrise_analyzer.js";
-import type { ArgumentOptions } from "../arg_options.js";
-import { BitriseClient } from "../client/bitrise_client.js";
-import { type BitriseConfig, parseConfig } from "../config/bitrise_config.js";
-import type { ValidatedYamlConfig } from "../config/config.js";
+import type { TestReport, WorkflowReport } from "../analyzer/analyzer.ts";
+import { BitriseAnalyzer } from "../analyzer/bitrise_analyzer.ts";
+import type { ArgumentOptions } from "../arg_options.ts";
+import { BitriseClient } from "../client/bitrise_client.ts";
+import { type BitriseConfig, parseConfig } from "../config/bitrise_config.ts";
+import type { ValidatedYamlConfig } from "../config/config.ts";
 import {
   createCustomReportCollection,
   CustomReportCollection,
-} from "../custom_report_collection.js";
-import { CompositExporter } from "../exporter/exporter.js";
-import { LastRunStore } from "../last_run_store.js";
-import { type Result, success, failure } from "../result.js";
-import type { Runner } from "./runner.js";
+} from "../custom_report_collection.ts";
+import { CompositExporter } from "../exporter/exporter.ts";
+import { LastRunStore } from "../last_run_store.ts";
+import { type Result, success, failure } from "../result.ts";
+import type { Runner } from "./runner.ts";
 
 const BITRISE_DEPRECATION_WARNING =
   "Bitrise support is DEPRECATED and will be removed in the next major release.";
@@ -25,12 +25,16 @@ export class BitriseRunner implements Runner {
   config: BitriseConfig | undefined;
   store?: LastRunStore;
   logger: Logger<unknown>;
+  yamlConfig: ValidatedYamlConfig;
+  options: ArgumentOptions;
 
   constructor(
     logger: Logger<unknown>,
-    public yamlConfig: ValidatedYamlConfig,
-    public options: ArgumentOptions,
+    yamlConfig: ValidatedYamlConfig,
+    options: ArgumentOptions,
   ) {
+    this.yamlConfig = yamlConfig;
+    this.options = options;
     const BITRISE_TOKEN = process.env.BITRISE_TOKEN || "";
     this.config = parseConfig(yamlConfig);
     this.logger = logger.getSubLogger({ name: `${BitriseRunner.name}` });

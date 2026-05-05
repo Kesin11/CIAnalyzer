@@ -83,7 +83,7 @@ Required tokens per service:
 - **Date handling**: Always use UTC timezone in tests
 
 ## Development Tips
-- **Debug commands**: `npx tsx src/index.ts -c config.yaml --debug`
+- **Debug commands**: `node src/index.ts -c config.yaml --debug`
 - **Service isolation**: `--only-services github` for focused development
 - **Local export only**: `--only-exporters local` for testing
 - **Concurrency**: `--max-concurrent-requests N` for API rate limiting

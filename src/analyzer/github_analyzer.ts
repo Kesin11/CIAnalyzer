@@ -7,9 +7,9 @@ import {
   type TestReport,
   type WorkflowParams,
   convertToTestReports,
-} from "./analyzer.js";
-import type { RepositoryTagMap } from "../client/github_client.js";
-import type { Artifact } from "../client/artifact.js";
+} from "./analyzer.ts";
+import type { RepositoryTagMap } from "../client/github_client.ts";
+import type { Artifact } from "../client/artifact.ts";
 export type WorkflowRunsItem =
   RestEndpointMethodTypes["actions"]["listWorkflowRunsForRepo"]["response"]["data"]["workflow_runs"][0];
 export type JobsItem =

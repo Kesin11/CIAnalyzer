@@ -15,9 +15,8 @@ COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --ignore-scripts
 
 COPY README.md LICENSE ci_analyzer.yaml ./
-COPY bin ./bin
 COPY src ./src
 COPY bigquery_schema ./bigquery_schema
 
-ENTRYPOINT ["/usr/bin/tini", "--", "/ci_analyzer/node_modules/.bin/tsx", "/ci_analyzer/src/index.ts"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/ci_analyzer/src/index.ts"]
 WORKDIR /app

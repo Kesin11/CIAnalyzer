@@ -1,7 +1,7 @@
 import { Agent, setGlobalDispatcher } from "undici";
 import type { Logger } from "tslog";
-import type { ArgumentOptions } from "../arg_options.js";
-import { summarizeHttpError } from "../error.js";
+import type { ArgumentOptions } from "../arg_options.ts";
+import { summarizeHttpError } from "../error.ts";
 
 export type RequestConfig = {
   params?: Record<string, unknown>;

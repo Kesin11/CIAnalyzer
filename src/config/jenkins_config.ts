@@ -1,5 +1,5 @@
-import { customReportSchema, commonSchema } from "./schema.js";
-import type { ValidatedYamlConfig } from "./config.js";
+import { customReportSchema, commonSchema } from "./schema.ts";
+import type { ValidatedYamlConfig } from "./config.ts";
 import { z } from "zod";
 import type { Logger } from "tslog";
 

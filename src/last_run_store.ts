@@ -1,9 +1,9 @@
-import type { Store } from "./store/store.js";
-import { LocalStore } from "./store/local_store.js";
-import type { LastRunStoreConfig } from "./config/schema.js";
-import { GcsStore } from "./store/gcs_store.js";
-import type { ArgumentOptions } from "./arg_options.js";
-import { NullStore } from "./store/null_store.js";
+import type { Store } from "./store/store.ts";
+import { LocalStore } from "./store/local_store.ts";
+import type { LastRunStoreConfig } from "./config/schema.ts";
+import { GcsStore } from "./store/gcs_store.ts";
+import type { ArgumentOptions } from "./arg_options.ts";
+import { NullStore } from "./store/null_store.ts";
 import type { Logger } from "tslog";
 
 type LastRun<T> = {

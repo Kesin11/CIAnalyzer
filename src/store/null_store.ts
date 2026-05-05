@@ -1,5 +1,5 @@
 import type { Logger } from "tslog";
-import type { Store, AnyObject } from "./store.js";
+import type { Store, AnyObject } from "./store.ts";
 
 export class NullStore implements Store {
   #logger: Logger<unknown>;

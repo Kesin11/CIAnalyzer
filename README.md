@@ -581,14 +581,18 @@ npm run docker
 ### Debugging
 
 ```bash
-npx tsx src/index.ts -c your_custom_config.yaml --debug
+./src/index.ts -c your_custom_config.yaml --debug
 ```
 
-### Execute CIAnalyzer with tsx runtime
+### Execute CIAnalyzer with Node TypeScript runtime
 
 ```bash
 npm run start -- -c your_custom_config.yaml
 ```
+
+The published `ci_analyzer` CLI now points directly to `src/index.ts`, so a
+local checkout and a local install can invoke the same executable entrypoint
+without a wrapper script.
 
 # LICENSE
 

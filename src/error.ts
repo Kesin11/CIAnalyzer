@@ -1,4 +1,4 @@
-import type { HttpError } from "./client/http_client.js";
+import type { HttpError } from "./client/http_client.ts";
 
 export const summarizeHttpError = (error: HttpError) => {
   const { baseURL, url, params, method } = error.request;

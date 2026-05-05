@@ -3,12 +3,12 @@ import path from "node:path";
 import fs from "node:fs";
 import crypto from "node:crypto";
 import { BigQuery } from "@google-cloud/bigquery";
-import type { WorkflowReport, TestReport } from "../analyzer/analyzer.js";
-import type { Exporter } from "./exporter.js";
-import type { BigqueryExporterConfig } from "../config/schema.js";
-import type { CustomReportCollection } from "../custom_report_collection.js";
+import type { WorkflowReport, TestReport } from "../analyzer/analyzer.ts";
+import type { Exporter } from "./exporter.ts";
+import type { BigqueryExporterConfig } from "../config/schema.ts";
+import type { CustomReportCollection } from "../custom_report_collection.ts";
 import type { Logger } from "tslog";
-import { BQ_SCHEMA_PATHS } from "../constant.js";
+import { BQ_SCHEMA_PATHS } from "../constant.ts";
 
 export class BigqueryExporter implements Exporter {
   bigquery: BigQuery;

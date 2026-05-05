@@ -1,17 +1,17 @@
 import { Octokit, type RestEndpointMethodTypes } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
 import { retry } from "@octokit/plugin-retry";
-import type { CustomReportArtifact, Artifact } from "./artifact.js";
+import type { CustomReportArtifact, Artifact } from "./artifact.ts";
 import { minBy } from "lodash-es";
-import { ZipExtractor } from "../zip_extractor.js";
-import type { CustomReportConfig } from "../config/schema.js";
-import type { ArgumentOptions } from "../arg_options.js";
+import { ZipExtractor } from "../zip_extractor.ts";
+import type { CustomReportConfig } from "../config/schema.ts";
+import type { ArgumentOptions } from "../arg_options.ts";
 import {
   detectGithubArtifactFormat,
   resolveGithubArtifactPath,
   toDirectArtifact,
   type GithubArtifactFormat,
-} from "./github_artifact.js";
+} from "./github_artifact.ts";
 
 // Oktokit document: https://octokit.github.io/rest.js/v18#actions
 
@@ -84,12 +84,14 @@ export class GithubClient {
   #artifactDownloadUrlResolver: ArtifactDownloadUrlResolver;
   #artifactDownloadOctokit: ArtifactDownloadOctokit;
   #octokit: GithubOctokit;
+  private options: ArgumentOptions;
   constructor(
     token: string,
-    private options: ArgumentOptions,
+    options: ArgumentOptions,
     baseUrl?: string,
     deps: GithubClientDependencies = {},
   ) {
+    this.options = options;
     const MyOctokit = Octokit.plugin(throttling, retry);
     this.#octokit =
       deps.octokit ??

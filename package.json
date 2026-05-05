@@ -19,12 +19,12 @@
     "node": "^24.15.0"
   },
   "bin": {
-    "ci_analyzer": "bin/ci_analyzer.js"
+    "ci_analyzer": "src/index.ts"
   },
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .githooks || true",
-    "start": "node ./bin/ci_analyzer.js",
+    "start": "node ./src/index.ts",
     "check": "tsc --noEmit",
     "check:watch": "tsc --watch --noEmit",
     "biome:ci": "biome ci .",
@@ -48,7 +48,6 @@
     "lodash-es": "4.18.1",
     "minimatch": "10.2.5",
     "tslog": "4.10.2",
-    "tsx": "4.21.0",
     "undici": "8.1.0",
     "utility-types": "3.11.0",
     "zod": "4.3.6"
