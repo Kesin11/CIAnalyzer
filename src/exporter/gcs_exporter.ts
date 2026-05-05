@@ -1,7 +1,6 @@
 import path from "node:path";
 import { Storage } from "@google-cloud/storage";
 import type { Logger } from "tslog";
-import dayjs from "dayjs";
 import type { Exporter } from "./exporter.ts";
 import type { WorkflowReport, TestReport } from "../analyzer/analyzer.ts";
 import type { GcsExporterConfig } from "../config/schema.ts";
@@ -9,6 +8,7 @@ import type {
   CustomReport,
   CustomReportCollection,
 } from "../custom_report_collection.ts";
+import { formatDateTemplate, formatTimestamp } from "../date.ts";
 
 export class GcsExporter implements Exporter {
   service: string;
@@ -50,20 +50,18 @@ export class GcsExporter implements Exporter {
     const groupedReports = Object.groupBy(
       reports,
       (report: WorkflowReport | TestReport | CustomReport) => {
-        const createdAt = dayjs(report.createdAt);
-        return this.prefixTemplate
-          .replace("{reportType}", reportType)
-          .replace("{YYYY}", createdAt.format("YYYY"))
-          .replace("{MM}", createdAt.format("MM"))
-          .replace("{DD}", createdAt.format("DD"));
+        return formatDateTemplate(
+          this.prefixTemplate.replace("{reportType}", reportType),
+          report.createdAt ?? new Date(),
+        );
       },
     );
 
-    const now = dayjs();
+    const now = new Date();
     for (const [dirPath, reports] of Object.entries(groupedReports)) {
       const filePath = path.join(
         dirPath,
-        `${now.format("YYYYMMDD-HHmmss")}-${reportType}-${this.service}.json`,
+        `${formatTimestamp(now, { includeSeconds: true })}-${reportType}-${this.service}.json`,
       );
       const file = this.storage.bucket(this.bucketName).file(filePath);
       const reportJson = this.formatJsonLines(reports || []);

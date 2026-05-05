@@ -42,7 +42,6 @@
     "@octokit/plugin-throttling": "11.0.3",
     "@octokit/rest": "22.0.1",
     "adm-zip": "0.5.17",
-    "dayjs": "1.11.20",
     "js-yaml": "4.1.1",
     "junit2json": "3.2.1",
     "lodash-es": "4.18.1",

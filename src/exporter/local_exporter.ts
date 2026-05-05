@@ -1,6 +1,5 @@
 import path from "node:path";
 import fs from "node:fs";
-import dayjs from "dayjs";
 import type { WorkflowReport, TestReport } from "../analyzer/analyzer.ts";
 import type { Exporter } from "./exporter.ts";
 import type { LocalExporterConfig } from "../config/schema.ts";
@@ -9,6 +8,7 @@ import type {
   CustomReportCollection,
 } from "../custom_report_collection.ts";
 import type { Logger } from "tslog";
+import { formatTimestamp } from "../date.ts";
 
 const defaultOutDir = "output";
 
@@ -41,10 +41,10 @@ export class LocalExporter implements Exporter {
   ) {
     await this.fsPromises.mkdir(this.outDir, { recursive: true });
 
-    const now = dayjs();
+    const now = new Date();
     const outputPath = path.join(
       this.outDir,
-      `${now.format("YYYYMMDD-HHmm")}-${reportType}-${this.service}.json`,
+      `${formatTimestamp(now)}-${reportType}-${this.service}.json`,
     );
 
     const formated = this.formatter(reports);
