@@ -4,7 +4,7 @@ jobs:
   cron-run:
     resource_class: small
     docker:
-      - image: ghcr.io/kesin11/ci_analyzer:v7
+      - image: ghcr.io/kesin11/ci_analyzer:v8
     steps:
       - checkout
       - run:
