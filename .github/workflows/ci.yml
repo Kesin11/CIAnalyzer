@@ -26,7 +26,7 @@ jobs:
       - name: Regenerate schema.json
         run: npm run json_schema
       - name: Check generated schema diff
-        run: git diff --exit-code -- schema.json
+        run: git diff --exit-code HEAD -- schema.json
 
   lint_fmt:
     runs-on: ubuntu-latest
