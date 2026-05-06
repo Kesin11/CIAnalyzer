@@ -23,10 +23,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - name: Regenerate schema.json
-        run: npm run json_schema
       - name: Check generated schema diff
-        run: git diff --exit-code HEAD -- schema.json
+        run: |
+          original_schema="$(mktemp)"
+          cp schema.json "$original_schema"
+          npm run json_schema
+          diff -u "$original_schema" schema.json
 
   lint_fmt:
     runs-on: ubuntu-latest
