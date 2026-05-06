@@ -10,6 +10,26 @@ permissions:
   contents: read
 
 jobs:
+  check_generated_schema:
+    runs-on: ubuntu-latest
+    container:
+      image: "node:24.15.0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: npm ci
+      - name: Check generated schema diff
+        run: |
+          original_schema="$(mktemp)"
+          cp schema.json "$original_schema"
+          npm run json_schema
+          diff -u "$original_schema" schema.json
+
   lint_fmt:
     runs-on: ubuntu-latest
     container:
