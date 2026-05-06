@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      tag_name: ${{ steps.release-drafter.outputs.tag_name }}
     steps:
       # Get next version
       - uses: release-drafter/release-drafter@563bf132657a13ded0b01fcb723c5a58cdd824e2 # v7.2.1
@@ -24,32 +22,15 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     needs: draft_release
-    permissions:
-      contents: write
+    # We use PAT for release-drafter, because GITHUB_TOKEN does not trigger 'push tag' event for build Docker workflow
+    # permissions:
+    #   contents: write
+    #   pull-requests: read
     steps:
-      # Create version string from tag (v1.0.0 -> 1.0.0)
-      - name: Create version string
-        run: |
-          export TAG_NAME=${{ needs.draft_release.outputs.tag_name }}
-          echo "VERSION=${TAG_NAME:1}" >> $GITHUB_ENV
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-depth: 0
-          ref: master
-          # Workaround for trigger 'push tag' event for build Docker workflow
-          # see: https://github.community/t/action-does-not-trigger-another-on-push-tag-action/17148/4
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - name: Setup git config
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-      - name: Create git tag and push for triggering docker.yml workflow
-        run: |
-          git push origin master
-          git push origin "v${VERSION}"
       - uses: release-drafter/release-drafter@563bf132657a13ded0b01fcb723c5a58cdd824e2 # v7.2.1
         with:
           publish: true
-          tag: v${{ env.VERSION }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Workaround for trigger 'push tag' event for build Docker workflow
+          # see: https://github.community/t/action-does-not-trigger-another-on-push-tag-action/17148/4
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
