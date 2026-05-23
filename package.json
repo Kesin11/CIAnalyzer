@@ -53,8 +53,8 @@
     "@types/js-yaml": "4.0.9",
     "@types/lodash-es": "4.17.12",
     "@types/node": "24.12.4",
-    "@vitest/coverage-v8": "^4.1.6",
+    "@vitest/coverage-v8": "^4.1.7",
     "typescript": "6.0.3",
-    "vitest": "4.1.6"
+    "vitest": "4.1.7"
   }
 }
