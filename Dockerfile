@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:24.15.0-slim
+FROM node:24.16.0-slim
 
 LABEL org.opencontainers.image.source=https://github.com/Kesin11/CIAnalyzer
 LABEL org.opencontainers.image.authors=kesin1202000@gmail.com
