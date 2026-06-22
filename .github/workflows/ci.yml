@@ -13,7 +13,7 @@ jobs:
   check_generated_schema:
     runs-on: ubuntu-latest
     container:
-      image: "node:24.15.0"
+      image: "node:24.17.0"
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
@@ -33,7 +33,7 @@ jobs:
   lint_fmt:
     runs-on: ubuntu-latest
     container:
-      image: "node:24.15.0"
+      image: "node:24.17.0"
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
@@ -49,7 +49,7 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
     container:
-      image: "node:24.15.0"
+      image: "node:24.17.0"
     permissions:
       contents: read
       pull-requests: write
@@ -89,7 +89,7 @@ jobs:
   smoke_test:
     runs-on: ubuntu-latest
     container:
-      image: "node:24.15.0"
+      image: "node:24.17.0"
     permissions:
       contents: read
     steps:
@@ -112,8 +112,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
-      - uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4
-      - uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+      - uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4
+      - uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           context: .
           push: false
