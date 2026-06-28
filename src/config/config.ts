@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import yaml from "js-yaml";
+import { load as yamlLoad } from "js-yaml";
 import type { Logger } from "tslog";
 import { z } from "zod";
 import { bitriseYamlSchema } from "./bitrise_config.ts";
@@ -34,7 +34,7 @@ export function loadConfig(
   logger: Logger<unknown>,
   configPath: string,
 ): YamlConfig {
-  const config = yaml.load(fs.readFileSync(configPath, "utf8"));
+  const config = yamlLoad(fs.readFileSync(configPath, "utf8"));
 
   if (!config || typeof config !== "object") {
     throw new Error(`Failed to load ${configPath} or config is not object`);
