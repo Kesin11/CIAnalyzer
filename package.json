@@ -48,7 +48,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.3",
+    "@biomejs/biome": "2.5.4",
     "@types/adm-zip": "0.5.8",
     "@types/js-yaml": "4.0.9",
     "@types/lodash-es": "4.17.12",
