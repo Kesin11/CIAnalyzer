@@ -53,7 +53,7 @@ function createZipArrayBuffer(path: string, content: string): ArrayBuffer {
   return buffer.buffer.slice(
     buffer.byteOffset,
     buffer.byteOffset + buffer.byteLength,
-  );
+  ) as ArrayBuffer;
 }
 
 function createArrayBuffer(content: string): ArrayBuffer {
@@ -61,7 +61,7 @@ function createArrayBuffer(content: string): ArrayBuffer {
   return buffer.buffer.slice(
     buffer.byteOffset,
     buffer.byteOffset + buffer.byteLength,
-  );
+  ) as ArrayBuffer;
 }
 
 function createMockOctokit(artifacts: MockArtifact[] = []) {
