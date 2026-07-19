@@ -43,7 +43,7 @@
     "junit2json": "3.2.1",
     "lodash-es": "4.18.1",
     "minimatch": "10.2.5",
-    "tslog": "4.11.0",
+    "tslog": "5.0.1",
     "undici": "8.7.0",
     "zod": "4.4.3"
   },
