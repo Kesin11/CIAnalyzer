@@ -45,10 +45,12 @@ const main = async () => {
   const argOptions = new ArgumentOptions(argv);
   const logger = new Logger({
     minLevel: argOptions.logLevel,
-    prettyLogTemplate: "{{logLevelName}}\t[{{name}}]",
-    prettyLogStyles: {
-      ...baseLoggerForStyles.settings.prettyLogStyles,
-      name: "whiteBright",
+    pretty: {
+      template: "{{logLevelName}}\t[{{name}}]",
+      styles: {
+        ...baseLoggerForStyles.settings.pretty.styles,
+        name: "whiteBright",
+      },
     },
   });
 

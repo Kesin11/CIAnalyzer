@@ -111,14 +111,14 @@ export class CompositRunner implements Runner {
         "Catch GCloud Error. Please check 'gcloud' auth status or your permission.",
       );
       this.#logger.error(`${error.response?.body}`);
-      this.#logger.error(error.stack);
+      this.#logger.error(error.stack ?? "");
     } else if (error instanceof Error) {
       this.#logger.error(error);
       if (error.cause) this.handlingError(error.cause);
     } else if (error instanceof Failure) {
       this.handlingError(error.value);
     } else {
-      this.#logger.error(error);
+      this.#logger.error(String(error));
     }
   }
 }
