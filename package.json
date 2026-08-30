@@ -33,7 +33,7 @@
     "docker": "docker buildx build --load --tag ghcr.io/kesin11/ci_analyzer:latest ."
   },
   "dependencies": {
-    "@google-cloud/bigquery": "9.0.2",
+    "@google-cloud/bigquery": "9.0.3",
     "@google-cloud/storage": "7.22.0",
     "@octokit/plugin-retry": "8.1.1",
     "@octokit/plugin-throttling": "11.0.5",
