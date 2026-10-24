@@ -45,7 +45,7 @@
     "minimatch": "10.2.6",
     "tslog": "5.4.0",
     "undici": "8.12.3",
-    "zod": "4.5.1"
+    "zod": "4.6.6"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
