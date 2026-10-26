@@ -106,6 +106,87 @@ describe("CircleciClient", () => {
       expect(workflows[0].jobs).toEqual([]);
     });
 
+    it("stops paginating workflow jobs when next_page_token is omitted", async () => {
+      let workflowJobRequests = 0;
+      const fetch = vi.fn(async (input: string | URL | Request) => {
+        const url = String(input);
+
+        if (url.includes("/v2/workflow/workflow-id/job")) {
+          workflowJobRequests++;
+          if (workflowJobRequests > 2) {
+            throw new Error("Workflow jobs were requested too many times");
+          }
+          if (!url.includes("page-token=")) {
+            return new Response(
+              JSON.stringify({
+                items: [
+                  {
+                    dependencies: [],
+                    id: "job-id-1",
+                    job_number: 123,
+                    name: "test-1",
+                    project_slug: "gh/owner/repo",
+                    status: "success",
+                    type: "build",
+                  },
+                ],
+                next_page_token: "next-page",
+              }),
+            );
+          }
+          // The last page omits next_page_token instead of returning null.
+          return new Response(
+            JSON.stringify({
+              items: [
+                {
+                  dependencies: [],
+                  id: "job-id-2",
+                  job_number: 124,
+                  name: "test-2",
+                  project_slug: "gh/owner/repo",
+                  status: "success",
+                  type: "build",
+                },
+              ],
+            }),
+          );
+        }
+
+        if (url.includes("/v2/project/gh/owner/repo/job/")) {
+          return new Response(JSON.stringify({ message: "Not Found" }), {
+            status: 404,
+            statusText: "Not Found",
+          });
+        }
+
+        throw new Error(`Unexpected request: ${url}`);
+      });
+      vi.stubGlobal("fetch", fetch);
+
+      const client = new CircleciClientV2("DUMMY_TOKEN", logger, options);
+      const workflows = await client.fetchPipelineWorkflows({
+        id: "pipeline-id",
+        number: 1,
+        workflows: [
+          {
+            id: "workflow-id",
+            name: "ci",
+            project_slug: "gh/owner/repo",
+            status: "success",
+            pipeline_id: "pipeline-id",
+            pipeline_number: 1,
+            created_at: "2026-01-01T00:00:00Z",
+            stopped_at: "2026-01-01T00:01:00Z",
+          },
+        ],
+      } as never);
+
+      expect(workflowJobRequests).toBe(2);
+      expect(workflows[0].fetchableJobs.map((job) => job.job_number)).toEqual([
+        123, 124,
+      ]);
+    });
+
     it("keeps exporting tests and custom reports for jobs whose details are missing", async () => {
       const fetch = vi.fn(async (input: string | URL | Request) => {
         const url = String(input);
