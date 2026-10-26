@@ -32,7 +32,8 @@ const FETCH_LIMIT = 100;
 
 type V2ApiResponse = {
   items: unknown[];
-  next_page_token: string | null;
+  // Some endpoints (e.g. listWorkflowJobs) omit this field on the last page instead of returning null.
+  next_page_token?: string | null;
 };
 
 type FetchV2ApiOptions = {
@@ -141,7 +142,7 @@ type ListWorkflowJobsResponse = {
     stopped_at?: string; // "2021-09-04T19:59:30Z"
     approval_request_id?: string;
   }[];
-  next_page_token: string | null;
+  next_page_token?: string | null;
 };
 
 type FilteredWorkflowJob = Omit<
@@ -349,7 +350,7 @@ export class CircleciClientV2 {
       }
       const data = res.data as T;
       items.push(...data.items);
-      pageToken = data.next_page_token;
+      pageToken = data.next_page_token ?? null;
     }
     return items;
   }
