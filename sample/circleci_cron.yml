@@ -33,7 +33,7 @@ jobs:
           name: Save last run store files
           key: cache-${CACHE_VERSION}-{{ .BuildNum }}
           paths:
-          - sample/.ci_analyzer
+            - sample/.ci_analyzer
 workflows:
   version: 2
   cron:

@@ -1,8 +1,10 @@
 ---
+
 description: "Use when editing CIAnalyzer documentation, config samples, Docker usage examples, or YAML examples. Covers Docker-first usage, config schema references, and sample consistency."
 name: "CIAnalyzer Docs and Config Guidelines"
 applyTo: README.md, ci_analyzer.yaml, sample/**
 ---
+
 # CIAnalyzer Docs and Config Guidelines
 
 - Prefer documenting CIAnalyzer as a Docker-first tool. Keep `docker run` examples, mounted paths, and container path references consistent with the current container workflow.

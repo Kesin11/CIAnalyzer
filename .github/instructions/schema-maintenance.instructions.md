@@ -1,8 +1,10 @@
 ---
+
 description: "Use when editing the CIAnalyzer config schema, BigQuery schema files, or report shape definitions. Covers keeping the ci_analyzer.yaml schema, BigQuery schemas, source schemas, and docs in sync."
 name: "CIAnalyzer Schema Maintenance"
 applyTo: schema.json, bigquery_schema/**, src/config/**/*.ts
 ---
+
 # CIAnalyzer Schema Maintenance
 
 - Treat `schema.json` as generated output from the Zod config schema and commit the regenerated file with the source change. Files under `bigquery_schema/` are still maintained source artifacts.
