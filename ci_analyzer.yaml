@@ -8,11 +8,11 @@ github:
   repos:
     - name: Kesin11/CIAnalyzer
       tests:
-        - '**/*.xml' # Test report JUnit XML path in artifact that uploaded by actions/upload-artifact
+        - "**/*.xml" # Test report JUnit XML path in artifact that uploaded by actions/upload-artifact
       customReports:
         - name: $CUSTOM_REPORT_NAME # It must be same bigquery.customReports[].name
           paths:
-            - 'custom_report.json' # Path at inside of artifact.
+            - "custom_report.json" # Path at inside of artifact.
     - Kesin11/ts-junit2json # Can use abbr format if don't collect test report
   exporter: &exporter # Can use yaml anchor
     local:
@@ -71,15 +71,14 @@ jenkins:
   jobs: # Job names in your Jenkins
     - name: ci_analyzer
       tests:
-        - 'junit/junit.xml' # Test report JUnit XML path in artifact
+        - "junit/junit.xml" # Test report JUnit XML path in artifact
       customReports:
         - name: $CUSTOM_REPORT_NAME
           paths:
-            - 'custom.json'
+            - "custom.json"
     - ci_analyzer_pull_request
   exporter: *exporter
   # If 'lastRunStore' is omitted, local backend is used
-
 # DEPRECATED: Bitrise support will be removed in the next major release.
 bitrise:
   baseUrl: https://api.bitrise.io/v0.1 # default
@@ -92,6 +91,6 @@ bitrise:
       customReports:
         - name: $CUSTOM_REPORT_NAME
           paths:
-            - 'custom_*.json'
+            - "custom_*.json"
     - Kesin11/FlutterGettingStarted2 # Can use abbr format
   exporter: *exporter

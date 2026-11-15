@@ -1,20 +1,19 @@
-
 name: CIAnalyzer
 on:
   workflow_dispatch:
     inputs:
       force_save_last_run:
-        description: 'Force saving last run state even when errors occur'
+        description: "Force saving last run state even when errors occur"
         required: false
         default: false
         type: boolean
   schedule:
-  - cron:  '0 * * * *'
+    - cron: "0 * * * *"
 concurrency: cianalyzer
 
 permissions:
-  contents: 'read'
-  id-token: 'write'
+  contents: "read"
+  id-token: "write"
 
 jobs:
   run:
@@ -25,11 +24,11 @@ jobs:
     steps:
       # Checkout your repository that contains your config file.
       - uses: actions/checkout@v3
-      - name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v1'
+      - name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
         with:
-          workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
-          service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
+          workload_identity_provider: "projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider"
+          service_account: "my-service-account@my-project.iam.gserviceaccount.com"
 
       - name: Run CIAnalyzer
         run: ci_analyzer -c ./ci_analyzer.yaml ${{ inputs.force_save_last_run && '--force-save-last-run' || '' }}

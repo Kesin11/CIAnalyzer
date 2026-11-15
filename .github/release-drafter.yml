@@ -1,40 +1,40 @@
-name-template: 'v$RESOLVED_VERSION'
-tag-template: 'v$RESOLVED_VERSION'
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
 categories:
-  - title: 'BREAKING CHANGES'
+  - title: "BREAKING CHANGES"
     semver-increment: major
     when:
       labels:
-        - 'BREAKING CHANGES'
-  - title: 'Features'
+        - "BREAKING CHANGES"
+  - title: "Features"
     semver-increment: minor
     when:
       labels:
-        - 'feature'
-        - 'enhancement'
-  - title: 'Fixes'
+        - "feature"
+        - "enhancement"
+  - title: "Fixes"
     semver-increment: patch
     when:
       labels:
-        - 'fix'
-        - 'bug'
-        - 'security'
-  - title: 'Dependencies'
+        - "fix"
+        - "bug"
+        - "security"
+  - title: "Dependencies"
     collapse-after: 3
     when:
       labels:
-        - 'dependencies'
-        - 'renovate'
-  - title: 'Documentation'
+        - "dependencies"
+        - "renovate"
+  - title: "Documentation"
     when:
       labels:
-        - 'document'
-        - 'documentation'
-  - title: 'Internal improvement'
+        - "document"
+        - "documentation"
+  - title: "Internal improvement"
     when:
       labels:
-        - 'ci'
-change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+        - "ci"
+change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:
   default: patch

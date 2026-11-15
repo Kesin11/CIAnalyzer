@@ -6,7 +6,7 @@ jenkins:
   jobs:
     - name: ci_analyzer
       tests:
-        - 'junit/junit.xml'
+        - "junit/junit.xml"
   exporter:
     local:
       outDir: ./output

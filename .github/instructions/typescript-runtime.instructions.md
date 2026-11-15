@@ -1,8 +1,10 @@
 ---
+
 description: "Use when editing TypeScript source or tests in CIAnalyzer. Covers Node ESM imports, plugin-layer structure, and validation commands."
 name: "CIAnalyzer TypeScript Runtime Guidelines"
 applyTo: src/**/*.ts, tests/**/*.ts
 ---
+
 # CIAnalyzer TypeScript Guidelines
 
 - Use Node ESM style imports for internal modules and keep explicit `.ts` extensions in relative import specifiers.

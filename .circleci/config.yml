@@ -42,7 +42,7 @@ jobs:
           key: npm-cache-{{ checksum "package-lock.json" }}
           name: Save npm cache
           paths:
-          - ~/.npm
+            - ~/.npm
 workflows:
   version: 2
   ci:
